@@ -1,0 +1,448 @@
+__author__ = "Camille Clouard"
+__copyright__ = "Copyright 2024, Camille Clouard"
+__email__ = "camille.clouard@scilifelab.uu.se"
+__license__ = "GPL-3"
+
+import os
+
+# Include pipeline specific rules
+include: "rules/common.smk"
+include: "rules/basecalling.smk"
+include: "rules/prealignment.smk"
+include: "rules/aligning.smk"
+include: "rules/qc.smk"
+include: "rules/varcalling.smk"
+include: "rules/prefiltering.smk"
+include: "rules/results_report.smk"
+
+ruleorder: pycoqc > basecalling_dorado
+ruleorder: fetch_filtered_reads > dorado_align
+ruleorder: aligning_create_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
+ruleorder: mosdepth_overlap > qc_mosdepth_amplicons > varcall_clairs_to
+ruleorder: filtlong > sequali
+ruleorder: mosdepth_merge > qc_multiqc
+ruleorder: mosdepth_overlap > varcall_clairs_to
+
+
+# 'All' rule, must be specified before any other modules are
+# included, since they also contain 'All' rule
+rule all:
+    input:
+        unpack(compile_output_file_list),
+
+# TODO: Draw DAG and rulegraph --> workflow/scripts
+# snakemake -s workflow/Snakefile --configfile config/config.yaml --dag | dot -Tpdf > images/dag.pdf
+# snakemake -s workflow/Snakefile --configfile config/config.yaml --rulegraph | dot -Tpdf > images/rulegraph.pdf
+
+# Include modules
+module snv_indels:
+    snakefile:
+        github(
+            "hydra-genetics/snv_indels",
+            path="workflow/Snakefile",
+            tag="v1.1.0",
+        )
+    config:
+        config
+
+
+use rule vardict from snv_indels as snv_indels_vardict with:
+    input:
+        reference=config.get("reference", {}).get("fasta", ""),
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        regions=config.get("vardict", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed")),
+    output:
+        vcf=temp("snv_indels/vardict/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
+    params:
+        extra = config.get("vardict",{}).get("extra","-Q 1"),
+        bed_columns = config.get("vardict",{}).get("bed_columns","-c 1 -S 2 -E 3 -g 4"),
+        allele_frequency_threshold = config.get("vardict",{}).get("allele_frequency_threshold","0.01"),
+        sample_name=lambda wildcards: f"{wildcards.sample}"
+    log:
+        "snv_indels/vardict/{sample}_{type}.vcf.log",
+    benchmark:
+        repeat(
+            "snv_indels/vardict/{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1)
+        )
+
+
+use rule vt_decompose from snv_indels as snv_indels_vt_decompose with:
+    input:
+        vcf="snv_indels/{file}.vcf.gz",
+    output:
+        vcf=temp("snv_indels/{file}.decomposed.vcf.gz"),
+    wildcard_constraints:
+        file="(clairs_to|vardict|deepsomatic)\/.*",
+    log:
+        "snv_indels/{file}.decomposed.vcf.gz.log",
+    benchmark:
+        repeat(
+            "snv_indels/{file}.decomposed.vcf.gz.benchmark.tsv",
+            config.get("vt_decompose", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule vt_normalize from snv_indels as snv_indels_vt_normalize with:
+    input:
+        vcf="snv_indels/{file}.decomposed.vcf.gz",
+        ref=config["reference"]["fasta"],
+    output:
+        vcf=temp("snv_indels/{file}.decomposed.normalized.vcf.gz"),
+    wildcard_constraints:
+        file="(clairs_to|vardict|deepsomatic)\/.*",
+    log:
+        "snv_indels/{file}.normalized.vcf.gz.log",
+    benchmark:
+        repeat(
+            "snv_indels/{file}.normalized.vcf.gz.benchmark.tsv",
+            config.get("vt_decompose", {}).get("benchmark_repeats", 1),
+        )
+
+
+# rule merge_af_complex_variants:
+#     input:
+#         vcf="snv_indels/{caller}/{sample}_{type}.normalized.sorted.vcf.gz",
+#         tabix="snv_indels/{caller}/{sample}_{type}.normalized.sorted.vcf.gz.tbi",
+#     output:
+#         vcf=temp("snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz"),
+#     params:
+#         merge_method=config.get("merge_af_complex_variants", {}).get("merge_method", "skip"),
+#     log:
+#         "snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz.log",
+#     benchmark:
+#         repeat(
+#             "snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz.benchmark.tsv",
+#             config.get("merge_af_complex_variants", {}).get("benchmark_repeats", 1),
+#         )
+
+use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_recall_ensemble with:
+    input:
+        vcfs=expand(
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.decomposed.normalized.vcf.gz",
+            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+        ),
+        tabix=expand(
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.decomposed.normalized.vcf.gz.tbi",
+            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+        ),
+        ref=config["reference"]["fasta"],
+    output:
+        vcf=temp("snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"),
+        bcbio_work=temp(directory("snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled-work/")),
+    params:
+        support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
+        sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")) # get_bvre_params_sort_order,
+    log:
+        "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz.log",
+    benchmark:
+        repeat(
+            "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
+            config.get("bcbio_variation_recall_ensemble", {}).get("benchmark_repeats", 1),
+        )
+
+module cnv_sv:
+    snakefile:
+        github(
+            "hydra-genetics/cnv_sv",
+            path="workflow/Snakefile",
+            tag="v0.7.1",
+        )
+    config:
+        config
+
+
+use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("reference", {}).get("fasta", ""),
+    output:
+        vcf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
+        snf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
+    params:
+        sample_id = lambda wildcards: f"{wildcards.sample}",
+        tandem_repeats="",  # f'--tandem-repeats {config.get("sniffles2_call", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed"))}',
+        extra=config.get("sniffles2_call", {}).get("extra", ""),
+    log:
+        "cnv_sv/sniffles2/{sample}_{type}.vcf.log",
+    benchmark:
+        repeat(
+            "cnv_sv/sniffles2/{sample}_{type}.output.benchmark.tsv",
+            config.get("sniffles2_call", {}).get("benchmark_repeats", 1),
+        )
+
+
+module annotation:
+    snakefile:
+        github(
+            "hydra-genetics/annotation",
+            path="workflow/Snakefile",
+            tag="v1.0.0",
+        )
+    config:
+        config
+
+# use rule * from annotation as annotation_*
+
+use rule vep from annotation as annotation_vep with:
+    input:
+        cache=config.get("vep", {}).get("vep_cache", ""),
+        fasta=config["ref_data"],
+        tabix="{file}.vcf.gz.tbi",  # clairs_to/{file}
+        vcf="{file}.vcf.gz",
+    output:
+        vcf=temp("{file}.vep_annotated.vcf"),
+    wildcard_constraints:
+        file="(snv_indels|cnv_sv)/(clairs_to|vardict|deepsomatic|bcbio_variation_recall_ensemble|sniffles2)\/.*"
+    params:
+        extra=config.get("vep", {}).get("extra", "--pick"),
+        mode=config.get("vep", {}).get("mode", "--offline --cache --refseq "),
+    log:
+        "{file}.vep_annotated.vcf.log",
+    benchmark:
+        repeat("{file}.vep_annotated.vcf.benchmark.tsv",
+            config.get("vep", {}).get("benchmark_repeats", 1))
+
+
+module misc:
+    snakefile:
+        github(
+            "hydra-genetics/misc",
+            path="workflow/Snakefile",
+            tag="v0.2.0",
+        )
+    config:
+        config
+
+# use rule * from misc as misc_*
+
+use rule bgzip from misc as misc_bgzip with:
+    input:
+        vcf="{file}.vcf",
+    output:
+        gz=temp("{file}.vcf.gz"),
+    params:
+        extra=config.get("bgzip",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.benchmark.tsv",
+            config.get("bgzip",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(snv_indels|cnv_sv)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled|somatic_.+|rename_vaf)"
+
+
+use rule tabix from misc as misc_tabix with:
+    input:
+        gz="{file}.vcf.gz",
+    output:
+        tbi=temp("{file}.vcf.gz.tbi"),
+    params:
+        extra=config.get("tabix",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.tbi.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.tbi.benchmark.tsv",
+            config.get("tabix",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(snv_indels|cnv_sv)\/.*"
+
+
+module filtering:
+    snakefile:
+        github(
+            "hydra-genetics/filtering",
+            path="workflow/Snakefile",
+            tag="v1.1.0",
+        )
+    config:
+        config
+
+
+use rule filter_vcf from filtering as filtering_filter_vcf with:
+    input:
+        vcf="{file}.vcf.gz",
+        vcf_index="{file}.vcf.gz.tbi",
+        filter_config=lambda wildcards: config["filter_vcf"][wildcards.tag],
+    output:
+        vcf=temp("{file}.filter.{tag}.vcf"),
+    wildcard_constraints:
+        file="snv_indels\/bcbio_variation_recall_ensemble\/.+(ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
+    params:
+        sample_name_regex=config.get("filter_vcf",{}).get("sample_name_regex","^([A-Za-z0-9-]+_T)$"),
+        filter_config=lambda wildcards: config["filter_vcf"][wildcards.tag],
+    log:
+        "{file}.filter.{tag}.log",
+    benchmark:
+        repeat("{file}.filter.{tag}.vcf.benchmark.tsv",config.get("filter_vcf",{}).get("benchmark_repeats",1))
+
+
+# use rule bcftools_view from filtering as filtering_bcftools_view with:
+#     input:
+#         vcf="{file}.{caller}.vcf.gz",
+#     output:
+#         vcf=temp("{file}.{caller}.bcftools_view.vcf.gz"),
+#     params:
+#         extra=lambda wildcards: config.get("bcftools_view",{}) \
+#                                     .get("filter", {}) \
+#                                     .get(f"{wildcards.caller}","").get("extra", "")
+#     log:
+#         "{file}.{caller}.bcftools_view.vcf.log",
+#     benchmark:
+#         repeat("{file}.{caller}.bcftools_view.vcf.benchmark.tsv",
+#             config.get("bcftools_view",{}).get("benchmark_repeats",1))
+#     wildcard_constraints:
+#         file="snv_indels\/.+_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped", # "(clairs_to|vardict|deepsomatic)\/.*",
+#         caller="(clairs_to|vardict|deepsomatic)"
+## The wrapper for bcftools does not seem to work here, likely version mismatch.
+
+
+module qc:
+    snakefile:
+        github(
+            "hydra-genetics/qc",
+            path="workflow/Snakefile",
+            tag=config["modules"]["qc"],
+        )
+    config:
+        config
+
+use rule * from qc as qc_*
+
+use rule multiqc from qc as qc_multiqc with:
+    input:
+        files=lambda wildcards: set(
+            [
+                file.format(
+                    sample=sample, target=target, type=type,
+                )
+                for file in config["multiqc"]["reports"][wildcards.report]["qc_files"]
+                for sample in [wildcards.sample]
+                for type in [wildcards.type]
+                for target in config["amplicons"] + config["extra_regions"]
+            ]
+        ),
+    output:
+        html="results/qc/multiqc/{sample}_{type}_multiqc_{report}.html",
+        data=directory("results/qc/multiqc/{sample}_{type}_multiqc_{report}_data")
+    log:
+        "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html.log",
+    benchmark:
+        repeat("results/qc/multiqc/{sample}_{type}_multiqc_{report}.html.benchmark.tsv",
+            config.get("multiqc",{}).get("benchmark_repeats",1))
+
+
+use rule picard_collect_hs_metrics from qc as qc_picard_collect_hs_metrics with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bait_intervals=config.get("reference", {}).get("design_intervals", ""),
+        reference=config["ref_data"],
+        target_intervals=config.get("reference", {}).get("design_intervals", ""),
+    output:
+        metrics = "results/qc/picard/{sample}_{type}_HsMetrics.txt",
+    params:
+        extra=config.get("picard_collect_hs_metrics", {}).get("extra", "COVERAGE_CAP=25000"),
+    log:
+        "results/qc/picard/{sample}_{type}_HsMetrics.txt.log",
+    benchmark:
+        repeat(
+            "results/qc/picard/{sample}_{type}_HsMetrics.txt.benchmark.tsv",
+            config.get("picard_collect_hs_metrics", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_alignment_summary_metrics with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("reference", {}).get("fasta", ""),
+    output:
+        metrics = "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt",
+    params:
+        extra=config.get("picard_collect_alignment_summary_metrics", {}).get("extra", ""),
+    log:
+        "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt.log",
+    benchmark:
+        repeat(
+            "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt.benchmark.tsv",
+            config.get("picard_collect_alignment_summary_metrics", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        type = "N|T"
+
+use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_alignment_summary_metrics_per_target with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("reference", {}).get("fasta", ""),
+    output:
+        metrics = "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt",
+    params:
+        extra=config.get("picard_collect_alignment_summary_metrics", {}).get("extra", ""),
+    log:
+        "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt.log",
+    benchmark:
+        repeat(
+            "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt.benchmark.tsv",
+            config.get("picard_collect_alignment_summary_metrics", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        type="N|T"
+
+
+use rule mosdepth from qc as qc_mosdepth_amplicons with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+    output:
+        bed=temp("results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz"),
+        csi=temp("results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz.csi"),
+        glob=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"),
+    params:
+        by=os.path.join(config["bed_files"], config.get("mosdepth", {}).get("by", "")),
+        extra=config.get("mosdepth", {}).get("extra", ""),
+    log:
+        "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt.log",
+    benchmark:
+        repeat(
+            "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt.benchmark.tsv",
+            config.get("mosdepth", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        type="N|T"
+
+
+use rule mosdepth_bed from qc as qc_mosdepth_bed_per_target with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bed=lambda w: os.path.join(config.get("bed_files",""), f"{w.target}.bed".replace("_only", ""))  # using "amplicons.bed" calculates cov per chrom --> values for TP53 are much lower since many amplicons there
+    output:
+        bed=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz"),
+        bed_csi=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz.csi"),
+        coverage=temp("results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz"),
+        coverage_csi=temp("results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz.csi"),
+        thresholds=temp("results/mosdepth_bed/{sample}_{type}_{target}.thresholds.bed.gz"),
+        glob=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.summary.txt"),
+    params:
+        thresholds=config.get("mosdepth_bed", {}).get("thresholds", ""),
+        extra=config.get("mosdepth",{}).get("extra",""),
+    log:
+        "results/mosdepth_bed/{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.log",
+    benchmark:
+        repeat(
+            "results/mosdepth_bed/{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.benchmark.tsv",
+            config.get("mosdepth", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        type="N|T"

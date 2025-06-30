@@ -1,0 +1,12 @@
+jobs: 1
+keep-going: True
+restart-times: 0
+rerun-incomplete: True
+local-cores: 1
+#max-jobs-per-second: 100
+#max-status-checks-per-second: 100
+use-singularity: True
+default-resources: [gres="", ]
+singularity-args: "--cleanenv --bind '/media/camille/Ultra Touch',$PWD/tmp:/tmp -B $PWD:$PWD -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache"
+singularity-prefix: "/home/camille/.apptainer/cache"
+printshellcmds: True

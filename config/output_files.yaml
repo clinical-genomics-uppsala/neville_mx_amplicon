@@ -1,0 +1,105 @@
+---
+ files: 
+   - name: "samples_tsv"
+     output: "Results/{sample}_{type}_samples.tsv"
+     input: "samples.tsv"
+
+   - name: "units_tsv"
+     output: "Results/{sample}_{type}_units.tsv"
+     input: "units.tsv"
+
+   - name: "config_yaml"
+     output: "Results/{sample}_{type}_config.yaml"
+     input: "config/config.yaml"
+
+   - name: "resources_yaml"
+     output: "Results/{sample}_{type}_resources.yaml"
+     input: "config/resources.yaml"
+
+   - name: "bed_files_amplicon"
+     output: "Results/Bed"
+     input: "bedfiles/"
+
+#   - name: "bed_files_targets"
+#     output: "results/bed/{target}.bed"
+#     input: "os.path.join(config["bed_files"], "{target}.bed")"
+
+#   - name: "dorado_ubam"
+#     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.bam"
+#     input: "basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam"
+
+   - name: "filtered_fastq"
+     output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"
+     input: "prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz"
+
+   - name: "soft_clipped_bam"
+     output: "Results/Data/{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
+     input: "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
+
+   - name: "soft_clipped_bam_bai"
+     output: "Results/Data/{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam.bai"
+     input: "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
+
+#   - name: "snv_indels_var_calls"
+#     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+#     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+
+   - name: "sniffles2_var_calls"
+     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
+     input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
+
+#   - name: "snv_indels_var_calls_ensembled"
+#     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
+#
+#   - name: "snv_indels_var_calls_ensembled_annotated"
+#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
+#
+#   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
+#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
+
+   - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
+     output: "Results/Data/{sample}_{type}.ont_reads.snv-indels.vcf"
+     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"
+
+   - name: "sequali_reports"
+     output: "Results/Reports/{sample}_{type}.ont_reads.filtered.fastq.gz.html"
+     input: "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"
+
+   - name: "multiqc_report"
+     output: "Results/Reports/{sample}_{type}_multiqc_{report}.html"
+     input: "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html"
+
+   - name: "mosdepth_coverage_per_amplicon"
+     output: "Results/Reports/{sample}_{type}_coverage_per_amplicon.csv"
+     input: "results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv"
+
+   - name: "yield_pool_1"
+     output: "Results/Reports/{sample}_{type}_yield_pool_1.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_1.csv"
+
+   - name: "yield_pool_2"
+     output: "Results/Reports/{sample}_{type}_yield_pool_2.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_2.csv"
+
+   - name: "yield_pool_3"
+     output: "Results/Reports/{sample}_{type}_yield_pool_3.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_3.csv"
+
+   - name: "mosdepth_timestep_coverage_per_amplicon_csv"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+
+   - name: "mosdepth_timestep_coverage_per_amplicon_png"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.png"
+     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"
+
+   - name: "mosdepth_summary_amplicons"
+     output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
+     input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
+
+   - name: "excel_report"
+     output: "Results/Reports/{sample}_{type}.xlsx"
+     input: "reports/xlsx/{sample}_{type}.xlsx"

@@ -1,0 +1,245 @@
+---
+output: "config/output_files.yaml"
+resources: "config/resources.yaml"
+samples: "config/samples.tsv"
+units: "config/units.tsv"
+samples_run: "samples.tsv"
+units_run: "units.tsv"
+
+# Custom keys and values below
+
+proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"  # on Marvin, to be replaced by runFolder
+ref_data: "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"  # on Marvin
+bed_files: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7" # on Marvin
+reference:
+  design_intervals:
+    "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.interval_list"
+  fasta:
+    "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"
+  fai:
+    "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai"
+  sequence_dict:
+    "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
+  design_bed:
+    "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+## M1
+# run_date: "20240528"
+# run_id: "Second_test"
+## M2
+# run_date: "20240909"
+# run_id: "1644_MN45214_ASK035_853ddf61"
+## M3
+# run_date: "20240923"
+# run_id: "1256_MN45214_ASA641_69751c45"
+## M4
+# run_date: "20240925"
+# run_id: "1247_MN45214_ARX878_af19e7e5"
+## M5
+# run_date: "20241105"
+# run_id: "1553_MN45214_ARY534_f0abac17"
+## M6
+# run_date: "20241115"
+# run_id: "1642_MN45214_ARY602_a48a43bb"
+## M7
+# run_date: "20241120"
+# run_id: "1659_MN45214_ARY596_1f20278e"
+## M8
+# run_date: "20241202"
+# run_id: "1624_MN45214_ARY499_7a908b3f"
+## M9
+# run_date: "20241213"
+# run_id: "1352_MN45214_AWZ567_7193b16d"
+
+# (SequenceRuns with known samples and known variants below)
+## M10
+# sample_id: "D21-06478"
+# run_date: "20241220"
+# run_id: "1359_MN45214_AWJ762_957ffc66"
+runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM10/D21-06478/20241220_1359_MN45214_AWJ762_957ffc66"
+## M11
+#sample_id: "D23-09080"
+#run_date: "20250109"
+#run_id: "1536_MN45214_AWJ503_da30a0f5"
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM11/D23-09080/20250109_1536_MN45214_AWJ503_da30a0f5"
+## M12
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO/D21-03300/20250117_1351_MN48987_AWY831_f6f7634a"
+## M13
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO/D21-03261/20250117_1351_MN45214_AWZ734_932a78d4"
+## M14 - D22-06119
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M14_250123_RO/D22-06119/20250123_1525_MN45214_AWY731_f6b8083c"
+## M14 - D19-05865
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M14_250123_RO/D19-05865/20250123_1525_MN48987_AWT937_0e8c6c10"
+## M15-1
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_1_250129_RO/D24-07030/20250129_1237_MN48987_AWZ728_9823857f"
+## M15-2
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_2_250129_RO/D24-00846/20250129_1427_MN45214_AWR183_a11f36d6"
+## M15-3 - D19-02830
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_3_250130_RO/D19-02830/20250130_1541_MN48987_AWR326_9c386fd7"
+## M15-3 - D22-08828
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_3_250130_RO/D22-08828/20250130_1541_MN45214_AWS379_74c0e9fe"
+## M16
+#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M16_250314_RO/CU11/20250314_1624_MN45214_AYV756_e7ce0ebd"
+## M17_1
+#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_1_250328_RO D23-07740 AXD297"
+## M17_2
+#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_2_230328_RO D19-07233 AWL991"
+## M!7_3
+#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_3_250331_RO D23-08787 AYO687"
+
+# All runs
+# runfolder: "{{runfolder}}"
+raw_data: "pod5"
+
+dir_models: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/dorado_models"
+dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.0.0"
+
+amplicons:
+    ["FLT3_ITD_3kb_1", "FLT3_TKD_3kb_1",
+    "IDH1_1", "IDH2_1",
+    "NPM1_5",
+    "TP53_3kb_A1", "TP53_3kb_B1", "TP53_C10", "TP53_J3", "TP53_D2", "TP53_E1", "TP53_F2", "TP53_G4", "TP53_H4", "TP53_I4"
+    ]
+
+extra_regions:
+    ["TP53_3kb_A1_only", "TP53_3kb_B1_only", "TP53_C10_only", "TP53_D2+J3", "TP53_D2_only",
+    "TP53_E1_only", "TP53_F2_only", "TP53_G4_only", "TP53_H4_only", "TP53_I4_only"
+    ]
+
+pools:
+    1: ["TP53_3kb_A1_only", "TP53_D2_only", "TP53_F2_only", "TP53_I4_only", "FLT3_TKD_3kb_1"]
+    2: ["IDH1_1", "TP53_3kb_B1_only", "TP53_G4_only", "TP53_D2+J3", "NPM1_5"]
+    3: ["IDH2_1", "TP53_C10_only", "TP53_E1_only", "TP53_H4_only", "FLT3_ITD_3kb_1"]
+
+
+# Containers
+
+default_container: "docker://hydragenetics/common:3.0.0"
+
+bcbio_variation_recall_ensemble:
+  container: "docker://hydragenetics/bcbio-vc:0.2.6"
+  callers:
+    - clairs_to
+    - deepsomatic
+    - vardict
+  support: 1
+
+bcftools_view:
+  filter:
+    deepsomatic:
+      extra: "-i 'QUAL>0'"
+    clairs_to:
+      extra: "-e 'FILTER==\"LowQual\" & QUAL==0'"
+    vardict:
+      extra: "-i 'QUAL>120'"
+    sniffles2:
+      extra: "-R /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+
+clairs_to:
+  container: "docker://hkubal/clairs-to:latest"
+  platform: "ont_r10_dorado_sup_5khz"
+  snv_min_af: 0.005
+  indel_min_af: 0.005
+
+deepsomatic:
+  container: "docker://google/deepsomatic:1.8.0"
+  extra: '--make_examples_extra_args="vsc_min_fraction_snps=0.01,vsc_min_fraction_indels=0.01,small_model_snp_gq_threshold=20,small_model_indel_gq_threshold=20"'
+  # filter: '--use_default_pon_filtering=true --qual_filter=0.1'
+  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-exons-deepsomatic.bed"
+
+dorado:
+    container: "docker://ontresearch/dorado:latest"
+
+filter_vcf:
+  somatic_soft: "config/config_soft_filter_somatic.yaml"
+  somatic_hard: "config/config_hard_filter_somatic.yaml"
+
+filtlong:
+    container: "docker://hydragenetics/filtlong:0.2.1"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
+    min_length: 2000
+    max_length: 4000
+
+mosdepth:
+    container: "docker://hydragenetics/mosdepth:0.3.6"
+    by: "amplicons.bed"
+
+mosdepth_bed:
+    container: "docker://hydragenetics/mosdepth:0.3.2"
+    thresholds: "1,5,100,500,1000"
+
+multiqc:
+  container: "docker://hydragenetics/multiqc:1.25.1" # sequali requires 1.25.1, fixes for HsMetrics require 1.21
+  reports:
+    amplicons:
+      config: "config/multiqc_config.yaml"
+      qc_files:
+        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"
+        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"
+        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"
+        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"
+        - "results/pycoqc/{sample}_{type}_report_sequencing_summary.json"
+        - "prealignment/filtlong/{sample}_{type}.filtlong.log"
+        - "results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz"
+        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.global.dist.txt"
+        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.region.dist.txt"
+        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
+        - "results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.summary.txt"
+        - "results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.region.dist.txt"
+        - "results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz"
+        - "results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz"
+        - "results/mosdepth_bed/{sample}_{type}_{target}.thresholds.bed.gz"
+        - "results/qc/samtools_ampliconclip/{sample}_{type}_ampliconclip.txt"
+        - "results/qc/picard/{sample}_{type}_HsMetrics.txt"
+        - "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt"
+        - "results/qc/picard/{sample}_{type}_TP53_J3_only.alignment_summary_metrics.txt"
+        - "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt"
+
+nanocaller:
+  container: "docker://genomicslab/nanocaller:latest"  # latest=3.6.2
+
+picard_collect_hs_metrics:
+    container: "docker://hydragenetics/picard:2.25.4"
+
+picard_bed_to_interval_list:
+    container: "docker://hydragenetics/picard:2.25.4"
+
+picard_collect_alignment_summary_metrics:
+    container: "docker://hydragenetics/picard:2.25.4"
+
+pycoqc:
+  container: "docker://nanozoo/pycoqc:2.5.0.23--320ecc7"
+
+samtools:
+    container: "docker://hydragenetics/samtools:1.21"
+
+sequali:
+    container: "docker://hydragenetics/sequali:0.12.0"
+
+sniffles2_call:
+  container: "docker://hydragenetics/sniffles2:2.6.1"
+  extra: "--minsvlen 3"
+  # bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
+
+vardict:
+  container: "docker://hydragenetics/vardict:1.8.3"
+  allele_frequency_threshold: "0.002"
+  extra: "-k 0 -L 1000 -a 50:0.95"
+  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
+  bed_columns: "-c 1 -S 2 -E 3 -g 4"
+  threads: 20
+
+vep:
+  container: "docker://hydragenetics/vep:111.0"
+  vep_cache: "/data/ref_genomes/VEP"
+  mode: "--offline --cache --merged "
+  extra: " --format vcf --assembly GRCh38 --check_existing --pick --variant_class --everything  --pick_order mane_select,mane_plus_clinical,canonical,biotype,rank,appris,tsl,ccds,length,ensembl,refseq"
+
+vt_decompose:
+  container: "docker://hydragenetics/vt:2015.11.10"
+
+vt_normalize:
+  container: "docker://hydragenetics/vt:2015.11.10"
+
+# Modules
+
+modules:
+  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
