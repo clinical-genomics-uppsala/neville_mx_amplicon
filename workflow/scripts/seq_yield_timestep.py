@@ -35,12 +35,15 @@ readcounts = []
 prev_counts = pd.Series(0.0, index=target_set, name="prev_counts")
 prev_counts.index.name = "target"
 for i, batch in enumerate(batches):
-    dfcov = pd.read_csv(os.path.join(indir, f"timestep{batch}_coverage_per_amplicon.csv")).set_index("target")
-    dfcov = dfcov.join(prev_counts, how="outer").drop("prev_counts", axis=1)  # expand axis in case an amplicon has not produced any read in the time interval
-    dfcov = dfcov.loc[target_set].fillna(0.0)
-    dfcov["timestep"] = batch * 10
-    dfstep = dfcov[["timestep", "mean"]]
-    readcounts.append(dfcov)
+    try:
+        dfcov = pd.read_csv(os.path.join(indir, f"timestep{batch}_coverage_per_amplicon.csv")).set_index("target")
+        dfcov = dfcov.join(prev_counts, how="outer").drop("prev_counts", axis=1)  # expand axis in case an amplicon has not produced any read in the time interval
+        dfcov = dfcov.loc[target_set].fillna(0.0)
+        dfcov["timestep"] = batch * 10
+        dfstep = dfcov[["timestep", "mean"]]
+        readcounts.append(dfcov)
+    except:  # if seqrun failed before elapsed time of 24h, then there < 144 bam files
+        continue
 
 df = pd.concat(readcounts).reset_index(drop=False).set_index(["target", "timestep"])# [target_set]
 dfcum = df.groupby(level=0).cumsum().reset_index(drop=False)  # cumulative sum over time per amplicon

@@ -219,6 +219,8 @@ rule plot_yield_timestep:
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
     # container:
     #     config["default_container"]
+    log:
+        "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log"
     message:
         """
         {rule}: Plot sequencing output per amplicon over time.
