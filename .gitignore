@@ -12,7 +12,7 @@ slurm/*.out
 .parallel/
 Results/
 alignment/
-basecalling/
+./basecalling/
 logs/
 prealignment/
 reports/

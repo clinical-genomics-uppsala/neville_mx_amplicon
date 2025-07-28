@@ -150,9 +150,22 @@ The workflow repository contains a small test dataset `.tests/integration` which
 
 ```bash
 $ cd .tests/integration
-$ snakemake -s ../../Snakefile --configfiles ../../config/config.yaml config/config.yaml -j1 --use-singularity
+$ snakemake -s ../../Snakefile --configfiles ... --config .. -j1 --use-singularity ...
 ```
-`../../config/config.yaml` is the original config-file, while `config/config.yaml` is the test config. By defining two config-files the latter overwrites any overlapping variables in the first config-file.
+
+How the data was generated:
+```bash
+$ cd .tests/integration/basecalling/dorado_duplex
+$ samtools split D25-test007_T_reads.basecalled.bam
+$ mv D25-test007_T_reads.basecalled_0.bam ../../test_data/bam_pass/ABC123_pass_456_789_0.bam
+$ mv D25-test007_T_reads.basecalled_0.bam ../../test_data/bam_pass/ABC123_pass_456_789_0.bam
+$ samtools index ../../test_data/bam_pass/ABC123_pass_456_789_0.bam
+$ samtools index ../../test_data/bam_pass/ABC123_pass_456_789_1.bam
+```
+The file name "ABC123_pass_456_789" was chosen to match ONT's naming for the basecalled files.
+BAI index files are usually part of the output data from the sequencer, but here we create them manually.
+
+
 ## :rocket: Usage
 
 To use this module in your workflow, follow the description in the
