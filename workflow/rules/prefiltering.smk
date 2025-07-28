@@ -76,6 +76,7 @@ rule rename_vaf_to_af:
     input:
         vcf="{file}.vcf.gz",
         tbi="{file}.vcf.gz.tbi",
+        txt="config/rename_vaf_to_af.txt"
     output:
         vcf=temp("{file}.rename_vaf.vcf"),
     wildcard_constraints:
@@ -99,5 +100,5 @@ rule rename_vaf_to_af:
         "{rule}: Use bcftools view to rename VAF to AF"
     shell:
         """
-        bcftools annotate --force --rename-annots rename_vaf_to_af.txt -o {output.vcf} {input.vcf} 2> {log}
+        bcftools annotate --force --rename-annots {input.txt} -o {output.vcf} {input.vcf} 2> {log}
         """

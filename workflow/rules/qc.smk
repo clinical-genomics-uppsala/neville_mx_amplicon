@@ -9,7 +9,9 @@ def read_bam_pass_names(bamdir):
     batches = []
     for bfile in os.listdir(bamdir):
         if bfile.endswith(".bam"):
-            names.append('_'.join(bfile.split('_')[:-1]))
+            name = '_'.join(bfile.split('_')[:-1])
+            if name not in names:
+                names.append(name)
             batches.append(bfile.split('_')[-1].replace(".bam", ""))
     return names, batches
 
@@ -89,6 +91,8 @@ rule mosdepth_merge:
         threads = config.get("default_resources").get("threads"),
         mem_mb = config.get("default_resources").get("mem_mb"),
         mem_per_cpu = config.get("default_resources").get("mem_per_cpu"),
+    container:
+        config.get("mosdepth_merge", {}).get("container", config["default_container"])
     message:
         "{rule}: Create merged report for mosdepth"
     run:
@@ -189,8 +193,8 @@ rule copy_mosdepth_merge_timestep:
         threads=config["default_resources"]["threads"],
         mem_mb=config["default_resources"]["mem_mb"],
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-    # container:
-    #     config["default_container"]
+    container:
+        config["default_container"]
     message:
         """
         {rule}: Save all timestepped coverage with mosdepth for each amplicon.
@@ -217,8 +221,8 @@ rule plot_yield_timestep:
         threads=config["default_resources"]["threads"],
         mem_mb=config["default_resources"]["mem_mb"],
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-    # container:
-    #     config["default_container"]
+    container:
+        config["default_container"]
     log:
         "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log"
     message:
@@ -243,8 +247,8 @@ rule sequali:
         threads=config.get("sequali",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("sequali",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("sequali",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    # container:
-    #     config.get("sequali", {}).get("container", config["default_container"])
+    container:
+        config.get("sequali", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Parse the (out)filtered reads and create quality report with sequali.
@@ -313,29 +317,3 @@ rule bed_to_interval_list:
         config.get("picard_bed_to_interval_list", {}).get("container", config["default_container"])
     wrapper:
         "v5.0.1/bio/picard/bedtointervallist"
-
-# rule j3_only_bam_to_bed:
-#     input:
-#         bam = "alignment/dorado_align/{sample}_{type}_TP53_J3_only_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
-#     output:
-#         bed = os.path.join(config.get("bed_files",""), "TP53_J3_only.bed")
-
-# rule samtools_stats:
-#     input:
-#         bam="{run_date}_{run_id}/data/reads.ont_adapt_trim.filtered.aligned.sorted.bam",
-#         bed=os.path.join(config.get("bed_files"), "amplicons.bed")
-#     output:
-#         "results/{run_date}_{run_id}/samtools/samtools_stats.txt"
-#     resources:
-#         partition=config.get("samtools",{}).get("partition",config["default_resources"]["partition"]),
-#         time=config.get("samtools",{}).get("time",config["default_resources"]["time"]),
-#         threads=config.get("samtools",{}).get("threads",config["default_resources"]["threads"]),
-#         mem_mb=config.get("samtools",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-#         mem_per_cpu=config.get("samtools",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-#     container:
-#         config.get("samtools",{}).get("container",config["default_container"])
-#     shell:
-#         """
-#         samtools stats -t {input.bed} {input.bam} > {output}
-#         """
-

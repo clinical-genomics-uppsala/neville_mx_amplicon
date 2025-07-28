@@ -30,9 +30,6 @@ rule all:
     input:
         unpack(compile_output_file_list),
 
-# TODO: Draw DAG and rulegraph --> workflow/scripts
-# snakemake -s workflow/Snakefile --configfile config/config.yaml --dag | dot -Tpdf > images/dag.pdf
-# snakemake -s workflow/Snakefile --configfile config/config.yaml --rulegraph | dot -Tpdf > images/rulegraph.pdf
 
 # Include modules
 module snv_indels:
@@ -141,6 +138,42 @@ use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_var
             config.get("bcbio_variation_recall_ensemble", {}).get("benchmark_repeats", 1),
         )
 
+use rule bgzip from snv_indels as snv_indels_bgzip with:
+    input:
+        vcf="{file}.vcf",
+    output:
+        gz=temp("{file}.vcf.gz"),
+    params:
+        extra=config.get("bgzip",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.benchmark.tsv",
+            config.get("bgzip",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(snv_indels)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled|somatic_.+|rename_vaf)"
+
+
+use rule tabix from snv_indels as snv_indels_tabix with:
+    input:
+        gz="{file}.vcf.gz",
+    output:
+        tbi=temp("{file}.vcf.gz.tbi"),
+    params:
+        extra=config.get("tabix",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.tbi.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.tbi.benchmark.tsv",
+            config.get("tabix",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(snv_indels)\/.*"
+
+
 module cnv_sv:
     snakefile:
         github(
@@ -173,6 +206,42 @@ use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
         )
 
 
+use rule bgzip from cnv_sv as cnv_sv_bgzip with:
+    input:
+        vcf="{file}.vcf",
+    output:
+        gz=temp("{file}.vcf.gz"),
+    params:
+        extra=config.get("bgzip",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.benchmark.tsv",
+            config.get("bgzip",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(cnv_sv)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled|somatic_.+|rename_vaf)"
+
+
+use rule tabix from cnv_sv as cnv_sv_tabix with:
+    input:
+        gz="{file}.vcf.gz",
+    output:
+        tbi=temp("{file}.vcf.gz.tbi"),
+    params:
+        extra=config.get("tabix",{}).get("extra",""),
+    log:
+        "{file}.vcf.gz.tbi.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.tbi.benchmark.tsv",
+            config.get("tabix",{}).get("benchmark_repeats",1),
+        )
+    wildcard_constraints:
+        file="(cnv_sv)\/.*"
+
+
 module annotation:
     snakefile:
         github(
@@ -203,54 +272,6 @@ use rule vep from annotation as annotation_vep with:
     benchmark:
         repeat("{file}.vep_annotated.vcf.benchmark.tsv",
             config.get("vep", {}).get("benchmark_repeats", 1))
-
-
-module misc:
-    snakefile:
-        github(
-            "hydra-genetics/misc",
-            path="workflow/Snakefile",
-            tag="v0.2.0",
-        )
-    config:
-        config
-
-# use rule * from misc as misc_*
-
-use rule bgzip from misc as misc_bgzip with:
-    input:
-        vcf="{file}.vcf",
-    output:
-        gz=temp("{file}.vcf.gz"),
-    params:
-        extra=config.get("bgzip",{}).get("extra",""),
-    log:
-        "{file}.vcf.gz.log",
-    benchmark:
-        repeat(
-            "{file}.vcf.gz.benchmark.tsv",
-            config.get("bgzip",{}).get("benchmark_repeats",1),
-        )
-    wildcard_constraints:
-        file="(snv_indels|cnv_sv)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled|somatic_.+|rename_vaf)"
-
-
-use rule tabix from misc as misc_tabix with:
-    input:
-        gz="{file}.vcf.gz",
-    output:
-        tbi=temp("{file}.vcf.gz.tbi"),
-    params:
-        extra=config.get("tabix",{}).get("extra",""),
-    log:
-        "{file}.vcf.gz.tbi.log",
-    benchmark:
-        repeat(
-            "{file}.vcf.gz.tbi.benchmark.tsv",
-            config.get("tabix",{}).get("benchmark_repeats",1),
-        )
-    wildcard_constraints:
-        file="(snv_indels|cnv_sv)\/.*"
 
 
 module filtering:

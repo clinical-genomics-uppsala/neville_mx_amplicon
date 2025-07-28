@@ -3,37 +3,31 @@ output: "config/output_files.yaml"
 resources: "config/resources.yaml"
 samples: "config/samples.tsv"
 units: "config/units.tsv"
+samples_run: "samples.tsv"
+units_run: "units.tsv"
 
-# config to be used from .tests/integration/ # Use this config to run the integration tests with a small dataset
-
- # Use test datasets provided in https://github.com/nanoporetech/dorado/tree/release-v1.0/tests/data
-
- # For basecalling from POD5 files:
- # https://github.com/nanoporetech/dorado/blob/release-v1.0/tests/data/pod5/dna_r10.4.1_e8.2_400bps_5khz/dna_r10.4.1_e8.2_400bps_5khz-FLO_PRO114M-SQK_LSK114_XL-5000.pod5 (simplex data)
- # https://github.com/nanoporetech/dorado/blob/release-v1.0/tests/data/duplex/pod5/duplex.pod5 (duplex data)
-
-# Or test data from a control sample e.g. HD829
-
-runfolder: "test_data"
+# General
 
 proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"  # on Marvin, to be replaced by runFolder
-ref_data: "reference/WASH7P.fna"  # on Marvin
-bed_files: "test_data/bedfiles" # on Marvin
+ref_data: ".tests/integration/reference/WASH7P.fna"  # on Marvin
+bed_files: ".tests/integration/test_data/bedfiles" # on Marvin
 reference:
   design_intervals:
-    "test_data/bedfiles/amplicons.interval_list"
+    ".tests/integration/test_data/bedfiles/amplicons.interval_list"
   fasta:
-    "reference/WASH7P.fna"
+    ".tests/integration/reference/WASH7P.fna"
   fai:
-    "reference/WASH7P.fna.fai"
+    ".tests/integration/reference/WASH7P.fna.fai"
   sequence_dict:
-    "reference/WASH7P.dict"
+    ".tests/integration/reference/WASH7P.dict"
   design_bed:
-    "test_data/bedfiles/amplicons.bed"
+    ".tests/integration/test_data/amplicons.bed"
+
+runfolder: "{{runfolder}}"
 
 raw_data: "pod5"
 
-dir_models: "dorado_models"
+dir_models: ".tests/integration/dorado_models"
 dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.0.0"
 
 amplicons:
@@ -75,7 +69,7 @@ bcftools_view:
     vardict:
       extra: "-i 'QUAL>120'"
     sniffles2:
-      extra: "-R test_data/bedfiles/amplicons.bed"
+      extra: "-R .tests/integration/test_data/bedfiles/amplicons.bed"
 
 clairs_to:
   container: "docker://hkubal/clairs-to:latest"
@@ -87,7 +81,7 @@ deepsomatic:
   container: "docker://google/deepsomatic:1.8.0"
   extra: '--make_examples_extra_args="vsc_min_fraction_snps=0.01,vsc_min_fraction_indels=0.01,small_model_snp_gq_threshold=20,small_model_indel_gq_threshold=20"'
   # filter: '--use_default_pon_filtering=true --qual_filter=0.1'
-  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-exons-deepsomatic.bed"
+  bed_file: ".tests/integration/test_data/bedfiles/amplicons-exons-deepsomatic.bed"
 
 dorado:
     container: "docker://ontresearch/dorado:latest"
@@ -160,19 +154,20 @@ sequali:
 sniffles2_call:
   container: "docker://hydragenetics/sniffles2:2.6.1"
   extra: "--minsvlen 3"
+  # bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
 
 vardict:
   container: "docker://hydragenetics/vardict:1.8.3"
   allele_frequency_threshold: "0.002"
   extra: "-k 0 -L 1000 -a 50:0.95"
-  bed_file: "test_data/bedfiles/NPM1-FLT3-vardict.bed"
+  bed_file: ".tests/integration/test_data/bedfiles/NPM1-FLT3-vardict.bed"
   bed_columns: "-c 1 -S 2 -E 3 -g 4"
   threads: 20
 
 vep:
   container: "docker://hydragenetics/vep:111.0"
-  vep_cache: "/data/ref_genomes/VEP"
-  mode: "--database --merged "  # connection to internet required
+  vep_cache: ".tests/integration/reference/vep_cache"
+  mode: "--cache --merged "
   extra: " --format vcf --assembly GRCh38 --check_existing --pick --variant_class --everything  --pick_order mane_select,mane_plus_clinical,canonical,biotype,rank,appris,tsl,ccds,length,ensembl,refseq"
 
 vt_decompose:
