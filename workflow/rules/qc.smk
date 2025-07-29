@@ -91,8 +91,8 @@ rule mosdepth_merge:
         threads = config.get("default_resources").get("threads"),
         mem_mb = config.get("default_resources").get("mem_mb"),
         mem_per_cpu = config.get("default_resources").get("mem_per_cpu"),
-    container:
-        config.get("mosdepth_merge", {}).get("container", config["default_container"])
+    # container:  # Singularity directive is only allowed with shell, script, notebook or wrapper directives (not with run or template_engine).
+    #     config.get("mosdepth_merge", {}).get("container", config["default_container"])
     message:
         "{rule}: Create merged report for mosdepth"
     run:
