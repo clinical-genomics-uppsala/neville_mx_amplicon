@@ -10,7 +10,7 @@ module load singularity/3.7.1
 module load snakemake/7.22.0
 module load samtools/1.17
 
-projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/pipeline_pool_amplicon
+projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon
 runFolder=$1
 sampleId=$2
 flowcellId=$3
@@ -33,7 +33,7 @@ cd ${projFolder}
 
 # Start pipeline
 cd ${projFolder}
-source venv/bin/activate
+source .venv/bin/activate
 hydra-genetics create-input-files -d ${runFolder}/${sampleId}/${runId}/bam_pass_merged/ -t T -p ONT -f
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml --config runfolder=${runFolder}/${sampleId}/${runId} --notemp
