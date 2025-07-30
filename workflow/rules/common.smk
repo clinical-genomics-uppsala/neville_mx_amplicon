@@ -9,6 +9,7 @@ import pathlib
 import pandas as pd
 import yaml
 import sys
+import os
 import re
 from datetime import datetime
 from snakemake.utils import validate
@@ -127,6 +128,19 @@ wildcard_constraints:
     target = "|".join(config.get("amplicons") + config.get("extra_regions")).replace('+', '\+')  # escape the '+' which has a specific meaning in regex
 
 print("Targets: ", "|".join(config.get("amplicons") + config.get("extra_regions")))
+
+### Define functions to be used in the workflow
+def read_bam_pass_names(bamdir):
+    names = []
+    batches = []
+    for bfile in os.listdir(bamdir):
+        if bfile.endswith(".bam"):
+            name = '_'.join(bfile.split('_')[:-1])
+            if name not in names:
+                names.append(name)
+            batches.append(bfile.split('_')[-1].replace(".bam", ""))
+    return names, batches
+
 
 def compile_output_file_list(wildcards):
     outdir = pathlib.Path(output_spec.get("directory", "./"))

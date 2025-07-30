@@ -3,23 +3,24 @@ __copyright__ = "Copyright 2024, Camille Clouard"
 __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
-import os
-def read_bam_pass_names(bamdir):
-    names = []
-    batches = []
-    for bfile in os.listdir(bamdir):
-        if bfile.endswith(".bam"):
-            name = '_'.join(bfile.split('_')[:-1])
-            if name not in names:
-                names.append(name)
-            batches.append(bfile.split('_')[-1].replace(".bam", ""))
-    return names, batches
+# # Moved the function below to common.smk to make linting happy
+# import os
+# def read_bam_pass_names(bamdir):
+#     names = []
+#     batches = []
+#     for bfile in os.listdir(bamdir):
+#         if bfile.endswith(".bam"):
+#             name = '_'.join(bfile.split('_')[:-1])
+#             if name not in names:
+#                 names.append(name)
+#             batches.append(bfile.split('_')[-1].replace(".bam", ""))
+#     return names, batches
 
 bam_pass, batches = read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))
 
 wildcard_constraints:
-    fname="[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
-    nbatch="\d+"
+    fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+    nbatch=r"\d+"
 
 rule pycoqc:
     input:
@@ -34,6 +35,13 @@ rule pycoqc:
         threads=config.get("pycoqc",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("pycoqc",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("pycoqc",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("pycoqc",{}).get("threads",config["default_resources"]["threads"]),
+    log:
+        "results/pycoqc/{sample}_{type}_report_sequencing_summary.log",
+    benchmark:
+        repeat("results/pycoqc/{sample}_{type}_report_sequencing_summary.benchmark.tsv",
+            config.get("pycoqc",{}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("pycoqc",{}).get("container",config["default_container"])
     message:
@@ -44,7 +52,7 @@ rule pycoqc:
         """
         summary=$( ls {input.seq_run_dir}/sequencing_summary*.txt ) 
         cp $summary {output.txt}
-        pycoQC -f {output.txt} --html_outfile {output.html} --json_outfile {output.json}
+        pycoQC -f {output.txt} --html_outfile {output.html} --json_outfile {output.json} 2> {log}
         """
 
 rule mosdepth_overlap:
@@ -59,7 +67,7 @@ rule mosdepth_overlap:
         region=temp("results/mosdepth/{sample}_{type}_{target}.mosdepth.region.dist.txt"),
         summary=temp("results/mosdepth/{sample}_{type}_{target}.mosdepth.summary.txt")
     params:
-        prefix_out = 'results/mosdepth',
+        prefix_out = lambda wildcards, output: os.path.dirname(output.summary),  # 'results/mosdepth',
         threads = 20
     resources:
         partition = config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
@@ -67,6 +75,13 @@ rule mosdepth_overlap:
         threads = config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb = config.get("mosdepth", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
         mem_per_cpu = config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
+    log:
+        "results/mosdepth/{sample}_{type}_{target}.mosdepth.log",
+    benchmark:
+        repeat("results/mosdepth/{sample}_{type}_{target}.mosdepth.benchmark.tsv",
+            config.get("mosdepth", {}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("mosdepth", {}).get("container", config["default_container"])
     message:
@@ -76,7 +91,7 @@ rule mosdepth_overlap:
     shell:
         """
         chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam}
+        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam} 2> {log}
         """
 
 rule mosdepth_merge:
@@ -91,6 +106,13 @@ rule mosdepth_merge:
         threads = config.get("default_resources").get("threads"),
         mem_mb = config.get("default_resources").get("mem_mb"),
         mem_per_cpu = config.get("default_resources").get("mem_per_cpu"),
+    threads: config.get("default_resources").get("threads"),
+    log:
+        "results/mosdepth/{sample}_{type}_coverage_per_amplicon.log",
+    benchmark:
+        repeat("results/mosdepth/{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
+            config.get("mosdepth_merge", {}).get("benchmark_repeats", 1)
+        )
     # container:  # Singularity directive is only allowed with shell, script, notebook or wrapper directives (not with run or template_engine).
     #     config.get("mosdepth_merge", {}).get("container", config["default_container"])
     message:
@@ -121,13 +143,20 @@ rule mosdepth_overlap_timestep:
         region=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.region.dist.txt"),
         summary=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.summary.txt")
     params:
-        prefix_out = 'results/mosdepth/timestep',
+        prefix_out = lambda wildcards, output: os.path.dirname(output.summary)  #'results/mosdepth/timestep',
     resources:
         partition = config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
         time = config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
         threads = config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb = config.get("mosdepth", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
         mem_per_cpu = config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
+    log:
+        "results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.log",
+    benchmark:
+        repeat("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.benchmark.tsv",
+            config.get("mosdepth", {}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("mosdepth", {}).get("container", config["default_container"])
     message:
@@ -137,7 +166,7 @@ rule mosdepth_overlap_timestep:
     shell:
         """
         chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {resources.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.fname}_{wildcards.nbatch}/{wildcards.target} {input.bam}
+        mosdepth -t {resources.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.target} {input.bam} 2> {log}
         """
 
 rule mosdepth_merge_timestep:
@@ -154,6 +183,13 @@ rule mosdepth_merge_timestep:
         threads = config.get("default_resources").get("threads"),
         mem_mb = config.get("default_resources").get("mem_mb"),
         mem_per_cpu = config.get("default_resources").get("mem_per_cpu"),
+    threads: config.get("default_resources").get("threads"),
+    log:
+        "results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.log",
+    benchmark:
+        repeat("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.benchmark.tsv",
+            config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1)
+        )
     message:
         "{rule}: Create merged report for mosdepth"
     run:
@@ -193,6 +229,13 @@ rule copy_mosdepth_merge_timestep:
         threads=config["default_resources"]["threads"],
         mem_mb=config["default_resources"]["mem_mb"],
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
+    threads: config["default_resources"]["threads"],
+    log:
+        "results/mosdepth/timestep_coverage/copy_timestep_coverage.log"
+    benchmark:
+        repeat("results/mosdepth/timestep_coverage/copy_timestep_coverage.benchmark.tsv",
+            config.get("copy_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1)
+        )
     container:
         config["default_container"]
     message:
@@ -201,10 +244,10 @@ rule copy_mosdepth_merge_timestep:
         """
     shell:
         """
-        mkdir -p {output.outdir}
+        mkdir -p {output.outdir} 2> {log}
         for fcsv in {input}
         do
-            cp $fcsv {output.outdir}/$( basename $fcsv )
+            cp $fcsv {output.outdir}/$( basename $fcsv ) 2>> {log}
         done
         """
 
@@ -221,10 +264,15 @@ rule plot_yield_timestep:
         threads=config["default_resources"]["threads"],
         mem_mb=config["default_resources"]["mem_mb"],
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-    container:
-        config["default_container"]
+    threads: config["default_resources"]["threads"],
+    # container:
+    #     config["default_container"]
     log:
         "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log"
+    benchmark:
+        repeat("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
+            config.get("plot_yield_timestep", {}).get("benchmark_repeats", 1)
+        )
     message:
         """
         {rule}: Plot sequencing output per amplicon over time.
@@ -247,6 +295,13 @@ rule sequali:
         threads=config.get("sequali",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("sequali",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("sequali",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("sequali", {}).get("threads", config["default_resources"]["threads"]),
+    log:
+        "results/sequali/{sample}_{type}_sequali.log",
+    benchmark:
+        repeat("results/sequali/{sample}_{type}_sequali.benchmark.tsv",
+            config.get("sequali", {}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("sequali", {}).get("container", config["default_container"])
     message:
@@ -255,8 +310,8 @@ rule sequali:
         """
     shell:
         """
-        sequali --html {output.html1} --json {output.json1} {input.fastgz1}
-        sequali --html {output.html2} --json {output.json2} {input.fastgz2}
+        sequali --html {output.html1} --json {output.json1} {input.fastgz1} 2> {log}
+        sequali --html {output.html2} --json {output.json2} {input.fastgz2} 2>> {log}
         """
 
 rule yield_per_pool:
@@ -270,6 +325,13 @@ rule yield_per_pool:
         threads=config.get("default_resources").get("threads"),
         mem_mb=config.get("default_resources").get("mem_mb"),
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
+    threads: config.get("default_resources").get("threads"),
+    log:
+        "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.log",
+    benchmark:
+        repeat("results/mosdepth/{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
+            config.get("yield_per_pool", {}).get("benchmark_repeats", 1)
+        )
     message:
         "{rule}: Calculate number of reads per pool"
     run:
@@ -305,7 +367,6 @@ rule bed_to_interval_list:
     log:
         "results/qc/picard/BedToIntervalList.log",
     params:
-        # optional parameters
         extra="--SORT true",  # sort output interval list before writing
     resources:
         partition=config.get("default_resources").get("partition"),
@@ -313,6 +374,11 @@ rule bed_to_interval_list:
         threads=config.get("default_resources").get("threads"),
         mem_mb=config.get("default_resources").get("mem_mb"),
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
+    threads: config.get("default_resources").get("threads")
+    benchmark:
+        repeat("results/qc/picard/BedToIntervalList.benchmark.tsv",
+            config.get("bed_to_interval_list", {}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("picard_bed_to_interval_list", {}).get("container", config["default_container"])
     wrapper:

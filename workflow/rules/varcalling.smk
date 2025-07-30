@@ -25,6 +25,14 @@ rule varcall_clairs_to:
         threads=config.get("clairs_to",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("clairs_to",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("clairs_to",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("clairs_to",{}).get("threads",config["default_resources"]["threads"])
+    log:
+        "snv_indels/clairs_to/{sample}_{type}_clairs_to.log"
+    benchmark:
+        repeat(
+            "snv_indels/clairs_to/{sample}_{type}_clairs_to.benchmark.tsv",
+            config.get("clairs_to",{}).get("benchmark_repeats", 1)
+        )
     container:
         config.get("clairs_to",{}).get("container",config["default_container"])
     message:
@@ -33,8 +41,7 @@ rule varcall_clairs_to:
         """
     shell:
         """
-        run_clairs_to --help
-        run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref} --threads {resources.threads} --platform {params.platform} --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed} --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af} --disable_verdict --snv_output_prefix {wildcards.sample}_{wildcards.type}_snv --indel_output_prefix {wildcards.sample}_{wildcards.type}_indel
+        run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref} --threads {resources.threads} --platform {params.platform} --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed} --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af} --disable_verdict --snv_output_prefix {wildcards.sample}_{wildcards.type}_snv --indel_output_prefix {wildcards.sample}_{wildcards.type}_indel 2> {log}
         """
 
 rule varcall_clairs_to_concat:
@@ -49,10 +56,16 @@ rule varcall_clairs_to_concat:
         threads=config.get("varcall_clairs_to_concat",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("varcall_clairs_to_concat",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("varcall_clairs_to_concat",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("varcall_clairs_to_concat",{}).get("threads",config["default_resources"]["threads"]),
     container:
         config.get("varcall_clairs_to_concat",{}).get("container",config["default_container"])
     log:
         "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log"
+    benchmark:
+        repeat(
+            "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
+            config.get("varcall_clairs_to_concat",{}).get("benchmark_repeats", 1)
+        )
     message:
         """
         {rule}: Concatenate the output of ClairS-TO into a single VCF.
@@ -81,6 +94,12 @@ rule varcall_deepsomatic:
         filter=config.get("deepsomatic",{}).get("filter",""),
     log:
         "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.log"
+    benchmark:
+        repeat(
+            "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.benchmark.tsv",
+            config.get("deepsomatic",{}).get("benchmark_repeats", 1)
+        )
+    threads: config.get("deepsomatic",{}).get("threads",config["default_resources"]["threads"])
     resources:
         partition=config.get("deepsomatic",{}).get("partition",config["default_resources"]["partition"]),
         time=config.get("deepsomatic",{}).get("time",config["default_resources"]["time"]),
@@ -112,12 +131,18 @@ rule varcall_nanocaller:
         prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller"
     log:
         "snv_indels/nanocaller/{sample}_{type}_nanocaller.log"
+    benchmark:
+        repeat(
+            "snv_indels/nanocaller/{sample}_{type}_nanocaller.benchmark.tsv",
+            config.get("nanocaller",{}).get("benchmark_repeats", 1)
+        )
     resources:
         partition=config.get("nanocaller",{}).get("partition",config["default_resources"]["partition"]),
         time=config.get("nanocaller",{}).get("time",config["default_resources"]["time"]),
         threads=config.get("nanocaller",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("nanocaller",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("nanocaller",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("nanocaller",{}).get("threads",config["default_resources"]["threads"])
     container:
         config.get("nanocaller",{}).get("container",config["default_container"])
     message:

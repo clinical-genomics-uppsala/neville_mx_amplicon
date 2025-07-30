@@ -2,7 +2,7 @@
 __pycache__
 .snakemake
 .idea
-venv/
+.venv
 slurm/*.err
 slurm/*.out
 ./samples.tsv
@@ -19,4 +19,3 @@ reports/
 results/
 snv_indels/
 tmp/
-.tests/integration/test_data/bam_pass/

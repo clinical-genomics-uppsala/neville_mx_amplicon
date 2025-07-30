@@ -144,16 +144,47 @@ The following information need to be added to these files:
 
 Edit the file paths and names in `config/config.yaml`.
 
-## :white_check_mark: Testing (TODO)
+### Set up the virtual environment
 
-The workflow repository contains a small test dataset `.tests/integration` which can be run like so:
-
+Create a virtual environment and install the required Python packages:
 ```bash
-$ cd .tests/integration
-$ snakemake -s ../../Snakefile --configfiles ... --config .. -j1 --use-singularity ...
+cd <root_of_the_repository>
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-How the data was generated:
+
+## :white_check_mark: Testing (TODO)
+
+### Linting
+Run the linter to check the code style and the correctness of the Snakefile:
+```bash
+cd <root_of_the_repository>
+snakemake -s workflow/Snakefile -n --configfile .tests/integration/config/config.yaml --config runfolder=.tests/integration/test_data --debug-dag --use-singularity --singularity-args  " --cleanenv"
+```
+
+### Dry run
+Configure the virtual environment `.venv` and test the pipeline with a dry run to see if the rules are correctly 
+defined and the dependencies are satisfied:
+
+```bash
+cd <root_of_the_repository>
+source .venv/bin/activate
+snakemake -s workflow/Snakefile -n --configfile .tests/integration/config/config.yaml --config runfolder=.tests/integration/test_data --debug-dag --use-singularity --singularity-args  " --cleanenv"
+```
+
+NB: Add the option `--profile profiles/slurm/` to run the pipeline on a cluster with SLURM installed on it.
+
+### Small integration test
+Also serves as example of how to run the pipeline with a small test dataset.
+The workflow repository contains a small test dataset `.tests/integration` which can be run like ...
+
+```bash
+...
+```
+
+Note on how the test data was generated:
 ```bash
 $ cd .tests/integration/basecalling/dorado_duplex
 $ samtools split D25-test007_T_reads.basecalled.bam
