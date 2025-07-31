@@ -33,6 +33,7 @@ cd ${projFolder}
 
 # Start pipeline
 cd ${projFolder}
+mkdir -p tmp
 source .venv/bin/activate
 hydra-genetics create-input-files -d ${runFolder}/${sampleId}/${runId}/bam_pass_merged/ -t T -p ONT -f
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
