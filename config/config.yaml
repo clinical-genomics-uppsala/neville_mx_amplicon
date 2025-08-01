@@ -22,72 +22,9 @@ reference:
     "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
   design_bed:
     "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
-## M1
-# run_date: "20240528"
-# run_id: "Second_test"
-## M2
-# run_date: "20240909"
-# run_id: "1644_MN45214_ASK035_853ddf61"
-## M3
-# run_date: "20240923"
-# run_id: "1256_MN45214_ASA641_69751c45"
-## M4
-# run_date: "20240925"
-# run_id: "1247_MN45214_ARX878_af19e7e5"
-## M5
-# run_date: "20241105"
-# run_id: "1553_MN45214_ARY534_f0abac17"
-## M6
-# run_date: "20241115"
-# run_id: "1642_MN45214_ARY602_a48a43bb"
-## M7
-# run_date: "20241120"
-# run_id: "1659_MN45214_ARY596_1f20278e"
-## M8
-# run_date: "20241202"
-# run_id: "1624_MN45214_ARY499_7a908b3f"
-## M9
-# run_date: "20241213"
-# run_id: "1352_MN45214_AWZ567_7193b16d"
-
-# (SequenceRuns with known samples and known variants below)
-## M10
-# sample_id: "D21-06478"
-# run_date: "20241220"
-# run_id: "1359_MN45214_AWJ762_957ffc66"
-runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM10/D21-06478/20241220_1359_MN45214_AWJ762_957ffc66"
-## M11
-#sample_id: "D23-09080"
-#run_date: "20250109"
-#run_id: "1536_MN45214_AWJ503_da30a0f5"
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM11/D23-09080/20250109_1536_MN45214_AWJ503_da30a0f5"
-## M12
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO/D21-03300/20250117_1351_MN48987_AWY831_f6f7634a"
-## M13
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO/D21-03261/20250117_1351_MN45214_AWZ734_932a78d4"
-## M14 - D22-06119
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M14_250123_RO/D22-06119/20250123_1525_MN45214_AWY731_f6b8083c"
-## M14 - D19-05865
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M14_250123_RO/D19-05865/20250123_1525_MN48987_AWT937_0e8c6c10"
-## M15-1
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_1_250129_RO/D24-07030/20250129_1237_MN48987_AWZ728_9823857f"
-## M15-2
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_2_250129_RO/D24-00846/20250129_1427_MN45214_AWR183_a11f36d6"
-## M15-3 - D19-02830
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_3_250130_RO/D19-02830/20250130_1541_MN48987_AWR326_9c386fd7"
-## M15-3 - D22-08828
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M15_3_250130_RO/D22-08828/20250130_1541_MN45214_AWS379_74c0e9fe"
-## M16
-#runfolder: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M16_250314_RO/CU11/20250314_1624_MN45214_AYV756_e7ce0ebd"
-## M17_1
-#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_1_250328_RO D23-07740 AXD297"
-## M17_2
-#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_2_230328_RO D19-07233 AWL991"
-## M!7_3
-#runfolder: "bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M17_3_250331_RO D23-08787 AYO687"
 
 # All runs
-# runfolder: "{{runfolder}}"
+runfolder: "{{runfolder}}"
 raw_data: "pod5"
 
 dir_models: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/dorado_models"
