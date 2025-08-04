@@ -8,25 +8,25 @@ units_run: "units.tsv"
 
 # General
 
-ref_data: "reference/WASH7P.fna"  # on Marvin
-bed_files: "test_data/bedfiles" # on Marvin
+ref_data: "reference/WASH7P.fna"
+bed_files: "test_data/bedfiles"
 reference:
   design_intervals:
-    ".tests/integration/test_data/bedfiles/amplicons.interval_list"
+    "test_data/bedfiles/amplicons.interval_list"
   fasta:
-    ".tests/integration/reference/WASH7P.fna"
+    "reference/WASH7P.fna"
   fai:
-    ".tests/integration/reference/WASH7P.fna.fai"
+    "reference/WASH7P.fna.fai"
   sequence_dict:
-    ".tests/integration/reference/WASH7P.dict"
+    "reference/WASH7P.dict"
   design_bed:
-    ".tests/integration/test_data/amplicons.bed"
+    "test_data/amplicons.bed"
 
 runfolder: "{{runfolder}}"
 
 raw_data: "pod5"
 
-dir_models: ".tests/integration/dorado_models"
+dir_models: "dorado_models"
 dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.0.0"
 
 amplicons:

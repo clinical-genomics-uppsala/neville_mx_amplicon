@@ -227,7 +227,7 @@ The workflow repository contains a small test dataset `.tests/integration` which
 Note on how the test data was generated:
 ```bash
 $ cd .tests/integration/basecalling/dorado_duplex
-$ samtools split D25-test007_T_reads.basecalled.bam
+$ samtools split D25-test007_T_reads.ont_adapt_trim.bam
 $ mv D25-test007_T_reads.basecalled_0.bam ../../test_data/bam_pass/ABC123_pass_456_789_0.bam
 $ mv D25-test007_T_reads.basecalled_1.bam ../../test_data/bam_pass/ABC123_pass_456_789_1.bam
 $ samtools index ../../test_data/bam_pass/ABC123_pass_456_789_0.bam

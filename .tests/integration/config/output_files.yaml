@@ -31,27 +31,27 @@
    - name: "soft_clipped_bam_bai"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam.bai"
      input: "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
+
+#   - name: "snv_indels_var_calls"
+#     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+#     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+
+   - name: "sniffles2_var_calls"
+     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
+     input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
+
+#   - name: "snv_indels_var_calls_ensembled"
+#     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
 #
-##   - name: "snv_indels_var_calls"
-##     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
-##     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+#   - name: "snv_indels_var_calls_ensembled_annotated"
+#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
 #
-#   - name: "sniffles2_var_calls"
-#     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
-#     input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
-#
-##   - name: "snv_indels_var_calls_ensembled"
-##     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
-##
-##   - name: "snv_indels_var_calls_ensembled_annotated"
-##     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-##
-##   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
-##     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
-#
+#   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
+#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
+
 #   - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
 #     output: "Results/Data/{sample}_{type}.ont_reads.snv-indels.vcf"
 #     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"

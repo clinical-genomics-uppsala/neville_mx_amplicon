@@ -1,0 +1,133 @@
+decimalPoint_format: ','
+
+highlight_patterns:
+  - "D.+T_re.+"  # T_reads... or T_report... are files for all targets together
+highlight_colors:
+  - "#e41a1c" # red
+highlight_regex: true # set to true to use regex patterns
+
+extra_fn_clean_exts:
+  - type: regex
+    pattern: "^D.+T_"
+  - type: remove
+    pattern: "_reads.ont_adapt_trim.filtered"
+
+mosdepth_config:
+  include_contigs:
+    - "chr*"
+  exclude_contigs:
+    - "*_alt"
+    - "*_decoy"
+    - "*_random"
+    - "chrUn*"
+    - "HLA*"
+    - "chrM"
+    - "chrEBV"
+
+  general_stats_coverage:
+    - 5
+    - 100
+    - 500
+
+table_columns_visible:
+  mosdepth:
+    median_coverage: True
+    mean_coverage: False
+    1_x_pc: False
+    5_x_pc: True
+    100_x_pc: True
+    500_x_pc: True
+    1000_x_pc: False
+
+module_order:
+  - pycoqc:
+      name:
+        "pycoQC"
+      path_filters:
+        - "*report_sequencing_summary.json"
+  - filtlong:
+      name:
+        "Filtlong"
+      info:
+        "Reads filtered out"
+      path_filters:
+        - "*filtlong.txt"
+  - sequali:
+      name:
+        "Sequali (trimmed filtered data)"
+      anchor:
+        "trimmed_filtered"
+      info:
+        "Sequali is a long-read-specific tool that is similar to FastQC"
+      path_filters:
+        - "*reads.ont_adapt_trim.filtered.fastq.gz.json"
+        - "*reads.ont_adapt_trim.filtered.fastq.gz.html"
+  - sequali:
+      name:
+        "Sequali (too short or too long reads that were filtered out)"
+      anchor:
+        "trimmed_filtered_out"
+      info:
+        "This section gives an overview of the characteristics of the reads that were filtered out by Filtlong"
+      path_filters:
+        - "*reads.ont_adapt_trim.filtered.out.fastq.gz.json"
+        - "*reads.ont_adapt_trim.filtered.out.fastq.gz.html"
+  - mosdepth:
+      name:
+        "Mosdepth"
+      info:
+        "Coverage for each amplicon"
+      path_filters:
+        - "*/mosdepth_bed/*FLT3*"
+        - "*/mosdepth_bed/*IDH*"
+        - "*/mosdepth_bed/*NPM*"
+        - "*/mosdepth_bed/*TP53_*_only*"
+        # - "*/mosdepth/*mosdepth.summary.txt"
+        # - "*/mosdepth_bed/*TP53_*+*"
+  - picard:
+      name:
+        "Picard HsMetrics"
+      info:
+        "Insights into off-target aligned reads"
+      path_filters:
+        - "*picard/*_HsMetrics.txt"
+  - picard:
+      name:
+        "Picard Alignment Summary Metrics"
+      info:
+        "Insights into alignment quality"
+      path_filters:
+        - "*picard/*_only.alignment_summary_metrics.txt"
+        - "*picard/*_IDH*.alignment_summary_metrics.txt"
+        - "*picard/*_FLT3*.alignment_summary_metrics.txt"
+        - "*picard/*_NPM1*.alignment_summary_metrics.txt"
+        - "*picard/*_T.alignment_summary_metrics.txt"
+
+remove_sections:
+  - trimmed_filtered_out_sequali_sequence_quality_per_position
+  - trimmed_filtered_out_sequali_top_overrepresented_sequences
+
+## Custom columns to general stats
+#multiqc_cgs:
+#  "Picard: HsMetrics":
+#    PCT_SELECTED_BASES:
+#      title: "Bases on Target [%]"
+#      description: "On+Near Bait Bases / PF Bases Aligned from Picard HsMetrics"
+#      format: "{:.2}"
+
+#  - samtools:  # erroneous/not informative output
+#      name:
+#        "Samtools stats"
+#      info:
+#        "Amplicons stats"
+#      path_filters:
+#        - "*samtools_stats/samtools-stats.txt"
+
+# TODO: write a plug-in for multiqc?
+#  - ampliconclip:
+#      name:
+#        "Samtools ampliconclip"
+#      info:
+#        "samtools ampliconclip – (Soft-)clips the ends of read alignments if they intersect with regions (for primers) defined in a BED file."
+#      path_filters:
+#        - "*samtools/ampliconclip.txt"
