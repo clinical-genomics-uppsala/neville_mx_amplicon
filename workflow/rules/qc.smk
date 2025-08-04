@@ -16,7 +16,7 @@ __license__ = "GPL-3"
 #             batches.append(bfile.split('_')[-1].replace(".bam", ""))
 #     return names, batches
 
-bam_pass, batches = read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))
+# bam_pass, batches = read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))
 
 wildcard_constraints:
     fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
@@ -172,8 +172,8 @@ rule mosdepth_overlap_timestep:
 rule mosdepth_merge_timestep:
     input:
         expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=bam_pass,
-            nbatch=batches,
+            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
+            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
             target=config.get("amplicons") + config.get("extra_regions"))
     output:
         csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
@@ -217,8 +217,8 @@ rule mosdepth_merge_timestep:
 rule copy_mosdepth_merge_timestep:
     input:
         expand("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv",
-            fname=bam_pass,
-            nbatch=batches,
+            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
+            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
         )
     output:
         outdir=temp(directory("results/mosdepth/timestep_coverage")),

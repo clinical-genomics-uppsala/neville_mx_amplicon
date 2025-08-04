@@ -200,18 +200,18 @@ which is not a problem as long as the GPU resources are correctly set up in the 
 ### Linting
 Run the linter to check the code style and the correctness of the Snakefile:
 ```bash
-cd <root_of_the_repository>
-snakemake -s workflow/Snakefile -n --configfile .tests/integration/config/config.yaml --config runfolder=.tests/integration/test_data --debug-dag --use-singularity --singularity-args  " --cleanenv"
+cd .tests/integration
+snakemake --lint -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data```
 ```
-
+git checkout 
 ### Dry run
 Configure the virtual environment `.venv` and test the pipeline with a dry run to see if the rules are correctly 
 defined and the dependencies are satisfied:
 
 ```bash
-cd <root_of_the_repository>
+cd .tests/integration
 source .venv/bin/activate
-snakemake -s workflow/Snakefile -n --configfile .tests/integration/config/config.yaml --config runfolder=.tests/integration/test_data --debug-dag --use-singularity --singularity-args  " --cleanenv"
+snakemake -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data
 ```
 
 NB: Add the option `--profile profiles/slurm/` to run the pipeline on a cluster with SLURM installed on it.

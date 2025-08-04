@@ -18,7 +18,7 @@
 
    - name: "bed_files_amplicon"
      output: "Results/Bed"
-     input: "bedfiles/"
+     input: "test_data/bedfiles/"
 
    - name: "filtered_fastq"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"

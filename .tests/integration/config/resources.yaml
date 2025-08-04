@@ -1,3 +1,101 @@
+---
+
 default_resources:
   threads: 1
+  time: "00:05:00"
+  mem_mb: 1024
+  mem_per_cpu: 3072
+  partition: "core"
+
+clairs_to:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+deepsomatic:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+dorado_basecalling:
+  partition: "GPU_low"
+  time: "00:30:00"
+  gres: "--gres=gres:gpu:4"
+  threads: 40
+  mem_mb: 655360
+  mem_per_cpu: 16384
+  slurm_extra: "-w computeGPU"
+
+dorado_alignment:
+  partition: "core"
+  time: "00:45:00"
+  threads: 20
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
+filtlong:
+  partition: "core"
+  time: "00:25:00"
+  threads: 8
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
+vardict:
+  partition: "core"
   time: "12:00:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+mosdepth:
+  partition: "core"
+  time: "00:05:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+mosdepth_bed:
+  partition: "core"
+  time: "00:05:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+nanocaller:
+  partition: "core"
+  time: "12:00:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+pycoqc:
+  partition: "core"
+  time: "00:05:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+sequali:
+  partition: "core"
+  time: "00:05:00"
+  threads: 10
+  mem_mb: 61440
+  mem_per_cpu: 6144
+
+samtools:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+sniffles2_call:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144

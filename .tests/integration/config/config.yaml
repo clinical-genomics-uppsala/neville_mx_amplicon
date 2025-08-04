@@ -8,9 +8,8 @@ units_run: "units.tsv"
 
 # General
 
-proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"  # on Marvin, to be replaced by runFolder
-ref_data: ".tests/integration/reference/WASH7P.fna"  # on Marvin
-bed_files: ".tests/integration/test_data/bedfiles" # on Marvin
+ref_data: "reference/WASH7P.fna"  # on Marvin
+bed_files: "test_data/bedfiles" # on Marvin
 reference:
   design_intervals:
     ".tests/integration/test_data/bedfiles/amplicons.interval_list"
