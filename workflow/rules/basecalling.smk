@@ -82,12 +82,14 @@ rule duplex_basecalling_dorado:
         "{rule}: Duplex basecalling with dorado from POD5 files. ONT adapters will be trimmed."
     shell:
         """
-        echo "Dorado executed from $( which dorado )"
+        echo "Dorado executed from $( which dorado )" > {log}
 
-        echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.dorado_options}'"
-        echo "and model {params.dorado_model}"
+        echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.dorado_options}'" >> {log}
+        echo "and model {params.dorado_model}" >> {log}
+        echo "POD5 files found:"
+        ls -la {input.pod5}/ >> {log}
 
-        dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ | dorado trim {params.trim_options} > {output.bam} 2> {log}
+        dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ 2>> {log} | dorado trim {params.trim_options} > {output.bam} 2>> {log}
         """
 
 rule basecalling_bam2fastq:
