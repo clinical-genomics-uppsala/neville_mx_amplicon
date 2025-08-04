@@ -201,7 +201,7 @@ which is not a problem as long as the GPU resources are correctly set up in the 
 Run the linter to check the code style and the correctness of the Snakefile:
 ```bash
 cd .tests/integration
-snakemake --lint -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data```
+snakemake --lint -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data
 ```
 git checkout 
 ### Dry run
