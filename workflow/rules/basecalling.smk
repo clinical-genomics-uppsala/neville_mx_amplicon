@@ -58,7 +58,7 @@ rule duplex_basecalling_dorado:
     params:
         dir_models=config.get("dir_models"),
         dorado_model=config.get("dorado_model"),
-        dorado_options="--verbose --device cuda:all",
+        dorado_options="--device cuda:all",
         trim_options="--no-trim-primers --sequencing-kit SQK-LSK114"
     resources:
         partition=config.get("dorado_basecalling",{}).get("partition",config["default_resources"]["partition"]),
@@ -82,14 +82,12 @@ rule duplex_basecalling_dorado:
         "{rule}: Duplex basecalling with dorado from POD5 files. ONT adapters will be trimmed."
     shell:
         """
-        echo "Dorado executed from $( which dorado )" > {log}
+        echo "Dorado executed from $( which dorado )"
 
-        echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.dorado_options}'" >> {log}
-        echo "and model {params.dorado_model}" >> {log}
-        echo "POD5 files found:"
-        ls -la {input.pod5}/ >> {log}
+        echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.dorado_options}'"
+        echo "and model {params.dorado_model}"
 
-        dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ 2>> {log} | dorado trim {params.trim_options} > {output.bam} 2>> {log}
+        dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ | dorado trim {params.trim_options} > {output.bam} 2> {log}
         """
 
 rule basecalling_bam2fastq:
