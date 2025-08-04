@@ -7,6 +7,7 @@ tabulate<0.9.0
 pulp<2.8
 sequali
 pybedtools
+pod5
 smart-open<7.0.0
 snakemake_wrapper_utils==0.6.2
 matplotlib

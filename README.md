@@ -16,8 +16,11 @@
 
 ## :speech_balloon: Introduction
 
+This module implements a workflow with Snakemake for the analysis of Nanopore sequence data from pooled amplicons
+at Clinical Genomics Uppsala (CGU) in view of supporting the diagnostics of Acute Myeloid Leukemia (AML).
 The module consists of ... build upon [hydra-genetics]().
-Multiplexed amplicon sequencing.
+Multiplexed amplicon sequencing: severral targets are amplified in **multiplexed PCR** settings. 
+The **sample** to be analyzed is **not multiplexed** with other ones.
 
 Aim with the multiplexed setup: decrease the workload of the amplification step in the wet lab.
 Caution: if two amplicons cover regions that overlap, those amplicons must be assigned to different pools.
@@ -31,25 +34,40 @@ Dorado is the currently recommended software for MinION output.
 
 The main processing steps are:
 
-- Basecalling with *Dorado* from POD5 files (raw output of ONT sequencing machines)
-- Filtering with *Filtlong*: 
+1. Basecalling with *Dorado* from POD5 files (raw output of ONT sequencing machines),
+> You may skip this step and directly use the basecalled BAM files provided by MinKNOW in the `bam_pass` directory
+> of the sequencing run folder. 
+> In this case, you need to edit the rules in `workflow/rules/basecalling.smk` accordingly.
+> You may first use `samtools merge <output.bam> <input1.bam> <input2.> bam> <...>` 
+> to merge the BAM files in the `bam_pass` directory into a single BAM file.
+
+2. As only one sample is sequenced at a time, the data do not carry any barcode neither they need to be demultiplexed.
+The "demultiplexing" of the amplicons is done later after aligning the reads, based on the coordinates of the targets.
+
+3. Filtering with *Filtlong*: 
 only reads with sufficient quality (based on the Phred quality scores) are kept. No reference is used. 
 Reads that are too short or too long are filtered out.
 Very long reads (over 4kb in our case) can be chimeras that result from concatenated amplicons.
 The `--split` option could be used as alternative strategy, in such case a reference genome is required.
 The thresholds for minimal and maximal length may be adjusted depending on the set of amplicons.
 See the [documentation for Filtlong](https://github.com/rrwick/Filtlong/tree/main) for more options.
-- Alignment with *Dorado* and soft-clipping with *samtools*,
-- Variant calling with:
+
+4. Alignment with *Dorado* and soft-clipping with *samtools*,
+
+5.Variant calling with:
   - the software [ClairS-TO](https://github.com/HKU-BAL/ClairS-TO) via the Docker container provided by the development team,
   - the software [DeepSomatic](https://github.com/google/deepsomatic) via Docker container provided by the development team and the [documented examples](https://github.com/google/deepsomatic/blob/r1.8/docs/deepsomatic-case-study-ont-tumor-only.md),
   - the software VarDict [](),
   - the software Sniffles v2 [](),
-- Annotation of the variants with VEP,
-- Computation of some quality metrics:
+
+6. Decomposition of the variants with the software _VT_ and annotation of the variants with _VEP_,
+
+7. Computation of some quality metrics and report them in an Excel file as well as in a HTML file with MultiQC:
   - Read quality with Sequali,
   - Estimated number of reads for each amplicon: approximated by the mean coverage computed with *mosdepth*,
   - Counts and proportion of reads for each amplicon relatively to the pool it belongs to,
+
+8. Reporting the results of variant calling and variant filtering in an Excel file.
 
 Estimating the number of reads for each amplicon is desirable for two reasons.
 Firstly, we want to assess within each pool whether the amplified reads are well-balanced between the amplicons. 
@@ -154,6 +172,28 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Set up the profile to run the pipeline
+
+Modify the file `profiles/slurm/config.yaml` to match your configuration for the run.
+At CGU, we use a cluster with Slurm installed on it and Slurm is interfaced with the application DRMAA.
+
+The file `profiles/local/config.yaml` shows an example of profile that is used for local settings, for instance on a 
+laptop.
+
+**Note:** If you want to run the pipeline with basecalling executed on a GPU node, 
+you must provide the correct resources to use the GPU e.g. `gres: "--gres=gres:gpu:4"` and pass them to DRMAA.
+Moreover, you must pass the option `--nv` as an argument to Singularity/Apptainer. If not, you will encounter the 
+following error:
+error:
+```
+[2025-08-04 09:02:49.732] [info] Failed to load NVML
+[2025-08-04 09:02:49.732] [error] device string set to cuda:all but no CUDA devices available.
+CUDA device string format: "cuda:0,...,N" or "cuda:all".
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Could not open file: -
+```
+Yet, you may get a warning about no nv profile found,
+which is not a problem as long as the GPU resources are correctly set up in the profile.
 
 ## :white_check_mark: Testing (TODO)
 
