@@ -55,15 +55,14 @@ use rule vardict from snv_indels as snv_indels_vardict with:
         vcf=temp("snv_indels/vardict/"
                  "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
     params:
-        extra = config.get("vardict", {}).get("extra", "-Q 1"),
-        bed_columns = config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
-        allele_frequency_threshold = config.get("vardict", {}).get("allele_frequency_threshold", "0.01"),
+        extra=config.get("vardict", {}).get("extra", "-Q 1"),
+        bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
+        allele_frequency_threshold=config.get("vardict", {}).get("allele_frequency_threshold", "0.01"),
         sample_name=lambda wildcards: f"{wildcards.sample}",
     log:
         "snv_indels/vardict/{sample}_{type}.vcf.log",
     benchmark:
-        repeat("snv_indels/vardict/{sample}_{type}.benchmark.tsv",
-            config.get("vardict", {}).get("benchmark_repeats", 1))
+        repeat("snv_indels/vardict/{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1))
 
 
 use rule vt_decompose from snv_indels as snv_indels_vt_decompose with:
@@ -119,11 +118,13 @@ use rule vt_normalize from snv_indels as snv_indels_vt_normalize with:
 use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_recall_ensemble with:
     input:
         vcfs=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.decomposed.normalized.vcf.gz",
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "{caller}.bcftools_view.decomposed.normalized.vcf.gz",
             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
         ),
         tabix=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.decomposed.normalized.vcf.gz.tbi",
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "{caller}.bcftools_view.decomposed.normalized.vcf.gz.tbi",
             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
         ),
         ref=config["reference"]["fasta"],
@@ -159,7 +160,7 @@ use rule bgzip from snv_indels as snv_indels_bgzip with:
         )
     wildcard_constraints:
         file="(snv_indels)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled"
-             "|somatic_.+|rename_vaf)",
+        "|somatic_.+|rename_vaf)",
 
 
 use rule tabix from snv_indels as snv_indels_tabix with:
@@ -197,10 +198,12 @@ use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
-        snf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
+        vcf=temp("cnv_sv/sniffles2/"
+                 "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
+        snf=temp("cnv_sv/sniffles2/"
+                 "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
     params:
-        sample_id = lambda wildcards: f"{wildcards.sample}",
+        sample_id=lambda wildcards: f"{wildcards.sample}",
         tandem_repeats="",  # f'--tandem-repeats {config.get("sniffles2_call", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed"))}',
         extra=config.get("sniffles2_call", {}).get("extra", ""),
     log:
@@ -228,7 +231,7 @@ use rule bgzip from cnv_sv as cnv_sv_bgzip with:
         )
     wildcard_constraints:
         file="(cnv_sv)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled"
-             "|somatic_.+|rename_vaf)",
+        "|somatic_.+|rename_vaf)",
 
 
 use rule tabix from cnv_sv as cnv_sv_tabix with:
@@ -258,7 +261,6 @@ module annotation:
         )
     config:
         config
-
 
 
 use rule vep from annotation as annotation_vep with:
@@ -300,7 +302,7 @@ use rule filter_vcf from filtering as filtering_filter_vcf with:
         vcf=temp("{file}.filter.{tag}.vcf"),
     wildcard_constraints:
         file="snv_indels\/bcbio_variation_recall_ensemble\/.+("
-             "ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
+        "ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
     params:
         sample_name_regex=config.get("filter_vcf",{}).get("sample_name_regex","^([A-Za-z0-9-]+_T)$"),
         filter_config=lambda wildcards: config["filter_vcf"][wildcards.tag],
@@ -408,7 +410,7 @@ use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_a
             config.get("picard_collect_alignment_summary_metrics", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
-        type = "N|T",
+        type="N|T",
 
 
 use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_alignment_summary_metrics_per_target with:
