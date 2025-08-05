@@ -3,13 +3,13 @@ import pandas as pd
 
 cols = ["length", "bases", "mean", "target"]
 df = pd.concat([pd.read_csv(summary, sep='\t')
-               .assign(target=os.path.basename(summary).replace(".mosdepth.summary.txt", "")) \
+               .assign(target=os.path.basename(summary).replace(".mosdepth.summary.txt", ""))
                 for summary in list(snakemake.input)
                 ])
 print(df)
 try:
     df = df[df["chrom"] == "total_region"].loc[:, cols]
-except:  # this might not be necessary
+except KeyError:  # this might not be necessary
     df = pd.DataFrame([0.0, 0.0, 0.0, 0.0], columns=cols)
 print(df)
 try:
