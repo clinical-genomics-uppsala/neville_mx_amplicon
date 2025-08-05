@@ -1,13 +1,8 @@
 import os
-import sys
-import subprocess
-import pysam
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
-
 from futils import *
-import re
 
 """
 Estimate the number of reads for each amplicon at increasing sequencing elapsed times.
@@ -15,10 +10,7 @@ Use mean coverage metrics from Mosdepth in targeted region to estimate the numbe
 """
 
 indir = snakemake.input.indir
-# indir = "results/mosdepth/timestep_coverage"
-# indir = os.path.join(snakemake.config["proj_data"],
-#                      snakemake.config["run_date"] + "_" + snakemake.config["run_id"],
-#                      "bam_pass")
+# indir = "../../.tests/integration/test_data/mosdepth/timestep_coverage"
 
 target_set = ["FLT3_ITD_3kb_1", "FLT3_TKD_3kb_1",
               "IDH1_1", "IDH2_1",
@@ -26,6 +18,9 @@ target_set = ["FLT3_ITD_3kb_1", "FLT3_TKD_3kb_1",
               "TP53_3kb_A1_only", "TP53_3kb_B1_only", "TP53_C10_only", "TP53_D2+J3", "TP53_D2_only",
               "TP53_E1_only", "TP53_F2_only", "TP53_G4_only", "TP53_H4_only", "TP53_I4_only"
               ]
+target_set_j3 = target_set + ["TP53_J3_only"]  # add J3 amplicon to the target set
+target_set_j3.remove("TP53_D2+J3")
+
 # pool P2 only
 p2 = ["IDH1_1", "TP53_3kb_B1_only", "TP53_G4_only", "TP53_D2+J3", "NPM1_5"]
 
@@ -46,11 +41,26 @@ df = pd.concat(readcounts).reset_index(drop=False).set_index(["target", "timeste
 dfcum = df.groupby(level=0).cumsum().reset_index(drop=False)  # cumulative sum over time per amplicon
 dfcum.to_csv(os.path.join(snakemake.output.csv), index=False)
 # dfcum.to_csv(os.path.join(indir, "cumsum_coverage_per_amplicon.csv"), index=False)
+print(dfcum[dfcum["target"].isin(["TP53_C10_only", "TP53_D2+J3", "TP53_D2_only"])])
+for t in set(sorted(dfcum["timestep"])):
+    row_j3 = dict(zip(dfcum.columns, [
+        "TP53_J3_only",
+        t,
+        0,
+        0,
+        dfcum[(dfcum["target"] == "TP53_D2+J3") & (dfcum["timestep"] == t)]["mean"].values[0] \
+        - dfcum[(dfcum["target"] == "TP53_D2_only") & (dfcum["timestep"] == t)]["mean"].values[0]
+    ]))
+    dfcum = pd.concat([dfcum,
+                       pd.DataFrame(data=row_j3, index=[0])],
+                      axis=0, ignore_index=True)
+dfcum = dfcum[dfcum["target"] != "TP53_D2+J3"]  # remove the D2+J3 amplicon
+print(dfcum)
 
 sns.set_style("whitegrid")
 fig, ax = plt.subplots(1, 1, figsize=(16, 8))
 sns.lineplot(data=dfcum, x="timestep", y="mean",
-             hue="target", hue_order=target_set, palette="tab10", style="target",  # hue_order=target_set
+             hue="target", hue_order=target_set_j3, palette="tab10", style="target",  # hue_order=target_set
              ax=ax)
 ax.set_title("Estimated reads counts per amplicon")
 ax.set_ylabel("Estimated reads count from mean coverage")

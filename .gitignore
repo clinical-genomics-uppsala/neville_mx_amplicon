@@ -19,3 +19,4 @@ reports/
 results/
 snv_indels/
 tmp/
+/.tests/integration/test_data/mosdepth/

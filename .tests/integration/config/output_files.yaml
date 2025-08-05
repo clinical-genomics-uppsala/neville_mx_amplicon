@@ -63,34 +63,34 @@
 #   - name: "multiqc_report"
 #     output: "Results/Reports/{sample}_{type}_multiqc_{report}.html"
 #     input: "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html"
-#
-#   - name: "mosdepth_coverage_per_amplicon"
-#     output: "Results/Reports/{sample}_{type}_coverage_per_amplicon.csv"
-#     input: "results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv"
-#
-#   - name: "yield_pool_1"
-#     output: "Results/Reports/{sample}_{type}_yield_pool_1.csv"
-#     input: "results/mosdepth/{sample}_{type}_yield_pool_1.csv"
-#
-#   - name: "yield_pool_2"
-#     output: "Results/Reports/{sample}_{type}_yield_pool_2.csv"
-#     input: "results/mosdepth/{sample}_{type}_yield_pool_2.csv"
-#
-#   - name: "yield_pool_3"
-#     output: "Results/Reports/{sample}_{type}_yield_pool_3.csv"
-#     input: "results/mosdepth/{sample}_{type}_yield_pool_3.csv"
-#
-#   - name: "mosdepth_timestep_coverage_per_amplicon_csv"
-#     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
-#     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
-#
-#   - name: "mosdepth_timestep_coverage_per_amplicon_png"
-#     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.png"
-#     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"
-#
-#   - name: "mosdepth_summary_amplicons"
-#     output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
-#     input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
+
+   - name: "mosdepth_coverage_per_amplicon"
+     output: "Results/Reports/{sample}_{type}_coverage_per_amplicon.csv"
+     input: "results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv"
+
+   - name: "yield_pool_1"
+     output: "Results/Reports/{sample}_{type}_yield_pool_1.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_1.csv"
+
+   - name: "yield_pool_2"
+     output: "Results/Reports/{sample}_{type}_yield_pool_2.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_2.csv"
+
+   - name: "yield_pool_3"
+     output: "Results/Reports/{sample}_{type}_yield_pool_3.csv"
+     input: "results/mosdepth/{sample}_{type}_yield_pool_3.csv"
+
+   - name: "mosdepth_timestep_coverage_per_amplicon_csv"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+
+   - name: "mosdepth_timestep_coverage_per_amplicon_png"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{sample}_{type}_cumsum_coverage_per_amplicon.png"
+     input: "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"
+
+   - name: "mosdepth_summary_amplicons"
+     output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
+     input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
 #
 #   - name: "excel_report"
 #     output: "Results/Reports/{sample}_{type}.xlsx"
