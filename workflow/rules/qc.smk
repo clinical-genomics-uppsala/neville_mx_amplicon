@@ -113,21 +113,13 @@ rule mosdepth_merge:
         repeat("results/mosdepth/{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
             config.get("mosdepth_merge", {}).get("benchmark_repeats", 1)
         )
-    # container:  # Singularity directive is only allowed with shell, script, notebook or wrapper directives (not with run or template_engine).
-    #     config.get("mosdepth_merge", {}).get("container", config["default_container"])
+    container:
+        config.get("mosdepth_merge", {}).get("container", config["default_container"])
     message:
         "{rule}: Create merged report for mosdepth"
-    run:
-        import os
-        import pandas as pd
+    script:
+        "../scripts/mosdepth_merge.py"
 
-        cols = ["length", "bases", "mean", "target"]
-        df = pd.concat([pd.read_csv(summary, sep='\t')
-                        .assign(target=os.path.basename(summary).replace(".mosdepth.summary.txt", "")) \
-                        for summary in list(input)
-                        ]).loc[3,cols] # lines for "total_region" have index=3 in the dataframe
-        df.set_index("target", inplace=True)
-        df.to_csv(output.csv, index=True)
 
 rule mosdepth_overlap_timestep:
     input:
@@ -184,6 +176,8 @@ rule mosdepth_merge_timestep:
         mem_mb = config.get("default_resources").get("mem_mb"),
         mem_per_cpu = config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads"),
+    container:
+        config.get("mosdepth_merge", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.log",
     benchmark:
@@ -192,26 +186,8 @@ rule mosdepth_merge_timestep:
         )
     message:
         "{rule}: Create merged report for mosdepth"
-    run:
-        import os
-        import pandas as pd
-
-        cols = ["length", "bases", "mean", "target"]
-        df = pd.concat([pd.read_csv(summary, sep='\t')
-                        .assign(target=os.path.basename(summary).replace(".mosdepth.summary.txt", "")) \
-                        for summary in list(input)
-                        ])
-        print(df)
-        try:
-            df = df[df["chrom"] == "total_region"].loc[:, cols]  # .loc[3,cols] # lines for "total_region" have index=3 in the dataframe
-        except: # this might not be necessary
-            df = pd.DataFrame([0.0, 0.0, 0.0, 0.0], columns=cols)
-        print(df)
-        try:
-            df.set_index("target", inplace=True)
-        except AttributeError:
-            df.rename("target", inplace=True)
-        df.to_csv(output.csv, index=True)
+    script:
+        "../scripts/mosdepth_merge_timestep.py"
 
 
 rule copy_mosdepth_merge_timestep:
@@ -326,6 +302,8 @@ rule yield_per_pool:
         mem_mb=config.get("default_resources").get("mem_mb"),
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads"),
+    container:
+        config.get("yield_per_pool", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.log",
     benchmark:
@@ -334,28 +312,8 @@ rule yield_per_pool:
         )
     message:
         "{rule}: Calculate number of reads per pool"
-    run:
-        import pandas as pd
-
-        cols =["pool","target","reads_counts"]
-        df = pd.read_csv(input.csv, sep=',', index_col="target")
-        counts = dict([(target, round(df.loc[target, "mean"])) \
-                       for target in df.index \
-                       if target.replace(f"{wildcards.sample}_{wildcards.type}_", "") in config.get("pools")[int(wildcards.pooln)]  # dirty fix to not include the sample's name in the target's label
-                       ])
-        d_and_j = [target for target in counts.keys() if target.find("+J") >= 0]
-        d_only = [(target, round(df.loc[target, "mean"])) \
-                  for target in df.index \
-                  if (target.find("TP53_D") >= 0 and target.find("_only") >= 0)
-                  ]
-        if d_and_j:
-            counts["TP53_JX"] = counts[d_and_j[0]] - d_only[0][1]
-            del counts[d_and_j[0]]
-        counts["total"] = sum(counts.values())
-        df_p = pd.DataFrame.from_dict(counts,orient="index",columns=["reads_counts"])
-        df_p.index.name = f"Pool {wildcards.pooln}"
-        df_p = df_p.assign(pct_reads = round(df_p["reads_counts"] * 100 / counts["total"], ndigits=1))
-        df_p.to_csv(output.csv,index=True)
+    script:
+        "../scripts/yield_per_pool.py"
 
 # Picard HsMetrics requires interval file
 rule bed_to_interval_list:

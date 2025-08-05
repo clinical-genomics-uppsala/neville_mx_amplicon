@@ -162,6 +162,12 @@ The following information need to be added to these files:
 
 Edit the file paths and names in `config/config.yaml`.
 
+Create a `tmp` directory in the root of the repository to store temporary files:
+```bash
+cd <root_of_the_repository>
+mkdir tmp
+```
+
 ### Set up the virtual environment
 
 Create a virtual environment and install the required Python packages:
@@ -192,7 +198,11 @@ CUDA device string format: "cuda:0,...,N" or "cuda:all".
 terminate called after throwing an instance of 'std::runtime_error'
   what():  Could not open file: -
 ```
-Yet, you may get a warning about no nv profile found,
+You may get the following message about no nv host found upon execution of the rules and allocation the resources 
+for rules in which no GPU is involved:
+```
+INFO:    Could not find any nv files on this host!
+```
 which is not a problem as long as the GPU resources are correctly set up in the profile.
 
 ## :white_check_mark: Testing (TODO)
