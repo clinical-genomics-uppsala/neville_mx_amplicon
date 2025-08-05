@@ -162,6 +162,12 @@ The following information need to be added to these files:
 
 Edit the file paths and names in `config/config.yaml`.
 
+Create a `tmp` directory in the root of the repository to store temporary files:
+```bash
+cd <root_of_the_repository>
+mkdir tmp
+```
+
 ### Set up the virtual environment
 
 Create a virtual environment and install the required Python packages:
