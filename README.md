@@ -278,6 +278,8 @@ The following output files should be targeted via another rule:
 |---|---|
 | `pipeline_pool_amplicon/PATH/FILE` | DESCRIPTION |
 
+Note about mosdepth_bed: using "amplicons.bed" calculates cov per chrom --> values for TP53 are much lower since many amplicons there
+
 ### Program versions
 
 Default container: ...
