@@ -7,34 +7,34 @@ import os
 
 rule varcall_clairs_to:
     input:
-        bam = "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        ref = config.get("ref_data"),
-        bed = os.path.join(config.get("bed_files"), "amplicons.bed")
+        ref=config.get("ref_data"),
+        bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
         snv=temp("snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz"),
-        indel=temp("snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz")
+        indel=temp("snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz"),
     params:
-        platform=config.get("clairs_to",{}).get("platform",""),
-        snv_min_af=config.get("clairs_to",{}).get("snv_min_af",0.05),
-        indel_min_af=config.get("clairs_to",{}).get("indel_min_af",0.1),
-        outdir=directory("snv_indels/clairs_to"),
+        platform=config.get("clairs_to", {}).get("platform", ""),
+        snv_min_af=config.get("clairs_to", {}).get("snv_min_af", 0.05),
+        indel_min_af=config.get("clairs_to", {}).get("indel_min_af", 0.1),
+        outdir=directory(lambda wildcards, output: os.path.dirname(output.snv)),
     resources:
-        partition=config.get("clairs_to",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("clairs_to",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("clairs_to",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("clairs_to",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("clairs_to",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("clairs_to",{}).get("threads",config["default_resources"]["threads"])
+        partition=config.get("clairs_to", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("clairs_to", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("clairs_to", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("clairs_to", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("clairs_to", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("clairs_to", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "snv_indels/clairs_to/{sample}_{type}_clairs_to.log"
+        "snv_indels/clairs_to/{sample}_{type}_clairs_to.log",
     benchmark:
         repeat(
             "snv_indels/clairs_to/{sample}_{type}_clairs_to.benchmark.tsv",
-            config.get("clairs_to",{}).get("benchmark_repeats", 1)
+            config.get("clairs_to", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("clairs_to",{}).get("container",config["default_container"])
+        config.get("clairs_to", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in only tumor samples with ClairS-TO.
@@ -51,20 +51,21 @@ rule varcall_clairs_to_concat:
     output:
         all=temp("snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"),
     resources:
-        partition=config.get("varcall_clairs_to_concat",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("varcall_clairs_to_concat",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("varcall_clairs_to_concat",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("varcall_clairs_to_concat",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("varcall_clairs_to_concat",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("varcall_clairs_to_concat",{}).get("threads",config["default_resources"]["threads"]),
+        partition=config.get("varcall_clairs_to_concat", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("varcall_clairs_to_concat", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("varcall_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("varcall_clairs_to_concat", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("varcall_clairs_to_concat", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("varcall_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("varcall_clairs_to_concat",{}).get("container",config["default_container"])
+        config.get("varcall_clairs_to_concat", {}).get("container", config["default_container"])
     log:
-        "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log"
+        "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf"
+        ".gz.log",
     benchmark:
         repeat(
             "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
-            config.get("varcall_clairs_to_concat",{}).get("benchmark_repeats", 1)
+            config.get("varcall_clairs_to_concat", {}).get("benchmark_repeats", 1),
         )
     message:
         """
@@ -83,31 +84,30 @@ rule varcall_deepsomatic:
         bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed")),
-        # bed=os.path.join(config.get("bed_files"),"amplicons.bed"),
     output:
         tmpdir=directory("snv_indels/deepsomatic/{sample}_{type}_tmp"),
-        vcf="snv_indels/deepsomatic/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz"
+        vcf="snv_indels/deepsomatic/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
     params:
-        sample=lambda w: f"{w.sample}",
+        sample=lambda wildcards: f"{wildcards.sample}",
         model="ONT_TUMOR_ONLY",
-        extra=config.get("deepsomatic",{}).get("extra",""),
-        filter=config.get("deepsomatic",{}).get("filter",""),
+        extra=config.get("deepsomatic", {}).get("extra", ""),
+        filter=config.get("deepsomatic", {}).get("filter", ""),
     log:
-        "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.log"
+        "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.log",
     benchmark:
         repeat(
             "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.benchmark.tsv",
-            config.get("deepsomatic",{}).get("benchmark_repeats", 1)
+            config.get("deepsomatic", {}).get("benchmark_repeats", 1),
         )
-    threads: config.get("deepsomatic",{}).get("threads",config["default_resources"]["threads"])
+    threads: config.get("deepsomatic", {}).get("threads", config["default_resources"]["threads"])
     resources:
-        partition=config.get("deepsomatic",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("deepsomatic",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("deepsomatic",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("deepsomatic",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("deepsomatic",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("deepsomatic", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("deepsomatic", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("deepsomatic", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("deepsomatic", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("deepsomatic", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     container:
-        config.get("deepsomatic",{}).get("container",config["default_container"])
+        config.get("deepsomatic", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in tumor samples only with DeepSomatic.
@@ -122,29 +122,29 @@ rule varcall_nanocaller:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=os.path.join(config.get("bed_files"),"amplicons.bed")
+        bed=os.path.join(config.get("bed_files"),"amplicons.bed"),
     output:
         vcf="snv_indels/nanocaller/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller.vcf.gz",
     params:
         sample=config.get("sample_id", "sample_T"),
         extra="--mode all --sequencing ont --preset ont --min_allele_freq 0.005 --output snv_indels/nanocaller",  #  --win_size 50 --maxcov 10000 --ins_threshold 40 --del_threshold 60",
-        prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller"
+        prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller",
     log:
-        "snv_indels/nanocaller/{sample}_{type}_nanocaller.log"
+        "snv_indels/nanocaller/{sample}_{type}_nanocaller.log",
     benchmark:
         repeat(
             "snv_indels/nanocaller/{sample}_{type}_nanocaller.benchmark.tsv",
-            config.get("nanocaller",{}).get("benchmark_repeats", 1)
+            config.get("nanocaller", {}).get("benchmark_repeats", 1)
         )
     resources:
-        partition=config.get("nanocaller",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("nanocaller",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("nanocaller",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("nanocaller",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("nanocaller",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("nanocaller",{}).get("threads",config["default_resources"]["threads"])
+        partition=config.get("nanocaller", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("nanocaller", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("nanocaller", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("nanocaller", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("nanocaller", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("nanocaller", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("nanocaller",{}).get("container",config["default_container"])
+        config.get("nanocaller", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in tumor samples only with NanoCaller.
