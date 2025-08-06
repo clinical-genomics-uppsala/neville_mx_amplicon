@@ -9,14 +9,14 @@ counts = dict([(target, round(df.loc[target, "mean"]))
                in snakemake.config.get("pools")[int(snakemake.wildcards.pooln)]
                # dirty fix to not include the sample's name in the target's label
                ])
-# d_and_j = [target for target in counts.keys() if target.find("+J") >= 0]
-# d_only = [(target, round(df.loc[target, "mean"]))
-#           for target in df.index
-#           if (target.find("TP53_D") >= 0 and target.find("_only") >= 0)
-#           ]
-# if d_and_j:
-#     counts["TP53_JX"] = counts[d_and_j[0]] - d_only[0][1]
-#     del counts[d_and_j[0]]
+d_and_j = [target for target in counts.keys() if target.find("+J") >= 0]
+d_only = [(target, round(df.loc[target, "mean"]))
+          for target in df.index
+          if (target.find("TP53_D") >= 0 and target.find("_only") >= 0)
+          ]
+if d_and_j:
+    counts["TP53_J3_only"] = counts[d_and_j[0]] - d_only[0][1]
+    del counts[d_and_j[0]]
 counts["total"] = sum(counts.values())
 df_p = pd.DataFrame.from_dict(counts, orient="index", columns=["reads_counts"])
 df_p.index.name = f"Pool {snakemake.wildcards.pooln}"
