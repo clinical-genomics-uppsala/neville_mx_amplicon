@@ -32,7 +32,7 @@ relabels = {
     'TP53_J3': 'TP53_J',
     'IDH1_1': 'IDH1',
     'FLT3_TKD_3kb_1': 'FLT3_TKD',
-    'TP53_D2_only': 'TP53_D'
+    'TP53_D2_only': 'TP53_D',
 }
 
 df1 = pd.read_csv(vaf_csv, sep=",")
@@ -110,7 +110,7 @@ for csv in os.listdir(cumcounts):
 df3 = pd.concat(cumcounts_24hours, ignore_index=True)
 print(df3.groupby(["target"]).describe())
 min_24h = df3["mean"].min()
-print("Min read counts after 24h: ", df3[df3["mean"] <= min_24h +1000])
+print("Min read counts after 24h: ", df3[df3["mean"] <= min_24h + 1000])
 print(df3.sort_values(by="mean", ascending=True))
 print(df3.sort_values(by="mean", ascending=False))
 
@@ -135,7 +135,9 @@ print(df4)
 min_reads = df4["mean"].min()
 print(df4[df4["mean"] <= min_reads + 200])
 print(df4.groupby(["target", "timestep"]).describe())
-df4.groupby(["target", "timestep"]).describe().to_csv("/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/4+24hours_describe.csv", index=False)
+(df4.groupby(["target", "timestep"])
+ .describe()
+ .to_csv("/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/4+24hours_describe.csv", index=False))
 
 sns.set_theme(style="ticks")
 custom_palette = {240: "darkkhaki", 1440: "royalblue"}
@@ -161,7 +163,7 @@ plt.legend(handles=hds, labels=hours,
            title_fontsize=18, fontsize=18)
 ax4.set_xticklabels(ax4.get_xticklabels(),
                     rotation=30,
-                    ha='right'
+                    ha='right',
                     )
 ax4.tick_params(axis='both', which='major', labelsize=14)
 ax4.set_xlabel("Amplicon", fontsize=18)
@@ -182,7 +184,7 @@ sns.swarmplot(x="target",
               )
 ax4.set_xticklabels(ax4.get_xticklabels(),
                     rotation=30,
-                    ha='right'
+                    ha='right',
                     )
 # labs4 = ax2.get_xticklabels()
 # newlabs4 = []
@@ -191,4 +193,3 @@ ax4.set_xticklabels(ax4.get_xticklabels(),
 ax4.set_ylim(bottom=0, top=None)
 plt.axhline(y=1000, linestyle='--', color='r', label='1000 threshold')
 plt.savefig(swarmplot4, bbox_inches='tight')
-

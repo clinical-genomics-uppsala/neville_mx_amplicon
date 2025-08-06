@@ -16,6 +16,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
 def convert_columns_to_letter(nr_columns):
     # Function to convert number of columns to alphabetical coordinates for xlsx-sheets
     if nr_columns < 27:
@@ -55,6 +56,7 @@ non_coding_regions = {
     "TP53": ["chr17", 7687366, 7687500, "Exon1 non-coding"],
     "NOTCH1": ["chr9", 136494400, 136496072, "3UTR"],
 }
+
 intron_coordinates = {}
 for gene in non_coding_regions:
     chrom = non_coding_regions[gene][0]

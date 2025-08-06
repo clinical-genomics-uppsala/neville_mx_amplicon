@@ -5,10 +5,11 @@ __license__ = "GPL-3"
 
 import os
 
+
 rule varcall_clairs_to:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
@@ -44,12 +45,15 @@ rule varcall_clairs_to:
         run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref} --threads {resources.threads} --platform {params.platform} --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed} --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af} --disable_verdict --snv_output_prefix {wildcards.sample}_{wildcards.type}_snv --indel_output_prefix {wildcards.sample}_{wildcards.type}_indel 2> {log}
         """
 
+
 rule varcall_clairs_to_concat:
     input:
         snv="snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz",
         indel="snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz",
     output:
-        all=temp("snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"),
+        all=temp(
+            "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"
+        ),
     resources:
         partition=config.get("varcall_clairs_to_concat", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("varcall_clairs_to_concat", {}).get("time", config["default_resources"]["time"]),
@@ -60,8 +64,7 @@ rule varcall_clairs_to_concat:
     container:
         config.get("varcall_clairs_to_concat", {}).get("container", config["default_container"])
     log:
-        "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf"
-        ".gz.log",
+        "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log",
     benchmark:
         repeat(
             "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
@@ -77,6 +80,7 @@ rule varcall_clairs_to_concat:
         bcftools concat -a -Oz -o tmp/{output.all} {input.snv} {input.indel} 2> {log}
         bcftools sort -Oz -o {output.all} tmp/{output.all}
         """
+
 
 rule varcall_deepsomatic:
     input:
@@ -117,12 +121,13 @@ rule varcall_deepsomatic:
         run_deepsomatic --model_type={params.model} --ref={input.ref} --reads_tumor={input.bam} --output_vcf={output.vcf} --sample_name_tumor={params.sample} --num_shards={resources.threads} --logging_dir={log} --intermediate_results_dir {output.tmpdir} --regions={input.bed} {params.extra} {params.filter}
         """
 
+
 rule varcall_nanocaller:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=os.path.join(config.get("bed_files"),"amplicons.bed"),
+        bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
         vcf="snv_indels/nanocaller/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller.vcf.gz",
     params:
@@ -134,7 +139,7 @@ rule varcall_nanocaller:
     benchmark:
         repeat(
             "snv_indels/nanocaller/{sample}_{type}_nanocaller.benchmark.tsv",
-            config.get("nanocaller", {}).get("benchmark_repeats", 1)
+            config.get("nanocaller", {}).get("benchmark_repeats", 1),
         )
     resources:
         partition=config.get("nanocaller", {}).get("partition", config["default_resources"]["partition"]),

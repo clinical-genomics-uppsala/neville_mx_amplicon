@@ -4,11 +4,6 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 
-wildcard_constraints:
-    fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
-    nbatch=r"\d+",
-
-
 rule pycoqc:
     input:
         seq_run_dir=config.get("runfolder")
@@ -124,6 +119,9 @@ rule mosdepth_overlap_timestep:
         summary=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.summary.txt"),
     params:
         prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
+    wildcard_constraints:
+        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        nbatch=r"\d+",
     resources:
         partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
@@ -158,6 +156,9 @@ rule mosdepth_merge_timestep:
         ),
     output:
         csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
+    wildcard_constraints:
+        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        nbatch=r"\d+",
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -187,7 +188,10 @@ rule copy_mosdepth_merge_timestep:
         ),
     output:
         outdir=temp(directory("results/mosdepth/timestep_coverage")),
-        # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv")
+        # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
+    wildcard_constraints:
+        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        nbatch=r"\d+",
     resources:
         partition=config["default_resources"]["partition"],
         time=config["default_resources"]["time"],
