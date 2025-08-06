@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
-from futils import *
+# from futils import *
 
 """
 Estimate the number of reads for each amplicon at increasing sequencing elapsed times.
@@ -37,11 +37,11 @@ for i, batch in enumerate(batches):
     dfstep = dfcov[["timestep", "mean"]]
     readcounts.append(dfcov)
 
-df = pd.concat(readcounts).reset_index(drop=False).set_index(["target", "timestep"])# [target_set]
+df = pd.concat(readcounts).reset_index(drop=False).set_index(["target", "timestep"])
 dfcum = df.groupby(level=0).cumsum().reset_index(drop=False)  # cumulative sum over time per amplicon
 dfcum.to_csv(os.path.join(snakemake.output.csv), index=False)
 # dfcum.to_csv(os.path.join(indir, "cumsum_coverage_per_amplicon.csv"), index=False)
-print(dfcum[dfcum["target"].isin(["TP53_C10_only", "TP53_D2+J3", "TP53_D2_only"])])
+print(dfcum[dfcum["target"].isin(["TP53_D2+J3", "TP53_D2_only"])])
 for t in set(sorted(dfcum["timestep"])):
     row_j3 = dict(zip(dfcum.columns, [
         "TP53_J3_only",

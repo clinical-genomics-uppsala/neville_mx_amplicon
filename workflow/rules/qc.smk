@@ -241,8 +241,8 @@ rule plot_yield_timestep:
         mem_mb=config["default_resources"]["mem_mb"],
         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
     threads: config["default_resources"]["threads"],
-    # container:
-    #     config["default_container"]
+    container:
+        config.get("plot_yield_timestep", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log"
     benchmark:
