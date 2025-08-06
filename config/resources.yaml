@@ -21,6 +21,13 @@ deepsomatic:
   mem_mb: 245760
   mem_per_cpu: 6144
 
+demux_dorado:
+  partition: "core"
+  time: "00:45:00"
+  threads: 20
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
 dorado_basecalling:
   partition: "GPU_low"
   time: "00:30:00"

@@ -92,6 +92,94 @@ rule duplex_basecalling_dorado:
         dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ 2>> {log} | dorado trim {params.trim_options} > {output.bam} 2>> {log}
         """
 
+
+rule duplex_basecalling_no_trim_dorado:
+    input:
+        pod5 = os.path.join(config.get("runfolder"),
+            config.get("raw_data")
+        ),
+        ref_data = config.get("ref_data")
+    output:
+        bam = temp("basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam")
+    params:
+        dir_models=config.get("dir_models"),
+        dorado_model=config.get("dorado_model"),
+        dorado_options="--device cuda:all",
+        # kit_name="--sequencing-kit SQK-LSK114",
+    resources:
+        partition=config.get("dorado_basecalling",{}).get("partition",config["default_resources"]["partition"]),
+        time=config.get("dorado_basecalling",{}).get("time",config["default_resources"]["time"]),
+        gres=config.get("dorado_basecalling",{}).get("gres"),
+        threads=config.get("dorado_basecalling",{}).get("threads",config["default_resources"]["threads"]),
+        mem_mb=config.get("dorado_basecalling",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("dorado_basecalling",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        slurm_extra=config.get("dorado_basecalling",{}).get("slurm_extra"),
+    threads: config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
+    benchmark:
+        repeat(
+            "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam.benchmark.tsv",
+            config.get("dorado_basecalling", {}).get("benchmark_repeats", 1)
+        )
+    container:
+        config.get("dorado",{}).get("container",config["default_container"])
+    log:
+        "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam.log"
+    message:
+        "{rule}: Duplex basecalling with dorado from POD5 files. ONT adapters will NOT be trimmed."
+    shell:
+        """
+        echo "Dorado executed from $( which dorado )" > {log}
+
+        echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.dorado_options}'" >> {log}
+        echo "and model {params.dorado_model}" >> {log}
+        echo "POD5 files found:"
+        ls -la {input.pod5}/ >> {log}
+
+        dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ > {output.bam} 2>> {log}
+        """
+
+
+rule demux_dorado:
+    input:
+        bam="basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam",
+        sample_sheet=config.get("sample_sheet"),
+    output:
+        outdir=directory("basecalling/dorado_demux/"),
+        # bam="basecalling/dorado_demux/{sample}_{type}_reads.basecalled.demux.bam",
+    params:
+        dorado_options="--kit-name SQK-NBD114.24",
+        outdir=directory(lambda wildcards, output: os.path.dirname(output.bam)),
+    resources:
+        partition=config.get("demux_dorado",{}).get("partition",config["default_resources"]["partition"]),
+        time=config.get("demux_dorado",{}).get("time",config["default_resources"]["time"]),
+        gres=config.get("demux_dorado",{}).get("gres"),
+        threads=config.get("demux_dorado",{}).get("threads",config["default_resources"]["threads"]),
+        mem_mb=config.get("demux_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("demux_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        slurm_extra=config.get("demux_dorado",{}).get("slurm_extra"),
+    threads: config.get("demux_dorado", {}).get("threads", config["default_resources"]["threads"]),
+    benchmark:
+        repeat(
+            "basecalling/dorado_demux/multi_samples_reads.basecalled.demux.bam.benchmark.tsv",
+            config.get("demux_dorado", {}).get("benchmark_repeats", 1)
+        )
+    container:
+        config.get("dorado",{}).get("container",config["default_container"])
+    log:
+        "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.demux.bam.log"
+    message:
+        "{rule}: Demultiplexing with dorado."
+    shell:
+        """
+        echo "Dorado executed from $( which dorado )" > {log}
+
+        echo "Executing dorado demultiplexing in {input.bam} with options '{params.dorado_options}'" >> {log}
+        echo "and sample sheet {params.sample_sheet}" >> {log}
+
+        dorado duplex --output-dir {output.outdir} --sample-sheet {input.sample_sheet} {params.dorado_options} {input.bam} 2>> {log}
+        """
+
+
 rule basecalling_bam2fastq:
     input:
         bam = "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam",
