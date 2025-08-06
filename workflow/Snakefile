@@ -52,8 +52,7 @@ use rule vardict from snv_indels as snv_indels_vardict with:
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         regions=config.get("vardict", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        vcf=temp("snv_indels/vardict/"
-                 "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
+        vcf=temp("snv_indels/vardict/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
     params:
         extra=config.get("vardict", {}).get("extra", "-Q 1"),
         bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
@@ -198,10 +197,8 @@ use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/sniffles2/"
-                 "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
-        snf=temp("cnv_sv/sniffles2/"
-                 "{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
+        vcf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
+        snf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
     params:
         sample_id=lambda wildcards: f"{wildcards.sample}",
         tandem_repeats="",  # f'--tandem-repeats {config.get("sniffles2_call", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed"))}',
@@ -301,10 +298,9 @@ use rule filter_vcf from filtering as filtering_filter_vcf with:
     output:
         vcf=temp("{file}.filter.{tag}.vcf"),
     wildcard_constraints:
-        file="snv_indels\/bcbio_variation_recall_ensemble\/.+("
-        "ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
+        file="snv_indels\/bcbio_variation_recall_ensemble\/.+(ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
     params:
-        sample_name_regex=config.get("filter_vcf",{}).get("sample_name_regex","^([A-Za-z0-9-]+_T)$"),
+        sample_name_regex=config.get("filter_vcf", {}).get("sample_name_regex","^([A-Za-z0-9-]+_T)$"),
         filter_config=lambda wildcards: config["filter_vcf"][wildcards.tag],
     log:
         "{file}.filter.{tag}.log",
@@ -369,7 +365,7 @@ use rule multiqc from qc as qc_multiqc with:
     benchmark:
         repeat(
             "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html.benchmark.tsv",
-            config.get("multiqc", {}).get("benchmark_repeats", 1)
+            config.get("multiqc", {}).get("benchmark_repeats", 1),
         )
 
 
@@ -461,8 +457,7 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed_per_target with:
     input:
         bam="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        bed=lambda wildcards: os.path.join(config.get("bed_files",""), f"{wildcards.target}.bed".replace("_only",
-            "")),
+        bed=lambda wildcards: os.path.join(config.get("bed_files",""), f"{wildcards.target}.bed".replace("_only","")),
     output:
         bed=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz"),
         bed_csi=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz.csi"),
