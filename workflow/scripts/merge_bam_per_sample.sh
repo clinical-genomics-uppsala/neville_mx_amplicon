@@ -38,6 +38,12 @@ mkdir -p tmp
 cp header_units.tsv units.tsv
 cp header_samples.tsv samples.tsv
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
-    echo -e $sample_id$'\t'$( cat units_$alias.tsv | tail -1 | cut --complement --output-delimiter='\t' -d$'\t' -f1 ) >> units.tsv
+  echo -e $sample_id$'\t'$( cat units_$alias.tsv | tail -1 | cut --complement --output-delimiter='\t' -d$'\t' -f1 ) >> units.tsv
 	echo -e $sample_id$'\t'$( cat samples_$alias.tsv | tail -1 | cut --complement --output-delimiter='\t' -d$'\t' -f1 ) >> samples.tsv
+	rm -f units_$alias.tsv
+  rm -f samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet})
+
+# Start pipeline
+snakemake --profile profiles/slurm/ -s workflow/Snakefile \
+--configfile config/config.yaml --config runfolder=${runFolder}/${sampleId}/${runId} --notemp
