@@ -152,11 +152,9 @@ rule demux_dorado:
     resources:
         partition=config.get("demux_dorado",{}).get("partition",config["default_resources"]["partition"]),
         time=config.get("demux_dorado",{}).get("time",config["default_resources"]["time"]),
-        gres=config.get("demux_dorado",{}).get("gres"),
         threads=config.get("demux_dorado",{}).get("threads",config["default_resources"]["threads"]),
         mem_mb=config.get("demux_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("demux_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-        slurm_extra=config.get("demux_dorado",{}).get("slurm_extra"),
     threads: config.get("demux_dorado", {}).get("threads", config["default_resources"]["threads"]),
     benchmark:
         repeat(
