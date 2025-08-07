@@ -21,6 +21,9 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
 	  cd ${runFolder}/${batchId}/${runId}/bam_pass/${alias}
 	  ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
 	  samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam -b bam_list.txt
+	  cd ${runFolder}/${sample_id}/${runId}
+	  mkdir -p bam_pass
+	  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${alias}/* ./bam_pass/
 	fi
 	cd ${projFolder}
 	source .venv/bin/activate
