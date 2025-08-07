@@ -24,7 +24,8 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
 	fi
 	cd ${projFolder}
 	source .venv/bin/activate
-	hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f --default-barcode $barcode
+	hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
+	# --default-barcode $barcode
 	cp units.tsv units_$alias.tsv
 	cp samples.tsv samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet}) # skip header line while reading csv
