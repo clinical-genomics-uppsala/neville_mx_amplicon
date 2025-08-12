@@ -91,6 +91,7 @@ try:
 except AttributeError:
     samples = pd.read_table(config["samples_run"],dtype=str)["sample"].to_frame().set_index("sample",drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
+print(samples)
 
 ### Read and validate units file
 
