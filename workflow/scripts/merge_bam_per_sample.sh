@@ -64,4 +64,4 @@ done < <(tail -n +2 ${sampleSheet})
 
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
---configfile config/config.yaml --config runfolder=${runFolder}/${batchId}/${runId} --notemp
+--configfile config/config.yaml --config runfolder=${runFolder}/${batchId}/${runId} --config multisample=True --notemp
