@@ -15,28 +15,30 @@ csvDelim=$'\t'
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
-    echo "$sample_id has barcode $alias."
-    mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
-    echo "Merging BAM files found for $sample_id into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
-    if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
-	then
-	  cd ${runFolder}/${batchId}/${runId}/bam_pass/${alias}
-	  ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
-	  samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam -b bam_list.txt
-	  cd ${runFolder}/${sample_id}/${runId}
-	  mkdir -p bam_pass
-	  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${alias}/* ./bam_pass/
-	fi
-	cd ${projFolder}
-	# Set merged BAM file as input for the pipeline to start
+  echo "$sample_id has barcode $alias."
+  mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
+  echo "Merging BAM files found for $sample_id into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
+  if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
+  then
+    cd ${runFolder}/${batchId}/${runId}/bam_pass/${alias}
+    ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
+    samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam -b bam_list.txt
+  fi
+  # Restructure time-stepped BAM files to be per sample
+  cd ${runFolder}/${sample_id}/${runId}
+  mkdir -p bam_pass
+  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${alias}/* ./bam_pass/
+  # Prep
+  cd ${projFolder}
+  # Set merged BAM file as input for the pipeline to start
   mkdir -p basecalling/dorado_duplex
   cp ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam ./basecalling/dorado_duplex/${sample_id}_T_reads.basecalled.bam
-	# Create input files to the pipeline per sample
-	source .venv/bin/activate
-	hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
-	# --default-barcode $barcode
-	cp units.tsv units_$alias.tsv
-	cp samples.tsv samples_$alias.tsv
+  # Create input files to the pipeline per sample
+  source .venv/bin/activate
+  hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
+  # --default-barcode $barcode
+  cp units.tsv units_$alias.tsv
+  cp samples.tsv samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet}) # skip header line while reading csv
 
 cat units.tsv | head -1 > header_units.tsv
