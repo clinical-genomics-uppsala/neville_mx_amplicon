@@ -120,7 +120,7 @@ rule mosdepth_overlap_timestep:
     params:
         prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
     wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
         nbatch=r"\d+",
     resources:
         partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
@@ -157,7 +157,7 @@ rule mosdepth_merge_timestep:
     output:
         csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
     wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
         nbatch=r"\d+",
     resources:
         partition=config.get("default_resources").get("partition"),
@@ -190,7 +190,7 @@ rule copy_mosdepth_merge_timestep:
         outdir=temp(directory("results/mosdepth/timestep_coverage")),
         # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
     wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
+        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
         nbatch=r"\d+",
     resources:
         partition=config["default_resources"]["partition"],
