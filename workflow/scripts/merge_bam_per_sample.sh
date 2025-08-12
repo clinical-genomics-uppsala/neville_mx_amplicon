@@ -54,9 +54,9 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
   # echo -e $sample_id$'\t'$( cat samples_$alias.tsv | tail -1 | cut --complement --output-delimiter='\t' -d$'\t' -f1 ) >> samples.tsv
   echo -e $sample_id >> samples.tsv
   rm -f units_$alias.tsv
-  # rm -f samples_$alias.tsv
+  rm -f samples_$alias.tsv
   rm -f header_units.tsv
-  # rm -f header_samples.tsv
+  rm -f header_samples.tsv
 done < <(tail -n +2 ${sampleSheet})
 
 # Start pipeline

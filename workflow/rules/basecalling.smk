@@ -142,11 +142,11 @@ rule duplex_basecalling_dorado:
 rule trim_dorado:
     input:
         bam="basecalling/dorado_duplex/{sample}_{type}_reads.basecalled.bam",
-        sample_sheet=config.get("sample_sheet"),
     output:
         bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
     params:
         dorado_options="--kit-name SQK-NBD114.24",
+        sample_sheet=config.get("sample_sheet"),
         outdir=directory(lambda wildcards, output: os.path.dirname(output.bam)),
     resources:
         partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
@@ -171,7 +171,6 @@ rule trim_dorado:
         echo "Dorado executed from $( which dorado )" > {log}
 
         echo "Executing dorado trimming in {input.bam} with options '{params.dorado_options}'" >> {log}
-        echo "and sample sheet {params.sample_sheet}" >> {log}
 
         dorado trim {input.bam} {params.dorado_options} > {output.bam} 2>> {log}
         """
