@@ -150,8 +150,10 @@ rule mosdepth_overlap_timestep:
 rule mosdepth_merge_timestep:
     input:
         expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
+            fname=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
+                "bam_pass"))[0],
+            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
+                "bam_pass"))[1],
             target=config.get("amplicons") + config.get("extra_regions"),
         ),
     output:
