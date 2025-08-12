@@ -38,11 +38,11 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
   hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
   # --default-barcode $barcode
   cp units.tsv units_$alias.tsv
-  cp samples.tsv samples_$alias.tsv
+  cat samples.tsv | cut -d$'\t' -f1 > samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet}) # skip header line while reading csv
 
 cat units.tsv | head -1 > header_units.tsv
-cat samples.tsv | head -1 > header_samples.tsv
+cat samples.tsv | cut -d$'\t' -f1 | head -1 > header_samples.tsv
 
 cd ${projFolder}
 mkdir -p tmp
