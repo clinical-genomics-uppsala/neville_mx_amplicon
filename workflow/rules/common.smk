@@ -86,7 +86,7 @@ validate(config, schema="../schemas/resources.schema.yaml")
 
 ### Read and validate samples file
 
-samples = pd.read_table(config["samples_run"], dtype=str).set_index("sample", drop=False)
+samples = pd.read_table(config["samples_run"], dtype=str)["sample"].set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
 
 ### Read and validate units file
