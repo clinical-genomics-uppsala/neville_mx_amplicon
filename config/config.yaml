@@ -24,9 +24,9 @@ reference:
     "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
 
 # All runs
-runfolder: "{{runfolder}}"
-batchid: "{{batchid}}"
-runid: "{{runid}}"
+#runfolder: "{{runfolder}}"
+#batchid: "{{batchid}}"
+#runid: "{{runid}}"
 sample_sheet: "{{samplesheet}}"
 raw_data: "pod5"
 
