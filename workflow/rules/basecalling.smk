@@ -146,8 +146,7 @@ rule trim_dorado:
         bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
     params:
         dorado_options="--kit-name SQK-NBD114.24",
-        sample_sheet=config.get("sample_sheet"),
-        outdir=directory(lambda wildcards, output: os.path.dirname(output.bam)),
+        # sample_sheet=config.get("sample_sheet"),
     resources:
         partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
         time=config.get("trim_dorado",{}).get("time",config["default_resources"]["time"]),
