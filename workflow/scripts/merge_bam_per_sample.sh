@@ -3,6 +3,9 @@
 
 # set -euox pipefail
 
+module load slurm-drmaa/1.1.4
+module load singularity/3.7.1
+module load snakemake/7.22.0
 module load samtools/1.17
 
 # Parse command line arguments
