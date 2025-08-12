@@ -25,6 +25,8 @@ reference:
 
 # All runs
 runfolder: "{{runfolder}}"
+batchid: "{{batchid}}"
+runid: "{{runid}}"
 sample_sheet: "{{samplesheet}}"
 raw_data: "pod5"
 

@@ -12,9 +12,13 @@ module load samtools/1.17
 projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon
 runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_MWash1_250804
 batchId=MWash1
-runId=20250804_1309_MN48987_FBB06783_fd3e24b1
+flowcellId=FBB06783
+# runId=20250804_1309_MN48987_FBB06783_fd3e24b1
 sampleSheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH1.csv
 csvDelim=$'\t'
+
+runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
+echo "runfolder: '${runFolder}/${batchId}/${runId}'" > runfolder.txt
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
@@ -64,4 +68,6 @@ done < <(tail -n +2 ${sampleSheet})
 
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
---configfile config/config.yaml --config runfolder=${runFolder}/${batchId}/${runId} --config multisample=True --notemp
+--configfile config/config.yaml \
+--config runfolder=${runFolder} --config batchid=${batchId} --config runid=${runId} --config multisample=True \
+--notemp

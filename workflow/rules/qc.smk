@@ -183,8 +183,10 @@ rule mosdepth_merge_timestep:
 rule copy_mosdepth_merge_timestep:
     input:
         expand("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
+            fname=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
+                "bam_pass"))[0],
+            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
+                "bam_pass"))[1],
         ),
     output:
         outdir=temp(directory("results/mosdepth/timestep_coverage")),
