@@ -17,7 +17,7 @@ include: "rules/prefiltering.smk"
 include: "rules/results_report.smk"
 
 
-ruleorder: pycoqc > basecalling_dorado
+# ruleorder: pycoqc > basecalling_dorado
 ruleorder: fetch_filtered_reads > dorado_align
 ruleorder: aligning_create_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
 ruleorder: mosdepth_overlap > qc_mosdepth_amplicons > varcall_clairs_to
