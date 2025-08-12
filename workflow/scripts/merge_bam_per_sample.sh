@@ -5,6 +5,7 @@
 
 module load samtools/1.17
 
+# Parse command line arguments
 projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon
 runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_MWash1_250804
 batchId=MWash1
@@ -12,6 +13,7 @@ runId=20250804_1309_MN48987_FBB06783_fd3e24b1
 sampleSheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH1.csv
 csvDelim=$'\t'
 
+# Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
     echo "$sample_id has barcode $alias."
     mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
@@ -26,6 +28,10 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
 	  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${alias}/* ./bam_pass/
 	fi
 	cd ${projFolder}
+	# Set merged BAM file as input for the pipeline to start
+  mkdir -p basecalling/dorado_duplex
+  cp ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam ./basecalling/dorado_duplex/${sample_id}_T_reads.basecalled.bam
+	# Create input files to the pipeline per sample
 	source .venv/bin/activate
 	hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
 	# --default-barcode $barcode
@@ -52,4 +58,4 @@ done < <(tail -n +2 ${sampleSheet})
 
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
---configfile config/config.yaml --config runfolder=${runFolder}/${sample_id}/${runId} --notemp
+--configfile config/config.yaml --config runfolder=${runFolder}/${batchId}/${runId} --notemp
