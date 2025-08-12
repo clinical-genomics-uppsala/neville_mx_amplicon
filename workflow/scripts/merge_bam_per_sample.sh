@@ -14,11 +14,11 @@ runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/C
 batchId=MWash1
 flowcellId=FBB06783
 # runId=20250804_1309_MN48987_FBB06783_fd3e24b1
+runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
+echo "runfolder: '${runFolder}/${batchId}/${runId}'" > runfolder.txt
 sampleSheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH1.csv
 csvDelim=$'\t'
 
-runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
-echo "runfolder: '${runFolder}/${batchId}/${runId}'" > runfolder.txt
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
