@@ -4,6 +4,15 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 
+def get_bam_pass_sample():
+    expr = lambda wildcards: expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
+            fname=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[0],
+            nbatch=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[1],
+            target=config.get("amplicons") + config.get("extra_regions"),
+        )
+    return expr
+
+
 rule pycoqc:
     input:
         seq_run_dir=config.get("runfolder")
@@ -149,13 +158,7 @@ rule mosdepth_overlap_timestep:
 
 rule mosdepth_merge_timestep:
     input:
-        expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
-                "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
-                "bam_pass"))[1],
-            target=config.get("amplicons") + config.get("extra_regions"),
-        ),
+        unpack(get_bam_pass_sample),
     output:
         csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
     wildcard_constraints:
@@ -184,12 +187,7 @@ rule mosdepth_merge_timestep:
 
 rule copy_mosdepth_merge_timestep:
     input:
-        expand("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
-                "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "{{sample}}", config["runid"],
-                "bam_pass"))[1],
-        ),
+        unpack(get_bam_pass_sample),
     output:
         outdir=temp(directory("results/mosdepth/timestep_coverage")),
         # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
