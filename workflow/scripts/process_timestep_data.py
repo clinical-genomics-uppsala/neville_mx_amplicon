@@ -1,7 +1,5 @@
 import os
 import subprocess
-import pandas as pd
-import pysam
 
 # This script creates and processes mosdepth summary files as well as it extracts relevant data for each target.
 
@@ -19,7 +17,6 @@ for bamfile in os.listdir(snakemake.input.bamdir):
     print("\r\nProcessing BAM file:", bamfile)
     if bamfile.endswith(".bam"):
         nbam = int(bamfile.split('_')[-1].replace(".bam", ""))
-        pysam.index(os.path.join(snakemake.input.bamdir, bamfile))
         for bedfile in os.listdir(snakemake.input.amplibed):
             target = bedfile.replace(".bed", "")
             # Create output directory for the current timestep
