@@ -15,7 +15,7 @@ def get_bam_pass_sample():
 
 rule pycoqc:
     input:
-        seq_run_dir=config.get("runfolder")
+        seq_run_dir=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid"))
     output:
         html=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.html"),
         json=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.json"),

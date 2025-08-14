@@ -1,10 +1,16 @@
 import os
 import pandas as pd
 
+"""
+For each timestep, this script aggregates the average coverage for each target from mosdepth summary files and writes the values to a CSV file.
+"""
+
+os.makedirs(snakemake.output.outdir, exist_ok=True)
+
 summaries = []
-for nbamdir in enumerate(os.listdir(snakemake.input.indir)):
+for nbamdir in os.listdir(snakemake.input.indir):
     for target in snakemake.config.get("amplicons") + snakemake.config.get("extra_regions"):
-        summary = os.path.join(nbamdir, f"{target}.mosdepth.summary.txt")
+        summary = os.path.join(snakemake.input.indir, nbamdir, f"{target}.mosdepth.summary.txt")
         if os.path.exists(summary):
             summaries.append(summary)
         else:

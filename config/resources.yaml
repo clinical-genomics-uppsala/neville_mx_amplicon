@@ -2,7 +2,7 @@
 
 default_resources:
   threads: 1
-  time: "00:05:00"
+  time: "12:00:00"
   mem_mb: 1024
   mem_per_cpu: 3072
   partition: "core"
@@ -60,7 +60,7 @@ vardict:
 
 mosdepth:
   partition: "core"
-  time: "00:05:00"
+  time: "00:30:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
