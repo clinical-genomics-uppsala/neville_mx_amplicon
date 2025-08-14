@@ -34,11 +34,6 @@ rule all:
 
 
 # Include modules
-module basecalling:
-    snakefile:
-        "workflow/basecalling.smk"
-
-
 module snv_indels:
     snakefile:
         github(

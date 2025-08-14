@@ -117,20 +117,13 @@ rule mosdepth_merge:
 
 rule mosdepth_overlap_timestep:
     input:
-        bam=os.path.join(config["runfolder"], "bam_pass/{fname}_{nbatch}.bam"),
-        bamidx=os.path.join(config["runfolder"], "bam_pass/{fname}_{nbatch}.bam.bai"),
-        amplibed=os.path.join(config.get("bed_files"), "{target}.bed"),
+        bamdir = os.path.join(config["runfolder"], "{sample}", config["runid"], "bam_pass"),
+        amplibed = [
+            f"{config.get('bed_files')}/{target}.bed"
+            for target in config.get("amplicons") + config.get("extra_regions")
+        ],
     output:
-        bed=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.regions.bed.gz"),
-        csi=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.regions.bed.gz.csi"),
-        glob=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.summary.txt"),
-    params:
-        prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
-        nbatch=r"\d+",
+        outdir = temp(directory("results/mosdepth/timestep/{sample}")),
     resources:
         partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
@@ -139,9 +132,9 @@ rule mosdepth_overlap_timestep:
         mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
     log:
-        "results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.log",
+        "results/mosdepth/timestep/{sample}.log",
     benchmark:
-        repeat("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.benchmark.tsv",
+        repeat("results/mosdepth/timestep/{sample}.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -150,20 +143,14 @@ rule mosdepth_overlap_timestep:
         """
         {rule}: Compute coverage with mosdepth for each amplicon.
         """
-    shell:
-        """
-        chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {resources.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.target} {input.bam} 2> {log}
-        """
+    script:
+        "../scripts/process_timestep_data.py"
 
 rule mosdepth_merge_timestep:
     input:
-        unpack(get_bam_pass_sample),
+        indir="results/mosdepth/timestep/{sample}",
     output:
-        csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
-        nbatch=r"\d+",
+        outdir=temp(directory("results/mosdepth/timestep_coverage/{sample}")),
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -174,9 +161,9 @@ rule mosdepth_merge_timestep:
     container:
         config.get("mosdepth_merge", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.log",
+        "results/mosdepth/timestep/{sample}/timestep_coverage.log",
     benchmark:
-        repeat("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.benchmark.tsv",
+        repeat("results/mosdepth/timestep/{sample}/timestep_coverage.benchmark.tsv",
             config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
         ),
     message:
@@ -185,47 +172,47 @@ rule mosdepth_merge_timestep:
         "../scripts/mosdepth_merge_timestep.py"
 
 
-rule copy_mosdepth_merge_timestep:
-    input:
-        unpack(get_bam_pass_sample),
-    output:
-        outdir=temp(directory("results/mosdepth/timestep_coverage")),
-        # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
-        nbatch=r"\d+",
-    resources:
-        partition=config["default_resources"]["partition"],
-        time=config["default_resources"]["time"],
-        threads=config["default_resources"]["threads"],
-        mem_mb=config["default_resources"]["mem_mb"],
-        mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-    threads: config["default_resources"]["threads"]
-    log:
-        "results/mosdepth/timestep_coverage/copy_timestep_coverage.log",
-    benchmark:
-        repeat("results/mosdepth/timestep_coverage/copy_timestep_coverage.benchmark.tsv",
-            config.get("copy_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
-        )
-    container:
-        config["default_container"]
-    message:
-        """
-        {rule}: Save all timestepped coverage with mosdepth for each amplicon.
-        """
-    shell:
-        """
-        mkdir -p {output.outdir} 2> {log}
-        for fcsv in {input}
-        do
-            cp $fcsv {output.outdir}/$( basename $fcsv ) 2>> {log}
-        done
-        """
+# rule copy_mosdepth_merge_timestep:
+#     input:
+#         unpack(get_bam_pass_sample),
+#     output:
+#         outdir=temp(directory("results/mosdepth/timestep_coverage")),
+#         # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
+#     wildcard_constraints:
+#         fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
+#         nbatch=r"\d+",
+#     resources:
+#         partition=config["default_resources"]["partition"],
+#         time=config["default_resources"]["time"],
+#         threads=config["default_resources"]["threads"],
+#         mem_mb=config["default_resources"]["mem_mb"],
+#         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
+#     threads: config["default_resources"]["threads"]
+#     log:
+#         "results/mosdepth/timestep_coverage/copy_timestep_coverage.log",
+#     benchmark:
+#         repeat("results/mosdepth/timestep_coverage/copy_timestep_coverage.benchmark.tsv",
+#             config.get("copy_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
+#         )
+#     container:
+#         config["default_container"]
+#     message:
+#         """
+#         {rule}: Save all timestepped coverage with mosdepth for each amplicon.
+#         """
+#     shell:
+#         """
+#         mkdir -p {output.outdir} 2> {log}
+#         for fcsv in {input}
+#         do
+#             cp $fcsv {output.outdir}/$( basename $fcsv ) 2>> {log}
+#         done
+#         """
 
 
 rule plot_yield_timestep:
     input:
-        indir="results/mosdepth/timestep_coverage",
+        indir="results/mosdepth/timestep_coverage/{sample}",
     output:
         csv=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"),
         png=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"),
