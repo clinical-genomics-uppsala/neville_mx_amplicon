@@ -60,7 +60,7 @@ vardict:
 
 mosdepth:
   partition: "core"
-  time: "00:30:00"
+  time: "02:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
