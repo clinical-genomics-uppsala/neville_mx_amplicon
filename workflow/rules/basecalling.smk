@@ -143,7 +143,7 @@ if not config.get("multisample", False):
 #         """
 
 
-if not config.get("multisample", False):
+if config.get("multisample", False):
 
 
     rule trim_dorado:
