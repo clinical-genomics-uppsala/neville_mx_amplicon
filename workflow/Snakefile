@@ -185,10 +185,29 @@ module cnv_sv:
         github(
             "hydra-genetics/cnv_sv",
             path="workflow/Snakefile",
-            tag="v0.7.1",
+            tag="v0.9.0",
         )
     config:
         config
+
+
+use rule scanitd from cnv_sv as cnv_sv_scanitd with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("reference", {}).get("fasta", ""),
+    output:
+        vcf=temp("cnv_sv/scanitd/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"),
+    params:
+        region_bed=config.get("scanitd", {}).get("bed_file", ""),
+        extra=config.get("scanitd", {}).get("extra", ""),
+    log:
+        "cnv_sv/scanitd/{sample}_{type}.vcf.log",
+    benchmark:
+        repeat(
+            "cnv_sv/scanitd/{sample}_{type}.output.benchmark.tsv",
+            config.get("scanitd", {}).get("benchmark_repeats", 1),
+        )
 
 
 use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
