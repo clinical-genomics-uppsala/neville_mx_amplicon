@@ -10,7 +10,10 @@ if not config.get("multisample", False):
 
     rule basecalling_dorado:
         input:
-            pod5 = os.path.join(config.get("runfolder"),
+            pod5 = os.path.join(
+                config.get("runfolder"),
+                config.get("batchid"),
+                config.get("runid"),
                 config.get("raw_data")
             ),
             ref_data = config.get("ref_data")
@@ -53,12 +56,15 @@ if not config.get("multisample", False):
 
     rule duplex_basecalling_dorado:
         input:
-            pod5 = os.path.join(config.get("runfolder"),
+            pod5=os.path.join(
+                config.get("runfolder"),
+                config.get("batchid"),
+                config.get("runid"),
                 config.get("raw_data")
             ),
-            ref_data = config.get("ref_data")
+            ref_data=config.get("ref_data"),
         output:
-            bam = temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam")
+            bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam")
         params:
             dir_models=config.get("dir_models"),
             dorado_model=config.get("dorado_model"),

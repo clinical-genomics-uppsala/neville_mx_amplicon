@@ -16,9 +16,12 @@ projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/amplicon
 # batchId=M21
 # runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Mwash3_250811
 # batchId=Mwash3
-runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Wash4_250813
-batchId=Wash4
-flowcellId=FBB06783
+# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Wash4_250813
+# batchId=Wash4
+# flowcellId=FBB06783
+runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M19-4_250717_RO
+batchId=D22-07885
+flowcellId=ARZ557
 
 runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
 echo "runfolder: '${runFolder}/${batchId}/${runId}'" > runfolder.txt
