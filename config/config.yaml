@@ -156,7 +156,7 @@ samtools:
   container: "docker://hydragenetics/samtools:1.21"
 
 scanitd:
-  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+  bed_file: "-t /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
   container: "docker://hydragenetics/scanitd:0.9.2"
 
 sequali:
