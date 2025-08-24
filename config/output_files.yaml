@@ -52,6 +52,10 @@
      output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.scanitd.vcf"
      input: "cnv_sv/scanitd/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"
 
+   - name: "savana_var_calls"
+     output: "Results/Data/{sample}_{type}_savana.done"
+     input: "cnv_sv/savana/{sample}_{type}_savana.done"
+
 ##   - name: "snv_indels_var_calls_ensembled"
 ##     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
 ##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
