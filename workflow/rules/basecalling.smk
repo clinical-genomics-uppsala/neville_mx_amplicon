@@ -25,13 +25,13 @@ if not config.get("multisample", False):
             dorado_model = config.get("dorado_model"),
             dorado_options = "--device cuda:all --trim adapters"  # --trim all
         resources:
-            partition=config.get("dorado_basecalling",{}).get("partition",config["default_resources"]["partition"]),
-            time=config.get("dorado_basecalling",{}).get("time",config["default_resources"]["time"]),
-            gres=config.get("dorado_basecalling",{}).get("gres"),
-            threads=config.get("dorado_basecalling",{}).get("threads",config["default_resources"]["threads"]),
-            mem_mb=config.get("dorado_basecalling",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("dorado_basecalling",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-            slurm_extra=config.get("dorado_basecalling",{}).get("slurm_extra"),
+            partition=config.get("dorado_basecalling", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("dorado_basecalling", {}).get("time", config["default_resources"]["time"]),
+            gres=config.get("dorado_basecalling", {}).get("gres"),
+            threads=config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("dorado_basecalling", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("dorado_basecalling", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            slurm_extra=config.get("dorado_basecalling", {}).get("slurm_extra"),
         threads: config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
         container:
             config.get("dorado", {}).get("container", config["default_container"])
@@ -72,13 +72,13 @@ if not config.get("multisample", False):
             dorado_options="--device cuda:all",
             trim_options="--no-trim-primers --sequencing-kit SQK-LSK114"
         resources:
-            partition=config.get("dorado_basecalling",{}).get("partition",config["default_resources"]["partition"]),
-            time=config.get("dorado_basecalling",{}).get("time",config["default_resources"]["time"]),
-            gres=config.get("dorado_basecalling",{}).get("gres"),
-            threads=config.get("dorado_basecalling",{}).get("threads",config["default_resources"]["threads"]),
-            mem_mb=config.get("dorado_basecalling",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("dorado_basecalling",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-            slurm_extra=config.get("dorado_basecalling",{}).get("slurm_extra"),
+            partition=config.get("dorado_basecalling", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("dorado_basecalling", {}).get("time", config["default_resources"]["time"]),
+            gres=config.get("dorado_basecalling", {}).get("gres"),
+            threads=config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("dorado_basecalling", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("dorado_basecalling", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            slurm_extra=config.get("dorado_basecalling", {}).get("slurm_extra"),
         threads: config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
         benchmark:
             repeat(
@@ -86,7 +86,7 @@ if not config.get("multisample", False):
                 config.get("dorado_basecalling", {}).get("benchmark_repeats", 1)
             )
         container:
-            config.get("dorado",{}).get("container",config["default_container"])
+            config.get("dorado", {}).get("container", config["default_container"])
         log:
             "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.log"
         message:
@@ -108,7 +108,7 @@ if not config.get("multisample", False):
 if config.get("multisample", False):
 
 
-    rule duplex_basecalling_no_trim_dorado:
+    rule duplex_basecalling_multisamples_dorado:
         input:
             pod5=os.path.join(
                 config.get("runfolder"),
@@ -118,32 +118,31 @@ if config.get("multisample", False):
             ),
             ref_data=config.get("ref_data"),
         output:
-            bam = temp("basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam")
+            bam = temp("basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam")
         params:
             dir_models=config.get("dir_models"),
             dorado_model=config.get("dorado_model"),
-            dorado_options="--device cuda:all --no-trim",
-            kit_name="--sequencing-kit SQK-NBD114.24",
+            dorado_options="--device cuda:all",
         resources:
-            partition=config.get("dorado_basecalling",{}).get("partition",config["default_resources"]["partition"]),
-            time=config.get("dorado_basecalling",{}).get("time",config["default_resources"]["time"]),
-            gres=config.get("dorado_basecalling",{}).get("gres"),
-            threads=config.get("dorado_basecalling",{}).get("threads",config["default_resources"]["threads"]),
-            mem_mb=config.get("dorado_basecalling",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("dorado_basecalling",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-            slurm_extra=config.get("dorado_basecalling",{}).get("slurm_extra"),
+            partition=config.get("dorado_basecalling", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("dorado_basecalling", {}).get("time", config["default_resources"]["time"]),
+            gres=config.get("dorado_basecalling", {}).get("gres"),
+            threads=config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("dorado_basecalling", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("dorado_basecalling", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            slurm_extra=config.get("dorado_basecalling", {}).get("slurm_extra"),
         threads: config.get("dorado_basecalling", {}).get("threads", config["default_resources"]["threads"]),
         benchmark:
             repeat(
-                "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam.benchmark.tsv",
+                "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam.benchmark.tsv",
                 config.get("dorado_basecalling", {}).get("benchmark_repeats", 1)
             )
         container:
-            config.get("dorado",{}).get("container",config["default_container"])
+            config.get("dorado", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam.log"
+            "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam.log"
         message:
-            "{rule}: Duplex basecalling with dorado from POD5 files. ONT adapters will NOT be trimmed."
+            "{rule}: Duplex basecalling with dorado inmultiplexed samples from POD5 files. ONT adapters will NOT be trimmed."
         shell:
             """
             echo "Dorado executed from $( which dorado )" > {log}
@@ -153,7 +152,7 @@ if config.get("multisample", False):
             echo "POD5 files found:"
             ls -la {input.pod5}/ >> {log}
 
-            dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {params.kit_name} {input.pod5}/ > {output.bam} 2>> {log}
+            dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ > {output.bam} 2>> {log}
             """
 
 
@@ -166,11 +165,11 @@ if config.get("multisample", False):
             dorado_options="--sequencing-kit SQK-NBD114.24",
             # sample_sheet=config.get("sample_sheet"),
         resources:
-            partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
-            time=config.get("trim_dorado",{}).get("time",config["default_resources"]["time"]),
-            threads=config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
-            mem_mb=config.get("trim_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("trim_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+            partition=config.get("trim_dorado", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("trim_dorado", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("trim_dorado", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("trim_dorado", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("trim_dorado", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
         threads: config.get("trim_dorado", {}).get("threads", config["default_resources"]["threads"]),
         benchmark:
             repeat(
@@ -178,7 +177,7 @@ if config.get("multisample", False):
                 config.get("trim_dorado", {}).get("benchmark_repeats", 1)
             )
         container:
-            config.get("dorado",{}).get("container",config["default_container"])
+            config.get("dorado", {}).get("container", config["default_container"])
         log:
             "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.log"
         message:
@@ -199,11 +198,11 @@ rule basecalling_bam2fastq:
     output:
         fastq=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq")
     resources:
-        partition=config.get("samtools",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("samtools",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("samtools",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("samtools",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("samtools",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("samtools", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("samtools", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
     benchmark:
         repeat(
@@ -227,11 +226,11 @@ rule basecalling_compress_fastq:
     output:
         fastqgz=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.gz")
     resources:
-        partition=config.get("samtools",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("samtools",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("samtools",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("samtools",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("samtools",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("samtools", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("samtools", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
     benchmark:
         repeat(
