@@ -159,6 +159,6 @@ rule varcall_savana:
     shell:
         """
         savana --help
-        savana to savana to --tumour {input.bam} --outdir {output.outdir} --ref {input.ref} --g1000_vcf {params.g1000_vcf} &> {log}
+        savana to --tumour {input.bam} --outdir {output.outdir} --ref {input.ref} --g1000_vcf {params.g1000_vcf} --chromosomes 2 5 13 15 17 &> {log}
         touch {output.dummy}
         """

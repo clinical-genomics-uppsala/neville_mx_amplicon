@@ -160,6 +160,7 @@ savana:
 
 scanitd:
   bed_file: "-t /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
+  extra: "--ao 3 --aln-mismatches 5 --ins-mismatches 7"
   container: "docker://hydragenetics/scanitd:0.9.2"
 
 sequali:
