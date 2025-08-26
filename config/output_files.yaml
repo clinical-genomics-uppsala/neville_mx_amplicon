@@ -24,9 +24,9 @@
 ##     output: "results/bed/{target}.bed"
 ##     input: "os.path.join(config["bed_files"], "{target}.bed")"
 
-#   - name: "dorado_ubam"
-#     output: "Results/Data/multi_samples_reads.basecalled.bam"
-#     input: "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam"
+   - name: "dorado_ubam"
+     output: "Results/Data/multi_samples_reads.basecalled.bam"
+     input: "basecalling/dorado_duplex_no_trim/multi_samples_reads.basecalled.bam"
 
    - name: "filtered_fastq"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"
