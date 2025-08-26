@@ -156,6 +156,45 @@ if config.get("multisample", False):
             """
 
 
+    rule demux_dorado:
+        input:
+            bam="basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam",
+        output:
+            bam=temp(directory("basecalling/dorado_demux/")),
+            dummy="basecalling/dorado_demux/dummy.out",
+        params:
+            dorado_options="--sequencing-kit SQK-NBD114.24",
+            sample_sheet=config.get("sample_sheet"),
+        resources:
+            partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
+            time=config.get("trim_dorado",{}).get("time",config["default_resources"]["time"]),
+            threads=config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
+            mem_mb=config.get("trim_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("trim_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        threads: config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
+        benchmark:
+            repeat(
+                "basecalling/dorado_demux/demux.output.bam.benchmark.tsv",
+                config.get("trim_dorado",{}).get("benchmark_repeats",1)
+            )
+        container:
+            config.get("dorado",{}).get("container",config["default_container"])
+        log:
+            "basecalling/dorado_demux/demux.output.bam.log"
+        message:
+            "{rule}: Demultiplexing samples with dorado."
+        shell:
+            """
+            echo "Dorado executed from $( which dorado )" > {log}
+
+            echo "Executing dorado demultiplexing in {input.bam} with options '{params.dorado_options}'" >> {log}
+
+            dorado demux --sample-sheet {params.sample_sheet} --output-dir {output.bam} {input.bam} 2>> {log}
+            
+            touch {output.dummy}
+            """
+
+
     rule trim_dorado:
         input:
             bam="basecalling/dorado_duplex/{sample}_{type}_reads.basecalled.bam",
