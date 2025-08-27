@@ -28,9 +28,9 @@
      output: "Results/Data/multi_samples_reads.basecalled.bam"
      input: "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam"
 
-   - name: "dorado_demux_bam"
-     output: "Results/basecalling/dorado_demux/dummy.out"
-     input: "basecalling/dorado_demux/dummy.out"
+#   - name: "dorado_demux_bam"
+#     output: "Results/basecalling/dorado_demux/dummy.out"
+#     input: "basecalling/dorado_demux/dummy.out"
 
    - name: "filtered_fastq"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"
