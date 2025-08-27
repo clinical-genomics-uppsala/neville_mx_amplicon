@@ -161,7 +161,6 @@ if config.get("multisample", False):
             bam="basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam",
         output:
             bamdir=temp(directory("basecalling/dorado_demux/")),
-            # dummy=temp("basecalling/dorado_demux/{units_run_id}_{sample}.bam"),
         params:
             dorado_options="--kit-name SQK-NBD114-24",
             samplesheet=config.get("samplesheet"),
@@ -195,7 +194,7 @@ if config.get("multisample", False):
         input:
             bamdir="basecalling/dorado_demux/",
         output:
-            bam_renamed=temp("basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam"),
+            bam_renamed=temp("basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam"),
         resources:
             partition=config.get("rename_demux_bam", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("rename_demux_bam", {}).get("time", config["default_resources"]["time"]),
@@ -205,34 +204,34 @@ if config.get("multisample", False):
         threads: config.get("rename_demux_bam", {}).get("threads", config["default_resources"]["threads"]),
         benchmark:
             repeat(
-                "basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam.benchmark.tsv",
+                "basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam.benchmark.tsv",
                 config.get("rename_demux_bam", {}).get("benchmark_repeats", 1)
             )
         container:
             config.get("rename_demux_bam", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam.log"
+            "basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam.log"
         message:
             "{rule}: Renaming demultiplexed BAM files to include sample name and read type."
         shell:
             """
+            outdir=$(dirname {output.bam_renamed})
             bams=$(ls {input.bamdir}/*.bam)
             for bam in $bams; do
                 filename=$(basename -- "$bam")
                 sample=$(echo $filename | cut -d'_' -f2)
-                cp $bam $sample_{wildcards.type}_reads.basecalled.bam
+                cp $bam $outdir/$sample_{wildcards.type}_reads.basecalled.bam
             done
             """
 
 
     rule trim_dorado:
         input:
-            bam="basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam",
+            bam="basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam",
         output:
             bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:
-            dorado_options="--sequencing-kit SQK-NBD114.24",
-            # sample_sheet=config.get("sample_sheet"),
+            dorado_options="--sequencing-kit SQK-NBD114-24",
         resources:
             partition=config.get("trim_dorado", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("trim_dorado", {}).get("time", config["default_resources"]["time"]),
