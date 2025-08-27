@@ -220,7 +220,8 @@ if config.get("multisample", False):
             for bam in $bams; do
                 filename=$(basename -- "$bam")
                 sample=$(echo $filename | cut -d'_' -f2)
-                cp $bam $outdir/$sample_{wildcards.type}_reads.basecalled.bam
+                echo "Renaming BaM file for $sample and writing to $outdir" > {log} 
+                cp $bam $outdir/$sample_{wildcards.type}_reads.basecalled.bam >> {log} 2>&1
             done
             """
 
