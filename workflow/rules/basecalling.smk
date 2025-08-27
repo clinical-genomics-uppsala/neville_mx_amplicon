@@ -161,7 +161,7 @@ if config.get("multisample", False):
             bam="basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam",
         output:
             bamdir=temp(directory("basecalling/dorado_demux/")),
-            dummy=temp("basecalling/dorado_demux/{units_run_id}_{sample}.bam"),
+            # dummy=temp("basecalling/dorado_demux/{units_run_id}_{sample}.bam"),
         params:
             dorado_options="--kit-name SQK-NBD114-24",
             samplesheet=config.get("samplesheet"),
@@ -174,13 +174,13 @@ if config.get("multisample", False):
         threads: config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
         benchmark:
             repeat(
-                "basecalling/dorado_demux/{units_run_id}_{sample}.bam.benchmark.tsv",
+                "basecalling/dorado_demux/output.bam.benchmark.tsv",
                 config.get("demux_dorado",{}).get("benchmark_repeats",1)
             )
         container:
             config.get("dorado", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_demux/{units_run_id}_{sample}.bam.log"
+            "basecalling/dorado_demux/output.bam.log"
         message:
             "{rule}: Demultiplexing samples with dorado."
         shell:
@@ -193,9 +193,7 @@ if config.get("multisample", False):
 
     rule rename_demux_bam:
         input:
-            bam=expand("basecalling/dorado_demux/{units_run_id}_{{sample}}.bam",
-                        units_run_id=config.get("units_run_id", "")
-            ),
+            bamdir="basecalling/dorado_demux/",
         output:
             bam_renamed=temp("basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam"),
         resources:
@@ -218,7 +216,12 @@ if config.get("multisample", False):
             "{rule}: Renaming demultiplexed BAM files to include sample name and read type."
         shell:
             """
-            mv {input.bam} {output.bam_renamed}
+            bams=$(ls {input.bamdir}/*.bam)
+            for bam in $bams; do
+                filename=$(basename -- "$bam")
+                sample=$(echo $filename | cut -d'_' -f2)
+                cp $bam $sample_{wildcards.type}_reads.basecalled.bam
+            done
             """
 
 
