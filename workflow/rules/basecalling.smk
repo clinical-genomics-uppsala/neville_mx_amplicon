@@ -217,11 +217,12 @@ if config.get("multisample", False):
             """
             outdir=$(dirname {output.bam_renamed})
             bams=$(ls {input.bamdir}/*.bam)
+            echo $bams > {log}
             for bam in $bams; do
                 filename=$(basename -- "$bam")
                 sample=$(echo $filename | cut -d'_' -f2 | cut -d'.' -f1)
-                echo "Renaming BaM file for $sample and writing to $outdir" > {log} 
-                cp $bam $outdir/$sample_{wildcards.type}_reads.basecalled.bam >> {log} 2>&1
+                echo "Renaming BAM file for $sample and writing to $outdir" &>> {log} 
+                cp $bam $outdir/$sample_{wildcards.type}_reads.basecalled.bam &>> {log}
             done
             """
 
