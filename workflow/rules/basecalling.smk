@@ -160,8 +160,8 @@ if config.get("multisample", False):
         input:
             bam="basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam",
         output:
-            bam=temp(directory("basecalling/dorado_demux/")),
-            dummy="basecalling/dorado_demux/dummy.out",
+            bamdir=temp(directory("basecalling/dorado_demux/")),
+            dummy=temp("basecalling/dorado_demux/{units_run_id}_{sample}.bam"),
         params:
             dorado_options="--kit-name SQK-NBD114-24",
             samplesheet=config.get("samplesheet"),
@@ -174,27 +174,57 @@ if config.get("multisample", False):
         threads: config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
         benchmark:
             repeat(
-                "basecalling/dorado_demux/demux.output.bam.benchmark.tsv",
+                "basecalling/dorado_demux/{units_run_id}_{sample}.bam.benchmark.tsv",
                 config.get("demux_dorado",{}).get("benchmark_repeats",1)
             )
         container:
             config.get("dorado", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_demux/demux.output.bam.log"
+            "basecalling/dorado_demux/{units_run_id}_{sample}.bam.log"
         message:
             "{rule}: Demultiplexing samples with dorado."
         shell:
             """
             echo "Dorado executed from $( which dorado )" > {log}
             echo "Executing dorado demultiplexing in {input.bam} with sample sheet '{params.samplesheet}'" >> {log}
-            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bam} {params.dorado_options} {input.bam} &>> {log}
-            touch {output.dummy}
+            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bamdir} {params.dorado_options} {input.bam} &>> {log}
+            """
+
+
+    rule rename_demux_bam:
+        input:
+            bam=expand("basecalling/dorado_demux/{units_run_id}_{{sample}}.bam",
+                        units_run_id=config.get("units_run_id", "")
+            ),
+        output:
+            bam_renamed=temp("basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam"),
+        resources:
+            partition=config.get("rename_demux_bam", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("rename_demux_bam", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("rename_demux_bam", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("rename_demux_bam", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("rename_demux_bam", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        threads: config.get("rename_demux_bam", {}).get("threads", config["default_resources"]["threads"]),
+        benchmark:
+            repeat(
+                "basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam.benchmark.tsv",
+                config.get("rename_demux_bam", {}).get("benchmark_repeats", 1)
+            )
+        container:
+            config.get("rename_demux_bam", {}).get("container", config["default_container"])
+        log:
+            "basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam.log"
+        message:
+            "{rule}: Renaming demultiplexed BAM files to include sample name and read type."
+        shell:
+            """
+            mv {input.bam} {output.bam_renamed}
             """
 
 
     rule trim_dorado:
         input:
-            bam="basecalling/dorado_duplex/{sample}_{type}_reads.basecalled.bam",
+            bam="basecalling/dorado_demux/{sample}_{type}_reads.basecalled.bam",
         output:
             bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:

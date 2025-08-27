@@ -113,6 +113,8 @@ units = (
 
 validate(units, schema="../schemas/units.schema.yaml")
 
+config["units_run_id"] = list(units["run_id"].unique())
+
 ### Read and validate output file
 
 with open(config["output"]) as output:
