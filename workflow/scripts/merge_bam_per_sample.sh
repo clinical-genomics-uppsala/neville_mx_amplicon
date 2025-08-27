@@ -23,7 +23,7 @@ flowcellId=FBB06783
 runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
 echo "runfolder: '${runFolder}/${batchId}/${runId}'" > runfolder.txt
 sampleSheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH.csv
-csvDelim=$'\t'
+csvDelim=','
 
 
 # Merge BAM files and p per sample and create input files for the pipeline
