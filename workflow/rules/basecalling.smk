@@ -163,8 +163,8 @@ if config.get("multisample", False):
             bam=temp(directory("basecalling/dorado_demux/")),
             dummy="basecalling/dorado_demux/dummy.out",
         params:
-            dorado_options="--sequencing-kit SQK-NBD114.24",
-            sample_sheet=config.get("sample_sheet"),
+            dorado_options="--kit-name SQK-NBD114-24",
+            samplesheet=config.get("samplesheet"),
         resources:
             partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
             time=config.get("trim_dorado",{}).get("time",config["default_resources"]["time"]),
@@ -175,10 +175,10 @@ if config.get("multisample", False):
         benchmark:
             repeat(
                 "basecalling/dorado_demux/demux.output.bam.benchmark.tsv",
-                config.get("trim_dorado",{}).get("benchmark_repeats",1)
+                config.get("demux_dorado",{}).get("benchmark_repeats",1)
             )
         container:
-            config.get("dorado",{}).get("container",config["default_container"])
+            config.get("dorado", {}).get("container", config["default_container"])
         log:
             "basecalling/dorado_demux/demux.output.bam.log"
         message:
@@ -186,11 +186,8 @@ if config.get("multisample", False):
         shell:
             """
             echo "Dorado executed from $( which dorado )" > {log}
-
-            echo "Executing dorado demultiplexing in {input.bam} with options '{params.dorado_options}'" >> {log}
-
-            dorado demux --sample-sheet {params.sample_sheet} --output-dir {output.bam} {input.bam} 2>> {log}
-            
+            echo "Executing dorado demultiplexing in {input.bam} with sample sheet '{params.samplesheet}'" >> {log}
+            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bam} {params.dorado_options} {input.bam} &>> {log}
             touch {output.dummy}
             """
 

@@ -75,5 +75,5 @@ done < <(tail -n +2 ${sampleSheet})
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml \
---config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True \
+--config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True samplesheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH.csv \
 --notemp

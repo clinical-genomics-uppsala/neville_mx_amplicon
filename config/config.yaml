@@ -28,7 +28,7 @@ runfolder: "{{runfolder}}"
 batchid: "{{batchid}}"
 runid: "{{runid}}"
 multisample: "{{multisample}}"
-sample_sheet: "{{samplesheet}}"
+samplesheet: "{{samplesheet}}"
 raw_data: "pod5"
 
 dir_models: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/dorado_models"
