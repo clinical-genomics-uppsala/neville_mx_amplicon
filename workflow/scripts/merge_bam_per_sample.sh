@@ -28,19 +28,19 @@ csvDelim=','
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
-  echo "$sample_id has barcode $alias."
+  echo "$sample_id has barcode $barcode."
   mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
   echo "Merging BAM files found for $sample_id into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
   if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
   then
-    cd ${runFolder}/${batchId}/${runId}/bam_pass/${alias}
+    cd ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}
     ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
     samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam -b bam_list.txt
   fi
   # Restructure time-stepped BAM files to be per sample
   cd ${runFolder}/${sample_id}/${runId}
   mkdir -p bam_pass
-  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${alias}/* ./bam_pass/
+  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}/* ./bam_pass/
   # Prep
   cd ${projFolder}
   # Set merged BAM file as input for the pipeline to start
