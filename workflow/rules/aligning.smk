@@ -210,3 +210,38 @@ rule aligning_create_bam_target_j3:
         samtools index {output.bam} 2>> {log}
         samtools view {output.bam} | cut -d$'\t' -f1 > {output.txt} 2>> {log}
         """
+
+
+rule aligning_samtools_calmd:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("ref_data"),
+    output:
+        bam=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam"),
+        bai=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai"),
+    log:
+        "alignment/dorado_align/{sample}_{type}_samtools_calmd.output.log",
+    benchmark:
+        repeat(
+            "alignment/dorado_align/{sample}_{type}_samtools_calmd.output.benchmark.tsv",
+            config.get("samtools", {}).get("benchmark_repeats", 1),
+        )
+    resources:
+        partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("samtools", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("samtools", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"])
+    container:
+        config.get("samtools", {}).get("container", config["default_container"])
+    message:
+        """
+        {rule}: Calculates MD and NM tags and add them to the BAM file. NM tag is required by ScanITD.
+        """
+    shell: 
+        """
+        samtools calmd -b --threads {resources.threads} {input.bam} {input.ref} > {output.bam} 2> {log}
+        samtools index {output.bam} 2>> {log}
+        """

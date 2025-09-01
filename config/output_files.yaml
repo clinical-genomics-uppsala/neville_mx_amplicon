@@ -23,11 +23,15 @@
 ##   - name: "bed_files_targets"
 ##     output: "results/bed/{target}.bed"
 ##     input: "os.path.join(config["bed_files"], "{target}.bed")"
-#
-##   - name: "dorado_ubam"
-##     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.bam"
-##     input: "basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam"
-#
+
+   - name: "dorado_ubam"
+     output: "Results/Data/multi_samples_reads.basecalled.bam"
+     input: "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam"
+
+#   - name: "dorado_demux_bam"
+#     output: "Results/basecalling/dorado_demux/dummy.out"
+#     input: "basecalling/dorado_demux/dummy.out"
+
    - name: "filtered_fastq"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"
      input: "prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz"
@@ -43,11 +47,19 @@
 ##   - name: "snv_indels_var_calls"
 ##     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
 ##     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+
+   - name: "sniffles2_var_calls"
+     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
+     input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
+
+#   - name: "scanitd_var_calls"
+#     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.scanitd.vcf"
+#     input: "cnv_sv/scanitd/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"
 #
-#   - name: "sniffles2_var_calls"
-#     output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
-#     input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
-#
+#   - name: "savana_var_calls"
+#     output: "Results/Data/{sample}_{type}_savana.done"
+#     input: "cnv_sv/savana/{sample}_{type}_savana.done"
+
 ##   - name: "snv_indels_var_calls_ensembled"
 ##     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
 ##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"

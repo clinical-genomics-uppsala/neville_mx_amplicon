@@ -113,6 +113,8 @@ units = (
 
 validate(units, schema="../schemas/units.schema.yaml")
 
+# config["units_run_id"] = list(units["run_id"].unique())
+
 ### Read and validate output file
 
 with open(config["output"]) as output:
@@ -132,8 +134,6 @@ wildcard_constraints:
     target = "|".join(config.get("amplicons") + config.get("extra_regions")).replace('+', '\+')  # escape the '+' which has a specific meaning in regex
 
 print("Targets: ", "|".join(config.get("amplicons") + config.get("extra_regions")))
-print("Key runfolder=", config.get("runfolder"))
-print("Key multisample=", config.get("multisample"))
 
 ### Define functions to be used in the workflow
 def read_bam_pass_names(*args):
