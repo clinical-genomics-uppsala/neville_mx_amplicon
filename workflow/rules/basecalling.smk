@@ -118,7 +118,7 @@ if config.get("multisample", False):
             ),
             ref_data=config.get("ref_data"),
         output:
-            bam = temp("basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam")
+            bam = temp(f"basecalling/dorado_duplex_multisamples/{config['batchid']}/multi_samples_reads.basecalled.bam")
         params:
             dir_models=config.get("dir_models"),
             dorado_model=config.get("dorado_model"),
@@ -158,19 +158,20 @@ if config.get("multisample", False):
 
     rule demux_dorado:
         input:
-            bam="basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam",
+            bam=f"basecalling/dorado_duplex_multisamples/{config['batchid']}/multi_samples_reads.basecalled.bam",
         output:
-            bamdir=temp(directory("basecalling/dorado_demux/")),
+            bamdir=temp(directory(os.path.join("basecalling/dorado_demux/", config['batchid']))),
+            done=temp(f"basecalling/dorado_demux/{config['batchid']}_demux.done"),
         params:
             dorado_options="--kit-name SQK-NBD114-24",
             samplesheet=config.get("samplesheet"),
         resources:
-            partition=config.get("trim_dorado",{}).get("partition",config["default_resources"]["partition"]),
-            time=config.get("trim_dorado",{}).get("time",config["default_resources"]["time"]),
-            threads=config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
-            mem_mb=config.get("trim_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("trim_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-        threads: config.get("trim_dorado",{}).get("threads",config["default_resources"]["threads"]),
+            partition=config.get("demux_dorado",{}).get("partition",config["default_resources"]["partition"]),
+            time=config.get("demux_dorado",{}).get("time",config["default_resources"]["time"]),
+            threads=config.get("demux_dorado",{}).get("threads",config["default_resources"]["threads"]),
+            mem_mb=config.get("demux_dorado",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("demux_dorado",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
+        threads: config.get("demux_dorado",{}).get("threads",config["default_resources"]["threads"]),
         benchmark:
             repeat(
                 "basecalling/dorado_demux/output.bam.benchmark.tsv",
@@ -186,13 +187,18 @@ if config.get("multisample", False):
             """
             echo "Dorado executed from $( which dorado )" > {log}
             echo "Executing dorado demultiplexing in {input.bam} with sample sheet '{params.samplesheet}'" >> {log}
-            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bamdir} {params.dorado_options} {input.bam} &>> {log}
+            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bamdir} {params.dorado_options} {input.bam} &  &>> {log}
+            process_id=$!
+            echo "Waiting for demux to complete... Process PID: $process_id"
+            wait $process_id
+            touch {output.done}
             """
 
 
     rule rename_demux_bam:
         input:
-            bamdir="basecalling/dorado_demux/",
+            bamdir=os.path.join("basecalling/dorado_demux/", config['batchid']),
+            done=f"basecalling/dorado_demux/{config['batchid']}_demux.done",
         output:
             bam_renamed=temp("basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam"),
         resources:

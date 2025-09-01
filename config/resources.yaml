@@ -30,7 +30,7 @@ demux_dorado:
 
 dorado_basecalling:
   partition: "GPU_low"
-  time: "00:30:00"
+  time: "02:30:00"
   gres: "--gres=gres:gpu:4"
   threads: 40
   mem_mb: 655360
