@@ -245,12 +245,13 @@ exonscov_table["headers"] = [
     {"header": "Avg Coverage"},
 ]
 bed_table = []
-with gzip.open(snakemake.input.mosdepth_exons, "rt") as regions_file:
-    for lline in regions_file:
+with gzip.open(snakemake.input.mosdepth_exons, "rt") as exons_file:
+    for lline in exons_file:
         line = lline.strip().split("\t")
+        print(line)
         gene = line[3].split("_")[0]
         transcript = "_".join(line[3].split("_")[1:3])
-        exon = str(line[3].split("_")[3])
+        exon = "" # str(line[3].split("_")[3])
         coverage_row = [line[0], line[1], line[2], gene, exon, transcript, float(line[4])]
         if coverage_row not in regionscov_table["data"]:
             exonscov_table["data"].append(coverage_row)
