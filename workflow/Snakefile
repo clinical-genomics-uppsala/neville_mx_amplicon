@@ -498,3 +498,31 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed_per_target with:
         )
     wildcard_constraints:
         type="N|T",
+
+
+use rule mosdepth_bed from qc as qc_mosdepth_bed_per_exon with:
+    input:
+        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bed=os.path.join(config.get("bed_files",""), "amplicons-exons-deepsomatic.bed"),
+    output:
+        bed=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz"),
+        bed_csi=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz.csi"),
+        coverage=temp("results/mosdepth_bed_per_exon/{sample}_{type}.per-base.bed.gz"),
+        coverage_csi=temp("results/mosdepth_bed_per_exon/{sample}_{type}.per-base.bed.gz.csi"),
+        thresholds=temp("results/mosdepth_bed_per_exon/{sample}_{type}.thresholds.bed.gz"),
+        glob=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.summary.txt"),
+    params:
+        thresholds=config.get("mosdepth_bed", {}).get("thresholds", ""),
+        extra=config.get("mosdepth", {}).get("extra", ""),
+    log:
+        "results/mosdepth_bed_per_exon/{sample}_{type}_thresholds.mosdepth.summary.txt.log",
+    benchmark:
+        repeat(
+            "results/mosdepth_bed_per_exon/{sample}_{type}_thresholds.mosdepth.summary.txt.benchmark.tsv",
+            config.get("mosdepth", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        type="N|T",

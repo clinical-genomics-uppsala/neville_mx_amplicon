@@ -112,6 +112,10 @@
      output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
      input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
 
+   - name: "mosdepth_bed_exon_summary"
+     output: "Results/Reports/{sample}_{type}_exons.mosdepth.summary.txt"
+     input: "results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.summary.txt"
+
    - name: "excel_report"
      output: "Results/Reports/{sample}_{type}.xlsx"
      input: "reports/xlsx/{sample}_{type}.xlsx"
