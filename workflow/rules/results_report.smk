@@ -48,17 +48,12 @@ rule results_report_xlsx:
         # TODO: replace the following with tab for Sniffles2
         vcf_cnv_svs="cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
         vcf_cnv_svs_tbi="cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz.tbi",
-        #################################################################################
-        # cll_vcf="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.artifact_annotated.background_annotated.filter.somatic_hard.filter.somatic.include.cll.vcf.gz",
-        # cll_tbi="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.artifact_annotated.background_annotated.filter.somatic_hard.filter.somatic.include.cll.vcf.gz.tbi",
-        # myeloid_vcf="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.artifact_annotated.background_annotated.filter.somatic_hard.filter.somatic.include.myeloid.vcf.gz",
-        # myeloid_tbi="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.artifact_annotated.background_annotated.filter.somatic_hard.filter.somatic.include.myeloid.vcf.gz.tbi",
         bedfile=os.path.join(config["bed_files"], "amplicons.bed"),
         deepsomatic_bed=config["deepsomatic"]["bed_file"],
         vardict_bed=config["vardict"]["bed_file"],
         # extra_bedfile=[config[caller]["bed_file"] for caller in ["deepsomatic", "vardict", "sniffles2"]
         mosdepth_summary="results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt",
-        # mosdepth_perbase="qc/mosdepth_bed_coding/{sample}_{type}.mosdepth.per-base.exon_bed.txt",
+        mosdepth_exons="results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.regions.bed.gz",
         mosdepth_regions="results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz",
         csv_counts="results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv",
         pool_counts=expand("results/mosdepth/{{sample}}_{{type}}_yield_pool_{pooln}.csv",
@@ -66,9 +61,7 @@ rule results_report_xlsx:
         ),
         yield_plot="results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"
         # mosdepth_thresholds="qc/mosdepth_bed_coding/{sample}_{type}.thresholds.bed.gz",
-        # picard_dupl="qc/picard_collect_duplication_metrics/{sample}_{type}.duplication_metrics.txt",
         # wanted_transcripts=config["results_report_xlsx"]["wanted_transcripts"],
-        # wait="versions/update_poppy.temp",
     output:
         xlsx="reports/xlsx/{sample}_{type}.xlsx",
     params:

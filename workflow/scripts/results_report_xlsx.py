@@ -233,6 +233,30 @@ with open(snakemake.input.mosdepth_summary, "r") as summary_file:
         # elif line[0] == "chrY_region":
         #     coverage["chrY_cov"] = line[3]
 
+logging.debug(f"Avg cov per exon/coding region from mosdepth {snakemake.input.mosdepth_exons=}")
+exonscov_table = {"data": [], "headers": []}
+exonscov_table["headers"] = [
+    {"header": "Chr"},
+    {"header": "Start"},
+    {"header": "Stop"},
+    {"header": "Gene"},
+    {"header": "Exon"},
+    {"header": "Transcript"},
+    {"header": "Avg Coverage"},
+]
+bed_table = []
+with gzip.open(snakemake.input.mosdepth_exons, "rt") as regions_file:
+    for lline in regions_file:
+        line = lline.strip().split("\t")
+        gene = line[3].split("_")[0]
+        transcript = "_".join(line[3].split("_")[1:3])
+        exon = str(line[3].split("_")[3])
+        coverage_row = [line[0], line[1], line[2], gene, exon, transcript, float(line[4])]
+        if coverage_row not in regionscov_table["data"]:
+            exonscov_table["data"].append(coverage_row)
+        if line[0:5] not in bed_table:
+            bed_table.append(line[0:5])
+
 
 """ xlsx file with sheets """
 logging.info(f"Creating xlsx file {snakemake.output.xlsx}")
@@ -248,9 +272,8 @@ worksheet_snv = workbook.add_worksheet("SNV_Indels")
 worksheet_sv = workbook.add_worksheet("SVs")
 # worksheet_intron = workbook.add_worksheet("Intron")
 # worksheet_syno = workbook.add_worksheet("Synonymous")
-# worksheet_lowcov = workbook.add_worksheet("Low Coverage")
 worksheet_cov = workbook.add_worksheet("Coverage")
-# worksheet_qci = workbook.add_worksheet("QCI")
+worksheet_exonscov = workbook.add_worksheet("Exon Coverage")
 
 
 empty_list = ["", "", "", "", "", ""]
@@ -375,7 +398,10 @@ else:
     table_area = "A" + str(i) + column_end + str(i + 1)
     table_area_data = "A" + str(i + 1) + column_end + str(i + 1)
 
-worksheet_snv.add_table(table_area, {"columns": snv_table["headers"], "style": "Table Style Light 1"})
+worksheet_snv.add_table(table_area, {"columns": snv_table["headers"],
+                                     "style": "Table Style Light 1",
+                                     "autofilter": False
+                                     })
 cond_formula = "=LEFT($A" + str(i + 1) + ', 4)<>"PASS"'
 worksheet_snv.conditional_format(table_area_data, {"type": "formula", "criteria": cond_formula, "format": format_orange})
 
@@ -430,7 +456,11 @@ if True:
         structv_table_area = "A" + str(i) + column_end + str(i + 1)
         structv_table_area_data = "A" + str(i + 1) + column_end + str(i + 1)
 
-    worksheet_sv.add_table(structv_table_area, {"columns": structv_table["headers"], "style": "Table Style Light 1"})
+    worksheet_sv.add_table(structv_table_area,
+                           {"columns": structv_table["headers"],
+                            "style": "Table Style Light 1",
+                            "autofilter": False
+                            })
     cond_formula = "=LEFT($A" + str(i + 1) + ', 4)<>"PASS"'
     worksheet_sv.conditional_format(structv_table_area_data, {"type": "formula", "criteria": cond_formula, "format": format_orange})
 
@@ -457,7 +487,7 @@ worksheet_cov.write(3, 0, "Average coverage of each region in amplicons-bedfile"
 top_row = 6
 tab_margin = 3  # leave 3-1=2 blank lines/columns between tables
 
-"""Table coverage per region"""
+"""Table coverage per amplicon"""
 cov_tab_params = {"first_col": "A",
                   "last_col": convert_columns_to_letter(len(regionscov_table["headers"])),
                   "width": len(regionscov_table["headers"]),
@@ -472,7 +502,9 @@ cov_table_area = f"{cov_tab_params['first_col']}{cov_tab_params['offset_top']}" 
 worksheet_cov.add_table(
     cov_table_area, {"data": regionscov_table["data"],
                      "columns": [{"header": hd["header"], "format": float_format} for hd in regionscov_table["headers"]],
-                     "style": "Table Style Light 1"}
+                     "style": "Table Style Light 1",
+                     "autofilter": False
+                     }
 )
 
 """Table estimated counts per amplicon"""
@@ -491,6 +523,7 @@ worksheet_cov.add_table(
     counts_table_area, {"data": targetcounts_table["data"],
                         "columns": targetcounts_table["headers"],
                         "style": "Table Style Light 1",
+                        "autofilter": False
                         }
                         # "total_row": True}
 )
@@ -513,7 +546,9 @@ for p, tab_pool in enumerate(poolcounts_table):
     worksheet_cov.add_table(
         pools_table_area, {"data": tab_pool["data"],
                            "columns": tab_pool["headers"],
-                           "style": "Table Style Light 1"}
+                           "style": "Table Style Light 1",
+                           "autofilter": False
+                           }
     )
 
 """Lineplot with sequencing throughput"""
@@ -522,38 +557,25 @@ worksheet_cov.insert_image(f"{convert_columns_to_letter(len(regionscov_table['he
                            {"x_scale": 0.65, "y_scale": 0.85}
                            )
 
-# """ QCI sheet """
-# logging.debug(f"QCI sheet")
-# qci_table_header = [
-#     "DNA nr",
-#     "Chromosome",
-#     "Position",
-#     "Gene Region",
-#     "Gene Symbol",
-#     "Transcript ID",
-#     "Transcript Variant",
-#     "Protein Variant",
-#     "Variant Findings",
-#     "Sample Genotype Quality",
-#     "Read Depth",
-#     "Allele Fraction",
-#     "Translation Impact",
-#     "dbSNP ID",
-#     "1000 Genomes Frequency",
-#     "ExAC Frequency",
-#     "HGMD",
-#     "COSMIC ID",
-#     "Artefacts_without_ASXL1",
-#     "ASXL1_variant_filter",
-# ]
-# worksheet_qci.set_column("C:C", 10)
-# worksheet_qci.write("A1", "Results from QCI", format_heading)
-# worksheet_qci.write_row("A2", empty_list, format_line)
-#
-# worksheet_qci.write("A5", "Analysen utfördes i enlighet med dokumentationen.")
-# worksheet_qci.write("A6", "Eventuella avvikelser: ")
-#
-# worksheet_qci.write_row(9, 0, qci_table_header, format_table_heading)
+""" Exon coverage sheet"""
+logging.debug(f"Exon coverage sheet")
+worksheet_exonscov.set_column(1, 2, 10)
+worksheet_exonscov.set_column(5, 5, 15)
+worksheet_exonscov.write(0, 0, "Average Coverage per Exon", format_heading)
+worksheet_exonscov.write_row(1, 0, empty_list, format_line)
+worksheet_exonscov.write(2, 0, "Sample: " + str(sample))
+worksheet_exonscov.write(3, 0, "Average coverage of each region in exon-bedfile")
+
+column_end = ":" + convert_columns_to_letter(len(exonscov_table["headers"]))
+table_area = "A6" + column_end + str(len(exonscov_table["data"]) + 6)
+
+worksheet_exonscov.add_table(
+    table_area, {"data": exonscov_table["data"],
+                 "columns": exonscov_table["headers"],
+                 "style": "Table Style Light 1",
+                 "autofilter": False
+                 }
+)
 
 workbook.close()
 logging.info(f"All done!")
