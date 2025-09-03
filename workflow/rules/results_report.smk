@@ -53,7 +53,7 @@ rule results_report_xlsx:
         vardict_bed=config["vardict"]["bed_file"],
         # extra_bedfile=[config[caller]["bed_file"] for caller in ["deepsomatic", "vardict", "sniffles2"]
         mosdepth_summary="results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt",
-        mosdepth_exons="results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.regions.bed.gz",
+        mosdepth_exons="results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz",
         mosdepth_regions="results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz",
         csv_counts="results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv",
         pool_counts=expand("results/mosdepth/{{sample}}_{{type}}_yield_pool_{pooln}.csv",
