@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # To run script:
-# bash start_marvin.sh... <path_to_the_runFolder> <sample_ID> <flowcell_ID>
-# Example: bash workflow/scripts/start_marvin.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM10 D21-06478 AWJ762
+# bash start_marvin_single.sh... <path_to_the_runFolder> <sample_ID> <flowcell_ID>
+# Example: bash workflow/scripts/start_marvin_single.sh /projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM10 D21-06478 AWJ762
 
 set -euox pipefail
 

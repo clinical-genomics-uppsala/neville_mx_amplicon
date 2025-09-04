@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # To run script:
-# bash start_marvin.sh... <path_to_the_runFolder>
+# bash start_marvin_single.sh... <path_to_the_runFolder>
 
 set -euo pipefail
 
