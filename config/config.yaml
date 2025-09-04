@@ -107,6 +107,11 @@ mosdepth_bed:
   container: "docker://hydragenetics/mosdepth:0.3.2"
   thresholds: "1,5,100,500,1000"
 
+mosdepth_exons:
+  container: "docker://hydragenetics/mosdepth:0.3.6"
+  bed: "exon_coverage.bed"
+  thresholds: "1,5,100,500,1000"
+
 multiqc:
   container: "docker://hydragenetics/multiqc:1.25.1" # sequali requires 1.25.1, fixes for HsMetrics require 1.21
   reports:
