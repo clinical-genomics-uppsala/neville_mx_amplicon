@@ -327,26 +327,6 @@ use rule filter_vcf from filtering as filtering_filter_vcf with:
         repeat("{file}.filter.{tag}.vcf.benchmark.tsv", config.get("filter_vcf", {}).get("benchmark_repeats", 1))
 
 
-# use rule bcftools_view from filtering as filtering_bcftools_view with:
-#     input:
-#         vcf="{file}.{caller}.vcf.gz",
-#     output:
-#         vcf=temp("{file}.{caller}.bcftools_view.vcf.gz"),
-#     params:
-#         extra=lambda wildcards: config.get("bcftools_view",{}) \
-#                                     .get("filter", {}) \
-#                                     .get(f"{wildcards.caller}","").get("extra", "")
-#     log:
-#         "{file}.{caller}.bcftools_view.vcf.log",
-#     benchmark:
-#         repeat("{file}.{caller}.bcftools_view.vcf.benchmark.tsv",
-#             config.get("bcftools_view",{}).get("benchmark_repeats",1))
-#     wildcard_constraints:
-#         file="snv_indels\/.+_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped", # "(clairs_to|vardict|deepsomatic)\/.*",
-#         caller="(clairs_to|vardict|deepsomatic)"
-## The wrapper for bcftools does not seem to work here, likely version mismatch.
-
-
 module qc:
     snakefile:
         github(
@@ -504,7 +484,7 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed_per_exon with:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        bed=os.path.join(config.get("mosdepth_exons", {}), config.get("bed", "")),
+        bed=os.path.join(config.get("bed_files", ""), config.get("mosdepth_exons", {}).get("bed", "")),
     output:
         bed=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz"),
         bed_csi=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz.csi"),
