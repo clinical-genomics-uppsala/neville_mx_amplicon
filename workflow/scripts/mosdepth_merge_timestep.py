@@ -7,8 +7,8 @@ For each timestep, this script aggregates the average coverage for each target f
 
 os.makedirs(snakemake.output.outdir, exist_ok=True)
 
-summaries = []
 for nbamdir in os.listdir(snakemake.input.indir):
+    summaries = []
     for target in snakemake.config.get("amplicons") + snakemake.config.get("extra_regions"):
         summary = os.path.join(snakemake.input.indir, nbamdir, f"{target}.mosdepth.summary.txt")
         if os.path.exists(summary):
