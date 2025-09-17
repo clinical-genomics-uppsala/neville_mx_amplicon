@@ -11,7 +11,7 @@ with open(snakemake.log, "w") as log:
     for nbamdir in os.listdir(snakemake.input.indir):
         print(os.path.join(snakemake.input.indir, nbamdir), file=log)
         if os.path.isdir(os.path.join(snakemake.input.indir, nbamdir)):  # skip files that might be in the input directory
-            print(nbamdir, file=log)
+            print(nbamdir, file=snakemake.log)
             summaries = []
             for target in snakemake.config.get("amplicons") + snakemake.config.get("extra_regions"):
                 summary = os.path.join(snakemake.input.indir, nbamdir, f"{target}.mosdepth.summary.txt")
