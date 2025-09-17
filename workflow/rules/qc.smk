@@ -161,9 +161,9 @@ rule mosdepth_merge_timestep:
     container:
         config.get("mosdepth_merge", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/timestep/{sample}/timestep_coverage.log",
+        "results/mosdepth/timestep_coverage/{sample}/timestep_coverage.log",
     benchmark:
-        repeat("results/mosdepth/timestep/{sample}/timestep_coverage.benchmark.tsv",
+        repeat("results/mosdepth/timestep_coverage/{sample}/timestep_coverage.benchmark.tsv",
             config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
         ),
     message:
