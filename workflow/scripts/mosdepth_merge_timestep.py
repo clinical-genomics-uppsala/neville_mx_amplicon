@@ -9,25 +9,26 @@ os.makedirs(snakemake.output.outdir, exist_ok=True)
 
 for nbamdir in os.listdir(snakemake.input.indir):
     if os.path.isdir(nbamdir): # skip files that might be in the input directory
+        print(nbamdir, file=snakemake.log)
         summaries = []
         for target in snakemake.config.get("amplicons") + snakemake.config.get("extra_regions"):
             summary = os.path.join(snakemake.input.indir, nbamdir, f"{target}.mosdepth.summary.txt")
             if os.path.exists(summary):
                 summaries.append(summary)
             else:
-                print(f"Warning: {summary} does not exist. Skipping.")
+                print(f"Warning: {summary} does not exist. Skipping.", file=snakemake.log)
 
         cols = ["length", "bases", "mean", "target"]
         df = pd.concat([pd.read_csv(summary, sep='\t')
                        .assign(target=os.path.basename(summary).replace(".mosdepth.summary.txt", ""))
                         for summary in summaries
                         ])
-        print(df)
+        print(df, file=snakemake.log)
         try:
             df = df[df["chrom"] == "total_region"].loc[:, cols]
         except KeyError:  # this might not be necessary
             df = pd.DataFrame([0.0, 0.0, 0.0, 0.0], columns=cols)
-        print(df)
+        print(df, file=snakemake.log)
         try:
             df.set_index("target", inplace=True)
         except AttributeError:  # if pd.Series is returned
