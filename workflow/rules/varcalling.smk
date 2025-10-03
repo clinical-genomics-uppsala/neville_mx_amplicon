@@ -11,7 +11,7 @@ rule varcall_clairs_to:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
+        bed=config.get("clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         snv=temp("snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz"),
         indel=temp("snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz"),

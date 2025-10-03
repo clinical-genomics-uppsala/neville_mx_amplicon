@@ -80,6 +80,7 @@ clairs_to:
   platform: "ont_r10_dorado_sup_5khz"
   snv_min_af: 0.005
   indel_min_af: 0.005
+  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-clairs-to.bed"
 
 deepsomatic:
   container: "docker://google/deepsomatic:1.9.0"
