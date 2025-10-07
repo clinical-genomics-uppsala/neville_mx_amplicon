@@ -28,7 +28,7 @@ flowcellId=$3
 # flowcellId=FBB06783
 
 runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
-sampleSheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH.csv
+sampleSheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv
 csvDelim=','
 
 
@@ -81,5 +81,6 @@ done < <(tail -n +2 ${sampleSheet})
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml \
---config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True samplesheet=${runFolder}/${batchId}/${runId}/SAMPLESHEET_ONT_MWASH.csv \
+--config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True \
+ samplesheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv \
 --notemp
