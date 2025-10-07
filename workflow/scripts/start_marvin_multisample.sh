@@ -82,5 +82,5 @@ done < <(tail -n +2 ${sampleSheet})
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml \
 --config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True \
- samplesheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv \
+ samplesheet="${sampleSheet}" \
 --notemp
