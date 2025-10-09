@@ -73,7 +73,7 @@ bcftools_view:
     vardict:
       extra: "-i 'QUAL>120'"
     sniffles2:
-      extra: "-R /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+      extra: "-R /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-sniffles2.bed"
 
 clairs_to:
   container: "docker://hkubal/clairs-to:latest"
