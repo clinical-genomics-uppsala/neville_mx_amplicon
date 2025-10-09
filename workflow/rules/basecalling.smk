@@ -152,7 +152,7 @@ if config.get("multisample", False):
             echo "POD5 files found:"
             ls -la {input.pod5}/ >> {log}
 
-            dorado duplex {params.dir_models}/{params.dorado_model} {params.dorado_options} {input.pod5}/ > {output.bam} 2>> {log}
+            dorado duplex {params.dorado_model} {params.dorado_options} {input.pod5}/ > {output.bam} 2>> {log}
             """
 
 
