@@ -34,7 +34,7 @@ csvDelim=','
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
-  echo "$sample_id has barcode $barcode."
+  echo "${sample_id} has barcode $barcode."
   mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
   echo "Merging BAM files found for $sample_id into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
   if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
