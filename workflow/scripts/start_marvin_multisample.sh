@@ -34,9 +34,9 @@ csvDelim=','
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
-  echo "${sample_id} has barcode $barcode."
+  # echo "${sample_id} has barcode $barcode."
   mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
-  echo "Merging BAM files found for $sample_id into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
+  echo "Merging BAM files found for ${sample_id} into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
   if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
   then
     cd ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}
@@ -55,7 +55,6 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
   # Create input files to the pipeline per sample
   source .venv/bin/activate
   hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
-  # --default-barcode $barcode
   cp units.tsv units_$alias.tsv
   cat samples.tsv | cut -d$'\t' -f1 > samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet}) # skip header line while reading csv
