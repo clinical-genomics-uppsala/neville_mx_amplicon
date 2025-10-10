@@ -119,7 +119,8 @@ if config.get("multisample", False):
             ),
             ref_data=config.get("ref_data"),
         output:
-            bam = temp(f"basecalling/dorado_duplex_multisamples/{config['batchid']}/multi_samples_reads.basecalled.bam")
+            bam = temp(f"basecalling/dorado_duplex_multisamples/"
+                       f"{config['batchid']}/multi_samples_reads.basecalled.bam"),
         params:
             # dir_models=config.get("dorado_duplex_multisamples", {}).get("dirmodels", config.get("dir_models")),
             model=config.get("dorado_duplex_multisamples", {}).get("model", ""),
@@ -154,8 +155,8 @@ if config.get("multisample", False):
             echo "and model {params.model}" >> {log}
             echo "POD5 files found:"
             ls -la {input.pod5}/ >> {log}
-
             dorado duplex {params.model} {params.trim} {params.extra} {input.pod5}/ > {output.bam} 2>> {log}
+            rm -rf {params.model}
             """
 
 
@@ -245,7 +246,7 @@ if config.get("multisample", False):
         output:
             bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:
-            trim=config.get("trim_dorado", {}).get("trim", ""),
+            trim=config.get("dorado_trim", {}).get("trim", ""),
         resources:
             partition=config.get("trim_dorado", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("trim_dorado", {}).get("time", config["default_resources"]["time"]),
