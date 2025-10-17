@@ -66,6 +66,7 @@ rule aligning_bam_sort:
     wrapper:
         "0.2.0/bio/samtools/sort"
 
+
 rule aligning_bam_index:
     input:
         "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.bam",
