@@ -3,6 +3,11 @@ __copyright__ = "Copyright 2024, Camille Clouard"
 __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
+
+
 rule filtlong:
     input:
         "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.gz"
@@ -36,6 +41,7 @@ rule filtlong:
         """
         filtlong --min_length {params.min_length} --max_length {params.max_length} --min_mean_q 30 --keep_percent 75 {input}  2> {log} | gzip > {output.fastq}
         """
+
 
 rule fetch_filtered_reads:
     input:
@@ -71,6 +77,7 @@ rule fetch_filtered_reads:
         samtools view -bo {output.bam} -N ^{output.txt} {input.fastq2} 2> {log}
         samtools fastq {output.bam} | gzip > {output.fastq} 2>> {log}
         """
+
 
 rule fetch_too_short_too_long_reads:
     input:

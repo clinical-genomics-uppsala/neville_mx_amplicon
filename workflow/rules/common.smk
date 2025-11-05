@@ -14,6 +14,7 @@ import re
 from datetime import datetime
 from snakemake.utils import validate
 from snakemake.utils import min_version
+from snakemake.logging import logger
 
 from hydra_genetics.utils.resources import load_resources
 from hydra_genetics.utils.samples import *
@@ -30,6 +31,8 @@ from hydra_genetics.utils.software_versions import touch_software_version_file
 from hydra_genetics.utils.software_versions import use_container
 
 min_version("7.8.0")
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
 
 ### Set and validate config file
 
@@ -91,7 +94,7 @@ try:
 except AttributeError:
     samples = pd.read_table(config["samples_run"],dtype=str)["sample"].to_frame().set_index("sample",drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
-print(samples)
+
 
 ### Read and validate units file
 
@@ -113,8 +116,6 @@ units = (
 
 validate(units, schema="../schemas/units.schema.yaml")
 
-# config["units_run_id"] = list(units["run_id"].unique())
-
 ### Read and validate output file
 
 with open(config["output"]) as output:
@@ -133,9 +134,10 @@ wildcard_constraints:
     report="amplicons",
     target = "|".join(config.get("amplicons") + config.get("extra_regions")).replace('+', '\+')  # escape the '+' which has a specific meaning in regex
 
-print("Targets: ", "|".join(config.get("amplicons") + config.get("extra_regions")))
+logger.info("\nTargets: " + "|".join(config.get("amplicons") + config.get("extra_regions")))
 
 ### Define functions to be used in the workflow
+
 def read_bam_pass_names(*args):
     bamdir = os.path.join(*args)
     names = []

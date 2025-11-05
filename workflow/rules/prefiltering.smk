@@ -3,6 +3,11 @@ __copyright__ = "Copyright 2024, Camille Clouard"
 __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
+
+
 rule filtering_bcftools_view:
     input:
         vcf="snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",

@@ -6,6 +6,9 @@ __license__ = "GPL-3"
 import os.path
 
 from hydra_genetics.utils.software_versions import get_pipeline_version
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
 # rule results_report_bedtools_intersect:

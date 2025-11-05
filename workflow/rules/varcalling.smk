@@ -4,6 +4,9 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 import os
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
 rule varcall_clairs_to:

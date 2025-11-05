@@ -4,8 +4,12 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 import os
+from snakemake.logging import logger
 
-# Rules to be run on single-sequenced samples
+logger.info(f"\n{workflow.snakefile} is being parsed")
+
+
+# Rules to be run on single-sequenced samples e.g. on Flongle flowcells
 if not config.get("multisample", False):
 
 
@@ -21,7 +25,6 @@ if not config.get("multisample", False):
         output:
             bam = temp("basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam")
         params:
-            # dir_models=config.get("dorado_basecaller", {}).get("dirmodels", config.get("dir_models")),
             model=config.get("dorado_basecaller",{}).get("model",""),
             trim=config.get("dorado_basecaller",{}).get("trim",""),
             extra=config.get("dorado_basecaller",{}).get("extra",""),
@@ -68,7 +71,6 @@ if not config.get("multisample", False):
         output:
             bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam")
         params:
-            # dir_models=config.get("dorado_duplex", {}).get("dirmodels", config.get("dir_models")),
             model=config.get("dorado_duplex",{}).get("model", ""),
             trim=config.get("dorado_duplex",{}).get("trim",""),
             extra=config.get("dorado_duplex",{}).get("extra",""),
@@ -106,7 +108,7 @@ if not config.get("multisample", False):
             """
 
 
-# Rules to be run on multiplexed samples
+# Rules to be run on multiplexed samples e.g. sequenced on MinION flowcells
 if config.get("multisample", False):
 
 

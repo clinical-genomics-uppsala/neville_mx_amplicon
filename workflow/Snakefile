@@ -4,6 +4,10 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 import os
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
+logger.info(f"\nCache location for the modules imported from GitHub: {workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics")
 
 
 # Include pipeline specific rules
@@ -43,6 +47,9 @@ module snv_indels:
         )
     config:
         config
+
+
+logger.info(f"\n{workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics/{list(workflow.modules.keys())[-1]} module is being parsed")
 
 
 use rule gatk_mutect2 from snv_indels as snv_indels_gatk_mutect2 with:
@@ -120,23 +127,6 @@ use rule vt_normalize from snv_indels as snv_indels_vt_normalize with:
         )
 
 
-# rule merge_af_complex_variants:
-#     input:
-#         vcf="snv_indels/{caller}/{sample}_{type}.normalized.sorted.vcf.gz",
-#         tabix="snv_indels/{caller}/{sample}_{type}.normalized.sorted.vcf.gz.tbi",
-#     output:
-#         vcf=temp("snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz"),
-#     params:
-#         merge_method=config.get("merge_af_complex_variants", {}).get("merge_method", "skip"),
-#     log:
-#         "snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz.log",
-#     benchmark:
-#         repeat(
-#             "snv_indels/{caller}/{sample}_{type}.normalized.merged_af.vcf.gz.benchmark.tsv",
-#             config.get("merge_af_complex_variants", {}).get("benchmark_repeats", 1),
-#         )
-
-
 use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_recall_ensemble with:
     input:
         vcfs=expand(
@@ -156,7 +146,6 @@ use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_var
     params:
         support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
         sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
-    # get_bvre_params_sort_order,
     log:
         "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz.log",
     benchmark:
@@ -212,6 +201,9 @@ module cnv_sv:
         )
     config:
         config
+
+
+logger.info(f"\n{workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics/{list(workflow.modules.keys())[-1]} module is being parsed")
 
 
 use rule scanitd from cnv_sv as cnv_sv_scanitd with:
@@ -302,6 +294,9 @@ module annotation:
         config
 
 
+logger.info(f"\n{workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics/{list(workflow.modules.keys())[-1]} module is being parsed")
+
+
 use rule vep from annotation as annotation_vep with:
     input:
         cache=config.get("vep", {}).get("vep_cache", ""),
@@ -330,6 +325,9 @@ module filtering:
         )
     config:
         config
+
+
+logger.info(f"\n{workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics/{list(workflow.modules.keys())[-1]} module is being parsed")
 
 
 use rule filter_vcf from filtering as filtering_filter_vcf with:
@@ -362,6 +360,9 @@ module qc:
 
 
 use rule * from qc as qc_*
+
+
+logger.info(f"\n{workflow.sourcecache.cache}/https/raw.githubusercontent.com/hydra-genetics/{list(workflow.modules.keys())[-1]} module is being parsed")
 
 
 use rule multiqc from qc as qc_multiqc with:
@@ -529,3 +530,5 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed_per_exon with:
         )
     wildcard_constraints:
         type="N|T",
+
+logger.info(f"\n\n")
