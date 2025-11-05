@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.metrics import r2_score
 import os
 
-vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT.csv"
+vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_251029.csv"
 plot1 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio.png"
 
 multiqc_data = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/multiqc_data"
@@ -35,13 +35,15 @@ relabels = {
 len_data = []
 
 for seqrun in os.listdir(multiqc_data):
-    sample_name = seqrun.split('_')[0]
-    dfrun = pd.read_csv(os.path.join(multiqc_data, seqrun, "pycoqc_read_len_plot_Passing_Reads.txt"), sep="\t")
-    pycoqc_data = [tup.strip("()").replace(" ", "").split(",") for tup in dfrun.iloc[0].values[1:]]
-    # print(df1.iloc[0].values[1:][0].strip("()").replace(" ", "").split(","))
-    len_counts = pd.DataFrame(data=pycoqc_data, columns=["len", "count"], dtype=float)
-    len_counts["sample"] = sample_name
-    len_data.append(len_counts)
+    if seqrun.endswith("multiqc_amplicons_data"):
+        print(f"\nFetching data in {seqrun}")
+        sample_name = seqrun.split('_')[0]
+        dfrun = pd.read_csv(os.path.join(multiqc_data, seqrun, "pycoqc_read_len_plot_Passing_Reads.txt"), sep="\t")
+        pycoqc_data = [tup.strip("()").replace(" ", "").split(",") for tup in dfrun.iloc[0].values[1:]]
+        # print(df1.iloc[0].values[1:][0].strip("()").replace(" ", "").split(","))
+        len_counts = pd.DataFrame(data=pycoqc_data, columns=["len", "count"], dtype=float)
+        len_counts["sample"] = sample_name
+        len_data.append(len_counts)
 
 df1 = pd.concat(len_data, ignore_index=True)
 intervals = pd.cut(df1["len"], bins=len_bins)

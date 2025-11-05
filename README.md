@@ -296,7 +296,7 @@ Default container: ...
 
 ## :judge: Rule Graph
 
-![rule_graph_reference](images/rulegraph.pdf)
+![rule_graph_reference](images/neville_mx_amplicon.png)
 
 ## References
 
