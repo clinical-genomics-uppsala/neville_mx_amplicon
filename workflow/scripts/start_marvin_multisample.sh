@@ -79,9 +79,16 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
   rm -f header_samples.tsv
 done < <(tail -n +2 ${sampleSheet})
 
+# Measure running time
+STARTTIME=$(date +%s)
+
 # Start pipeline
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml \
 --config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True \
  samplesheet="${sampleSheet}" \
 --notemp
+
+ENDTIME=$(date +%s)
+RUNTIME=$((ENDTIME - STARTTIME))
+echo "Pipeline finished in $RUNTIME seconds."

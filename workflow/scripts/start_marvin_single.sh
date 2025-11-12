@@ -15,14 +15,11 @@ projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/amplicon
 runFolder=$1
 sampleId=$2
 flowcellId=$3
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO/D21-03300/20250117_1351_MN48987_AWY831_f6f7634a
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO
 runId=$( ls -1 "$runFolder/${sampleId}" | grep ${flowcellId} )
-# echo "runfolder: '${runFolder}/${sampleId}/${runId}'" > runfolder.txt
 
 ## Prepare the uBAM data to be able to create input files to the pipeline
 ## Merged uBAM must be in a terminal subfolder (no child directories) because create-input-files recursively searches for BAM files
-#do the following if no bam pass merged yet and encapsulate in sbatch
+# do the following if no bam pass merged yet
 mkdir -p "${runFolder}/${sampleId}/${runId}/bam_pass_merged"
 if [ ! -f "${runFolder}/${sampleId}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
 then
@@ -33,13 +30,19 @@ fi
 cd ${projFolder}
 
 # Start pipeline
-# --dry-run
-# --configfile config/config.yaml --config runfolder=${runFolder}/${sampleId}/${runId}\
 cd ${projFolder}
 mkdir -p tmp
 source .venv/bin/activate
 hydra-genetics create-input-files -d ${runFolder}/${sampleId}/${runId}/bam_pass_merged/ -t T -p ONT -f
+
+# Measure running time
+STARTTIME=$(date +%s)
+
 snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 --configfile config/config.yaml \
 --config runfolder=${runFolder} batchid=${sampleId} runid=${runId} multisample=False \
 --notemp
+
+ENDTIME=$(date +%s)
+RUNTIME=$((ENDTIME - STARTTIME))
+echo "Pipeline finished in $RUNTIME seconds."
