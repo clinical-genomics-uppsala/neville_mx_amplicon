@@ -151,6 +151,15 @@ def read_bam_pass_names(*args):
     return names, batches
 
 
+def get_bam_pass_sample():
+    expr = lambda wildcards: expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
+            fname=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[0],
+            nbatch=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[1],
+            target=config.get("amplicons") + config.get("extra_regions"),
+        )
+    return expr
+
+
 def compile_output_file_list(wildcards):
     outdir = pathlib.Path(output_spec.get("directory", "./"))
     output_files = []

@@ -125,7 +125,6 @@ if config.get("multisample", False):
             bam = temp(f"basecalling/dorado_duplex_multisamples/"
                        f"{config['batchid']}/multi_samples_reads.basecalled.bam"),
         params:
-            # dir_models=config.get("dorado_duplex_multisamples", {}).get("dirmodels", config.get("dir_models")),
             model=config.get("dorado_duplex_multisamples", {}).get("model", ""),
             trim=config.get("dorado_duplex_multisamples", {}).get("trim", ""),
             extra=config.get("dorado_duplex_multisamples", {}).get("extra", ""),

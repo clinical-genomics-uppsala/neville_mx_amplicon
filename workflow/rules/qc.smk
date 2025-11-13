@@ -8,15 +8,6 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
-def get_bam_pass_sample():
-    expr = lambda wildcards: expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[0],
-            nbatch=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[1],
-            target=config.get("amplicons") + config.get("extra_regions"),
-        )
-    return expr
-
-
 rule pycoqc:
     input:
         seq_run_dir=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid"))
@@ -176,44 +167,6 @@ rule mosdepth_merge_timestep:
         "../scripts/mosdepth_merge_timestep.py"
 
 
-# rule copy_mosdepth_merge_timestep:
-#     input:
-#         unpack(get_bam_pass_sample),
-#     output:
-#         outdir=temp(directory("results/mosdepth/timestep_coverage")),
-#         # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
-#     wildcard_constraints:
-#         fname=r"[A-Z]{3}\d{3,5}_pass_([a-z0-9]+_)+",
-#         nbatch=r"\d+",
-#     resources:
-#         partition=config["default_resources"]["partition"],
-#         time=config["default_resources"]["time"],
-#         threads=config["default_resources"]["threads"],
-#         mem_mb=config["default_resources"]["mem_mb"],
-#         mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-#     threads: config["default_resources"]["threads"]
-#     log:
-#         "results/mosdepth/timestep_coverage/copy_timestep_coverage.log",
-#     benchmark:
-#         repeat("results/mosdepth/timestep_coverage/copy_timestep_coverage.benchmark.tsv",
-#             config.get("copy_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
-#         )
-#     container:
-#         config["default_container"]
-#     message:
-#         """
-#         {rule}: Save all timestepped coverage with mosdepth for each amplicon.
-#         """
-#     shell:
-#         """
-#         mkdir -p {output.outdir} 2> {log}
-#         for fcsv in {input}
-#         do
-#             cp $fcsv {output.outdir}/$( basename $fcsv ) 2>> {log}
-#         done
-#         """
-
-
 rule plot_yield_timestep:
     input:
         indir="results/mosdepth/timestep_coverage/{sample}",
@@ -300,6 +253,7 @@ rule yield_per_pool:
         "{rule}: Calculate number of reads per pool"
     script:
         "../scripts/yield_per_pool.py"
+
 
 # Picard HsMetrics requires interval file
 rule bed_to_interval_list:
