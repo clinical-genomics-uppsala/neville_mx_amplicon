@@ -66,7 +66,7 @@ df_cum_qscores = (df_agg_qscores.set_index(["Flowcell", 'Q-Score'])
                   .groupby(["Flowcell"])["mean_pct_counts"]
                   .cumsum()).reset_index()
 df_q90 = df_cum_qscores[df_cum_qscores['mean_pct_counts'] <= 90].groupby('Flowcell').agg(Q90_QScore=('Q-Score', 'max'))
-df_q90_qscores = (df_cum_qscores[df_cum_qscores['mean_pct_counts'] >= 90].set_index(["Flowcell", 'Q-Score'])  # [df_agg_qscores['mean_pct_counts'] <= 90]
+df_q90_qscores = (df_cum_qscores[df_cum_qscores['mean_pct_counts'] >= 90].set_index(["Flowcell", 'Q-Score'])
                   .groupby(["Flowcell", 'Q-Score'])
                   .max()).reset_index()
 
@@ -76,29 +76,23 @@ print(df_q90_qscores)
 print("Q90 Q-Scores:")
 print(df_q90)
 
-#plt.figure(figsize=(10, 6))
 fig, g_agg = plt.subplots(1, sharex=True, figsize=(10, 6))
 sns.lineplot(data=df_agg_qscores, x='Q-Score', y='median_pct_counts', ax=g_agg,
              hue='Flowcell',
-             # style="Flowcell", markers=True, dashes=False,
              alpha=1)
 sns.lineplot(data=df_agg_qscores, x='Q-Score', y='mean_pct_counts', ax=g_agg,
              hue='Flowcell', linestyle='--',
              alpha=1)
 g_agg.fill_between(df_agg_qscores['Q-Score'][df_agg_qscores['Flowcell'] == 'Flongle'],
-                      df_agg_qscores['min_pct_counts'][df_agg_qscores['Flowcell'] == 'Flongle'],
-                      df_agg_qscores['max_pct_counts'][df_agg_qscores['Flowcell'] == 'Flongle'],
-                      alpha=0.2, color=sns.color_palette()[0],
-                      label='Flongle min-max range')
+                   df_agg_qscores['min_pct_counts'][df_agg_qscores['Flowcell'] == 'Flongle'],
+                   df_agg_qscores['max_pct_counts'][df_agg_qscores['Flowcell'] == 'Flongle'],
+                   alpha=0.2, color=sns.color_palette()[0],
+                   label='Flongle min-max range')
 g_agg.fill_between(df_agg_qscores['Q-Score'][df_agg_qscores['Flowcell'] == 'MinION'],
-                      df_agg_qscores['min_pct_counts'][df_agg_qscores['Flowcell'] == 'MinION'],
-                      df_agg_qscores['max_pct_counts'][df_agg_qscores['Flowcell'] == 'MinION'],
-                      alpha=0.2, color=sns.color_palette()[1],
-                      label='MinION min-max range')
-# sns.lineplot(df_cum_qscores, x='Q-Score', y='mean_pct_counts',
-#             hue='Flowcell',
-#             ax=g_agg[1],
-#             alpha=0.5)
+                   df_agg_qscores['min_pct_counts'][df_agg_qscores['Flowcell'] == 'MinION'],
+                   df_agg_qscores['max_pct_counts'][df_agg_qscores['Flowcell'] == 'MinION'],
+                   alpha=0.2, color=sns.color_palette()[1],
+                   label='MinION min-max range')
 handles, labels = g_agg.get_legend_handles_labels()
 print(handles, labels)
 plt.legend(handles=handles,

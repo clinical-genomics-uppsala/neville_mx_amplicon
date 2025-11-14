@@ -21,6 +21,6 @@ snv_indels/
 tmp/
 .tests/integration/test_data/mosdepth/
 workflow/scripts/plot_vcf_vaf.py
-workflow/scripts/plots_eha_abstract.py
-workflow/scripts/plots_eha_poster.py
+workflow/scripts/plots_vaf_concordance_ngs_ont.py
+workflow/scripts/plots_read_len_distribution.py
 workflow/scripts/pon_from_vcf.py

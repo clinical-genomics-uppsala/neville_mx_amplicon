@@ -2,7 +2,8 @@ import os
 import pandas as pd
 
 """
-For each timestep, this script aggregates the average coverage for each target from mosdepth summary files and writes the values to a CSV file.
+For each timestep, this script aggregates the average coverage for each target from mosdepth summary files
+and writes the values to a CSV file.
 """
 
 os.makedirs(snakemake.output.outdir, exist_ok=True)

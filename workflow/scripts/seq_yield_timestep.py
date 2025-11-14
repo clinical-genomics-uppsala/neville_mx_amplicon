@@ -30,12 +30,13 @@ prev_counts.index.name = "target"
 for i, batch in enumerate(batches):
     try:
         dfcov = pd.read_csv(os.path.join(indir, f"timestep{batch}_coverage_per_amplicon.csv")).set_index("target")
-        dfcov = dfcov.join(prev_counts, how="outer").drop("prev_counts", axis=1)  # expand axis in case an amplicon has not produced any read in the time interval
+        # expand axis in case an amplicon has not produced any read in the time interval
+        dfcov = dfcov.join(prev_counts, how="outer").drop("prev_counts", axis=1)
         dfcov = dfcov.loc[target_set].fillna(0.0)
         dfcov["timestep"] = (batch + 1) * 60  # * 10 if Flongle and * 60 if MinION
         dfstep = dfcov[["timestep", "mean"]]
         readcounts.append(dfcov)
-    except:  # if seqrun failed or is stopped before elapsed time of 24h, then there < 144 bam files
+    except FileNotFoundError:  # if seqrun failed or is stopped before elapsed time of 24h, then there < 144 bam files
         continue
 
 df = pd.concat(readcounts).reset_index(drop=False).set_index(["target", "timestep"])
@@ -49,7 +50,7 @@ for t in set(sorted(dfcum["timestep"])):
         t,
         0,
         0,
-        dfcum[(dfcum["target"] == "TP53_D2+J3") & (dfcum["timestep"] == t)]["mean"].values[0] \
+        dfcum[(dfcum["target"] == "TP53_D2+J3") & (dfcum["timestep"] == t)]["mean"].values[0]
         - dfcum[(dfcum["target"] == "TP53_D2_only") & (dfcum["timestep"] == t)]["mean"].values[0]
     ]))
     dfcum = pd.concat([dfcum,

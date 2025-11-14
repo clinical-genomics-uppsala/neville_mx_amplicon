@@ -178,14 +178,16 @@ with (gzip.open(snakemake.input.mosdepth_regions, "rt") as regions_file):
             bed_table.append(line[0:5])
 # TODO: Add caller-specific BED info
 
-logging.debug(f"Estimated reads counts per amplicon (avg coverage excluding overlapping regions) from mosdepth {snakemake.input.mosdepth_regions=}")
+logging.debug(f"Estimated reads counts per amplicon (avg coverage excluding overlapping regions)"
+              f" from mosdepth {snakemake.input.mosdepth_regions=}")
 targetcounts_table = {"data": [], "headers": []}
 targetcounts_table["headers"] = [
-    {"header": "Amplicon"},  # , "total_string": "Total counts"},
-    {"header": "Estimated Reads Counts"}  # , "total_function": "sum"},
+    {"header": "Amplicon"},
+    {"header": "Estimated Reads Counts"}
 ]
-targets = [a for a in snakemake.params.amplicons if a.find("TP53") < 0] + snakemake.params.extra_regions  # select the non overlapping regions
-csvcounts = pd.read_csv(snakemake.input.csv_counts, index_col="target")  #, sep="\t")
+# select the non overlapping regions
+targets = [a for a in snakemake.params.amplicons if a.find("TP53") < 0] + snakemake.params.extra_regions
+csvcounts = pd.read_csv(snakemake.input.csv_counts, index_col="target")
 csvcounts.index = csvcounts.index.str.replace(f"{sample}_{sample_type}_", "")
 tot_reads = 0
 for counts_row in csvcounts.itertuples():
@@ -250,7 +252,7 @@ with gzip.open(snakemake.input.mosdepth_exons, "rt") as exons_file:
         line = lline.strip().split("\t")
         print(line)
         gene = line[3].split("_")[0]
-        transcript = "" # "_".join(line[3].split("_")[1:3])
+        transcript = ""  # "_".join(line[3].split("_")[1:3])
         exon = str(line[3].split("_")[1])
         coverage_row = [line[0], line[1], line[2], gene, exon, transcript, float(line[4])]
         if coverage_row not in regionscov_table["data"]:
@@ -330,7 +332,7 @@ worksheet_overview.write_row(
     ],
     format_table_heading,
 )
-worksheet_overview.write_row(i + 1, 0, [sequenceid, sample, coverage["avg_cov"]])  # , str(duplication_rate)] + thresholds_results)
+worksheet_overview.write_row(i + 1, 0, [sequenceid, sample, coverage["avg_cov"]])
 i += 3
 
 worksheet_overview.write(i, 0, "Average coverage of regions in amplicons bedfile")
@@ -463,7 +465,9 @@ if True:
                             "autofilter": False
                             })
     cond_formula = "=LEFT($A" + str(i + 1) + ', 4)<>"PASS"'
-    worksheet_sv.conditional_format(structv_table_area_data, {"type": "formula", "criteria": cond_formula, "format": format_orange})
+    worksheet_sv.conditional_format(
+        structv_table_area_data, {"type": "formula", "criteria": cond_formula, "format": format_orange}
+    )
 
     worksheet_sv.autofilter(structv_table_area)
     worksheet_sv.filter_column("A", "Filter != PASS")
@@ -521,23 +525,26 @@ counts_table_area = f"{counts_tab_params['first_col']}{counts_tab_params['offset
     + f"{counts_tab_params['last_col']}{counts_tab_params['height'] + counts_tab_params['offset_top']}"
 
 worksheet_cov.add_table(
-    counts_table_area, {"data": targetcounts_table["data"],
-                        "columns": targetcounts_table["headers"],
-                        "style": "Table Style Light 1",
-                        "autofilter": False
-                        }
-                        # "total_row": True}
+    counts_table_area, {
+        "data": targetcounts_table["data"],
+        "columns": targetcounts_table["headers"],
+        "style": "Table Style Light 1",
+        "autofilter": False,
+    }
 )
 
 """Tables reads counts per amplicon in each pool"""
 for p, tab_pool in enumerate(poolcounts_table):
     print(tab_pool)
-    pools_tab_params = {"first_col": convert_columns_to_letter(1 + p * (tab_margin + len(tab_pool["headers"]))),  # letter A = column 1 and letter @ = column 0
-                        "last_col": convert_columns_to_letter(p * (tab_margin + len(tab_pool["headers"])) + len(tab_pool["headers"])),
-                        "width": len(tab_pool["headers"]),
-                        "height": len(tab_pool["data"]),
-                        "offset_top": top_row + cov_tab_params['height'] + counts_tab_params['height'] + 2 * tab_margin  # place the table below coverage and estimated reads counts
-                        }
+    # letter A = column 1 and letter @ = column 0
+    # place the table below coverage and estimated reads counts
+    pools_tab_params = {
+        "first_col": convert_columns_to_letter(1 + p * (tab_margin + len(tab_pool["headers"]))),
+        "last_col": convert_columns_to_letter(p * (tab_margin + len(tab_pool["headers"])) + len(tab_pool["headers"])),
+        "width": len(tab_pool["headers"]),
+        "height": len(tab_pool["data"]),
+        "offset_top": top_row + cov_tab_params['height'] + counts_tab_params['height'] + 2 * tab_margin
+    }
 
     pools_table_area = f"{pools_tab_params['first_col']}{pools_tab_params['offset_top']}" \
         + ":" \
@@ -545,11 +552,12 @@ for p, tab_pool in enumerate(poolcounts_table):
     print(pools_table_area)
 
     worksheet_cov.add_table(
-        pools_table_area, {"data": tab_pool["data"],
-                           "columns": tab_pool["headers"],
-                           "style": "Table Style Light 1",
-                           "autofilter": False
-                           }
+        pools_table_area, {
+            "data": tab_pool["data"],
+            "columns": tab_pool["headers"],
+            "style": "Table Style Light 1",
+            "autofilter": False
+        }
     )
 
 """Lineplot with sequencing throughput"""
@@ -571,11 +579,12 @@ column_end = ":" + convert_columns_to_letter(len(exonscov_table["headers"]))
 table_area = "A6" + column_end + str(len(exonscov_table["data"]) + 6)
 
 worksheet_exonscov.add_table(
-    table_area, {"data": exonscov_table["data"],
-                 "columns": exonscov_table["headers"],
-                 "style": "Table Style Light 1",
-                 "autofilter": False
-                 }
+    table_area, {
+        "data": exonscov_table["data"],
+        "columns": exonscov_table["headers"],
+        "style": "Table Style Light 1",
+        "autofilter": False
+    }
 )
 
 workbook.close()
