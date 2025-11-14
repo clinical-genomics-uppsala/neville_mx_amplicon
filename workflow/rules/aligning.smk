@@ -102,9 +102,7 @@ rule aligning_bam_softclip:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.bam",
         amplibed=os.path.join(config.get("bed_files"), "amplicons-primers.bed"),
     output:
-        bamclip=temp(
-            "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
-        ),
+        bamclip=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"),
         bamclipidx=temp(
             "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
         ),
@@ -140,9 +138,7 @@ rule aligning_split_bam_by_target:
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         amplibed=os.path.join(config.get("bed_files"), "{target}.bed"),
     output:
-        bam=temp(
-            "alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
-        ),
+        bam=temp("alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"),
         bai=temp(
             "alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
         ),
@@ -177,8 +173,8 @@ rule aligning_create_bam_target_j3:
     input:
         txt=expand(
             "alignment/dorado_align/{{sample}}_{{type}}_{target}_reads.txt",
-            target=config.get("amplicons") + config.get("extra_regions")
-        )
+            target=config.get("amplicons") + config.get("extra_regions"),
+        ),
     output:
         bam=temp(
             "alignment/dorado_align/{sample}_{type}_TP53_J3_only_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
@@ -189,7 +185,8 @@ rule aligning_create_bam_target_j3:
         txt="alignment/dorado_align/{sample}_{type}_TP53_J3_only_reads.txt",
     params:
         inbam=lambda wildcards, input: os.path.join(
-            os.path.dirname(input[0]), f"{wildcards.sample}_{wildcards.type}_TP53_D2+J3_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
+            os.path.dirname(input[0]),
+            f"{wildcards.sample}_{wildcards.type}_TP53_D2+J3_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         ),
         intxt=lambda wildcards, input: os.path.join(
             os.path.dirname(input[0]), f"{wildcards.sample}_{wildcards.type}_TP53_D2_only_reads.txt"
@@ -226,12 +223,8 @@ rule aligning_samtools_calmd:
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
     output:
-        bam=temp(
-            "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam"
-        ),
-        bai=temp(
-            "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai"
-        ),
+        bam=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam"),
+        bai=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai"),
     log:
         "alignment/dorado_align/{sample}_{type}_samtools_calmd.output.log",
     benchmark:
@@ -249,11 +242,7 @@ rule aligning_samtools_calmd:
     container:
         config.get("samtools", {}).get("container", config["default_container"])
     message:
-        """
-        {rule}: Calculates MD and NM tags and add them to the BAM file. NM tag is required by ScanITD.
-        """
-    shell: 
-        """
-        samtools calmd -b --threads {resources.threads} {input.bam} {input.ref} > {output.bam} 2> {log}
-        samtools index {output.bam} 2>> {log}
-        """
+        "{rule}: Calculates MD and NM tags and add them to the BAM file. NM tag is required by ScanITD."
+    shell:
+        "samtools calmd -b --threads {resources.threads} {input.bam} {input.ref} > {output.bam} 2> {log}"
+        " && samtools index {output.bam} 2>> {log}"

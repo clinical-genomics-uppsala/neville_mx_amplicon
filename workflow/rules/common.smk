@@ -63,6 +63,7 @@ pipeline_version = get_pipeline_version(workflow, pipeline_name="pipeline_pool_a
 #     version_files.append(touch_software_version_file(config, date_string=date_string, directory="results/versions/software"))
 # add_version_files_to_multiqc(config, version_files)
 
+
 onstart:
     export_pipeline_version_as_file(pipeline_version, date_string=date_string, directory="results/versions/software")
     # Make sure that the user have the requested containers to be used
@@ -81,6 +82,8 @@ onstart:
     # date_string, a string that will be added to the folder name to make it unique (preferably a timestamp)
     # export_config_as_file(update_config, date_string=date_string, directory="results/versions")
 
+
+
 ### Read and validate resources file
 
 config = load_resources(config, config["resources"])
@@ -92,7 +95,7 @@ validate(config, schema="../schemas/resources.schema.yaml")
 try:
     samples = pd.read_table(config["samples_run"], dtype=str)["sample"].set_index("sample", drop=False)
 except AttributeError:
-    samples = pd.read_table(config["samples_run"],dtype=str)["sample"].to_frame().set_index("sample",drop=False)
+    samples = pd.read_table(config["samples_run"], dtype=str)["sample"].to_frame().set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
 
 
@@ -100,17 +103,21 @@ validate(samples, schema="../schemas/samples.schema.yaml")
 
 units = (
     pandas.read_table(config["units_run"], dtype=str)
-    .set_index(["sample",
-                "type",
-                "platform",
-                "machine",
-                "processing_unit",
-                "run_id",
-                "barcode",
-                "methylation",
-                "basecalling_model",
-                "bam"],
-        drop=False)
+    .set_index(
+        [
+            "sample",
+            "type",
+            "platform",
+            "machine",
+            "processing_unit",
+            "run_id",
+            "barcode",
+            "methylation",
+            "basecalling_model",
+            "bam",
+        ],
+        drop=False,
+    )
     .sort_index()
 )
 
@@ -132,11 +139,13 @@ wildcard_constraints:
     sample="|".join(samples.index),
     type="N|T",
     report="amplicons",
-    target = "|".join(config.get("amplicons") + config.get("extra_regions")).replace('+', '\+')  # escape the '+' which has a specific meaning in regex
+    target="|".join(config.get("amplicons") + config.get("extra_regions")).replace('+', '\+'),  # escape the '+' which has a specific meaning in regex
+
 
 logger.info("\nTargets: " + "|".join(config.get("amplicons") + config.get("extra_regions")))
 
 ### Define functions to be used in the workflow
+
 
 def read_bam_pass_names(*args):
     bamdir = os.path.join(*args)
@@ -152,11 +161,12 @@ def read_bam_pass_names(*args):
 
 
 def get_bam_pass_sample():
-    expr = lambda wildcards: expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[0],
-            nbatch=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[1],
-            target=config.get("amplicons") + config.get("extra_regions"),
-        )
+    expr = lambda wildcards: expand(
+        "results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
+        fname=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[0],
+        nbatch=read_bam_pass_names(config["runfolder"], f"{wildcards.sample}", config["runid"], "bam_pass")[1],
+        target=config.get("amplicons") + config.get("extra_regions"),
+    )
     return expr
 
 
@@ -195,7 +205,7 @@ def generate_copy_rules(output_spec):
         rule_name = "_copy_{}".format("_".join(re.split(r"\W{1,}", f["name"].strip().lower())))
         input_file = pathlib.Path(f["input"])
         output_file = output_directory / pathlib.Path(f["output"])
-        if pathlib.Path(f["output"]).suffix == '': # no file extension, hence a directory
+        if pathlib.Path(f["output"]).suffix == '':  # no file extension, hence a directory
             _ = f'@workflow.output(directory("{output_file}"))\n'
         else:
             _ = f'@workflow.output("{output_file}")\n'
@@ -211,12 +221,14 @@ def generate_copy_rules(output_spec):
             [
                 f'@workflow.rule(name="{rule_name}")',
                 f'@workflow.input("{input_file}")',
-                f'@workflow.output(directory("{output_file}"))' if pathlib.Path(f["output"]).suffix == '' else f'@workflow.output("{output_file}")',
+                f'@workflow.output(directory("{output_file}"))'
+                if pathlib.Path(f["output"]).suffix == ''
+                else f'@workflow.output("{output_file}")',
                 f'@workflow.log("logs/{rule_name}_{output_file.name}.log")',
                 f'@workflow.container("{copy_container}")',
                 f'@workflow.resources(time="{time}", threads={threads}, mem_mb="{mem_mb}", '
                 f'mem_per_cpu={mem_per_cpu}, partition="{partition}")',
-                f'@workflow.shellcmd("{copy_container}")', # replace with '@workflow.shellcmd("cp -r {input} {output}")\n\n' ?
+                f'@workflow.shellcmd("{copy_container}")',  # replace with '@workflow.shellcmd("cp -r {input} {output}")\n\n' ?
                 "@workflow.run\n",
                 f"def __rule_{rule_name}(input, output, params, wildcards, threads, resources, "
                 "log, version, rule, conda_env, container_img, singularity_args, use_singularity, "

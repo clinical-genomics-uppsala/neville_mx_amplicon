@@ -88,9 +88,9 @@ rule varcall_clairs_to_concat:
 rule varcall_deepsomatic:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed")),
+        bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         tmpdir=directory("snv_indels/deepsomatic/{sample}_{type}_tmp"),
         vcf="snv_indels/deepsomatic/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
@@ -160,8 +160,11 @@ rule varcall_savana:
         {rule}: Long-read somatic small variant and SV calling in tumor samples only with SAVANA.
         """
     shell:
-        """
-        savana --help
-        savana to --tumour {input.bam} --outdir {output.outdir} --ref {input.ref} --g1000_vcf {params.g1000_vcf} --chromosomes 2 5 13 15 17 &> {log}
-        touch {output.dummy}
-        """
+        "savana to"
+        " --tumour {input.bam}"
+        " --outdir {output.outdir}"
+        " --ref {input.ref}"
+        "--g1000_vcf {params.g1000_vcf}"
+        " --chromosomes 2 5 13 15 17"
+        " &> {log}"
+        " && touch {output.dummy}"
