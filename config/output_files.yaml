@@ -1,5 +1,5 @@
 ---
- files: 
+ files:
    - name: "samples_tsv"
      output: "Results/{sample}_{type}_samples.tsv"
      input: "samples.tsv"
@@ -20,13 +20,17 @@
      output: "Results/Bed"
      input: "bedfiles/"
 
-#   - name: "bed_files_targets"
-#     output: "results/bed/{target}.bed"
-#     input: "os.path.join(config["bed_files"], "{target}.bed")"
+##   - name: "bed_files_targets"
+##     output: "results/bed/{target}.bed"
+##     input: "os.path.join(config["bed_files"], "{target}.bed")"
 
-#   - name: "dorado_ubam"
-#     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.bam"
-#     input: "basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam"
+#    - name: "dorado_ubam"
+#     output: "Results/Data/multi_samples_reads.basecalled.bam"
+#     input: "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam"
+
+#   - name: "dorado_demux_bam"
+#     output: "Results/basecalling/dorado_demux/dummy.out"
+#     input: "basecalling/dorado_demux/dummy.out"
 
    - name: "filtered_fastq"
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.fastq.gz"
@@ -40,25 +44,33 @@
      output: "Results/Data/{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam.bai"
      input: "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
 
-#   - name: "snv_indels_var_calls"
-#     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
-#     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+##   - name: "snv_indels_var_calls"
+##     output: "Results/Data/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
+##     input: "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vep_annotated.vcf.gz"
 
    - name: "sniffles2_var_calls"
      output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
      input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
 
-#   - name: "snv_indels_var_calls_ensembled"
-#     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
-#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
-#
-#   - name: "snv_indels_var_calls_ensembled_annotated"
-#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-#
-#   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
-#     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
-#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
+#   - name: "mutect2_var_calls"
+#     output: "Results/Data/{sample}_{type}.unfiltered.gatk_mutect2.vcf.gz"
+#     input: "snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz"
+
+#   - name: "savana_var_calls"
+#     output: "Results/Data/{sample}_{type}_savana.done"
+#     input: "cnv_sv/savana/{sample}_{type}_savana.done"
+
+##   - name: "snv_indels_var_calls_ensembled"
+##     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
+##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
+##
+##   - name: "snv_indels_var_calls_ensembled_annotated"
+##     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
+##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
+##
+##   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
+##     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
+##     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
 
    - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
      output: "Results/Data/{sample}_{type}.ont_reads.snv-indels.vcf"
@@ -99,6 +111,10 @@
    - name: "mosdepth_summary_amplicons"
      output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
      input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
+
+   - name: "mosdepth_bed_exon_summary"
+     output: "Results/Reports/{sample}_{type}_exons.mosdepth.summary.txt"
+     input: "results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.summary.txt"
 
    - name: "excel_report"
      output: "Results/Reports/{sample}_{type}.xlsx"

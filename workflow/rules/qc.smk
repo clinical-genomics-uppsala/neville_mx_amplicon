@@ -3,10 +3,14 @@ __copyright__ = "Copyright 2024, Camille Clouard"
 __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
+
 
 rule pycoqc:
     input:
-        seq_run_dir=config.get("runfolder")
+        seq_run_dir=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid")),
     output:
         html=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.html"),
         json=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.json"),
@@ -21,7 +25,8 @@ rule pycoqc:
     log:
         "results/pycoqc/{sample}_{type}_report_sequencing_summary.log",
     benchmark:
-        repeat("results/pycoqc/{sample}_{type}_report_sequencing_summary.benchmark.tsv",
+        repeat(
+            "results/pycoqc/{sample}_{type}_report_sequencing_summary.benchmark.tsv",
             config.get("pycoqc", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -62,7 +67,8 @@ rule mosdepth_overlap:
     log:
         "results/mosdepth/{sample}_{type}_{target}.mosdepth.log",
     benchmark:
-        repeat("results/mosdepth/{sample}_{type}_{target}.mosdepth.benchmark.tsv",
+        repeat(
+            "results/mosdepth/{sample}_{type}_{target}.mosdepth.benchmark.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -80,7 +86,8 @@ rule mosdepth_overlap:
 
 rule mosdepth_merge:
     input:
-        expand("results/mosdepth/{{sample}}_{{type}}_{target}.mosdepth.summary.txt",
+        expand(
+            "results/mosdepth/{{sample}}_{{type}}_{target}.mosdepth.summary.txt",
             target=config.get("amplicons") + config.get("extra_regions"),
         ),
     output:
@@ -91,11 +98,12 @@ rule mosdepth_merge:
         threads=config.get("default_resources").get("threads"),
         mem_mb=config.get("default_resources").get("mem_mb"),
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
-    threads: config.get("default_resources").get("threads"),
+    threads: config.get("default_resources").get("threads")
     log:
         "results/mosdepth/{sample}_{type}_coverage_per_amplicon.log",
     benchmark:
-        repeat("results/mosdepth/{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
+        repeat(
+            "results/mosdepth/{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
             config.get("mosdepth_merge", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -108,31 +116,22 @@ rule mosdepth_merge:
 
 rule mosdepth_overlap_timestep:
     input:
-        bam=os.path.join(config["runfolder"], "bam_pass/{fname}_{nbatch}.bam"),
-        bamidx=os.path.join(config["runfolder"], "bam_pass/{fname}_{nbatch}.bam.bai"),
-        amplibed=os.path.join(config.get("bed_files"), "{target}.bed"),
+        bamdir=os.path.join(config["runfolder"], "{sample}", config["runid"], "bam_pass"),
+        amplibed=[f"{config.get('bed_files')}/{target}.bed" for target in config.get("amplicons") + config.get("extra_regions")],
     output:
-        bed=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.regions.bed.gz"),
-        csi=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.regions.bed.gz.csi"),
-        glob=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.summary.txt"),
-    params:
-        prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
-        nbatch=r"\d+",
+        outdir=temp(directory("results/mosdepth/timestep/{sample}")),
     resources:
         partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("mosdepth", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
         mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
+    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.log",
+        "results/mosdepth/timestep/{sample}.log",
     benchmark:
-        repeat("results/mosdepth/timestep/{fname}_{nbatch}/{target}.mosdepth.benchmark.tsv",
+        repeat(
+            "results/mosdepth/timestep/{sample}.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -141,24 +140,15 @@ rule mosdepth_overlap_timestep:
         """
         {rule}: Compute coverage with mosdepth for each amplicon.
         """
-    shell:
-        """
-        chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {resources.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.target} {input.bam} 2> {log}
-        """
+    script:
+        "../scripts/process_timestep_data.py"
+
 
 rule mosdepth_merge_timestep:
     input:
-        expand("results/mosdepth/timestep/{{fname}}_{{nbatch}}/{target}.mosdepth.summary.txt",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
-            target=config.get("amplicons") + config.get("extra_regions"),
-        ),
+        indir="results/mosdepth/timestep/{sample}",
     output:
-        csv=temp("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv"),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
-        nbatch=r"\d+",
+        outdir=temp(directory("results/mosdepth/timestep_coverage/{sample}")),
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -169,61 +159,21 @@ rule mosdepth_merge_timestep:
     container:
         config.get("mosdepth_merge", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.log",
+        "results/mosdepth/timestep_coverage/{sample}/timestep_coverage.log",
     benchmark:
-        repeat("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.benchmark.tsv",
+        repeat(
+            "results/mosdepth/timestep_coverage/{sample}/timestep_coverage.benchmark.tsv",
             config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
-        ),
+        )
     message:
         "{rule}: Create merged report for mosdepth"
     script:
         "../scripts/mosdepth_merge_timestep.py"
 
 
-rule copy_mosdepth_merge_timestep:
-    input:
-        expand("results/mosdepth/timestep/{fname}_{nbatch}/timestep{nbatch}_coverage_per_amplicon.csv",
-            fname=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[0],
-            nbatch=read_bam_pass_names(os.path.join(config["runfolder"], "bam_pass"))[1],
-        ),
-    output:
-        outdir=temp(directory("results/mosdepth/timestep_coverage")),
-        # csv=temp("results/mosdepth/timestep_coverage/timestep{nbatch}_coverage_per_amplicon.csv"),
-    wildcard_constraints:
-        fname=r"[A-Z]{3}\d{3}_pass_[a-z0-9]+_[a-z0-9]+",
-        nbatch=r"\d+",
-    resources:
-        partition=config["default_resources"]["partition"],
-        time=config["default_resources"]["time"],
-        threads=config["default_resources"]["threads"],
-        mem_mb=config["default_resources"]["mem_mb"],
-        mem_per_cpu=config["default_resources"]["mem_per_cpu"]
-    threads: config["default_resources"]["threads"]
-    log:
-        "results/mosdepth/timestep_coverage/copy_timestep_coverage.log",
-    benchmark:
-        repeat("results/mosdepth/timestep_coverage/copy_timestep_coverage.benchmark.tsv",
-            config.get("copy_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
-        )
-    container:
-        config["default_container"]
-    message:
-        """
-        {rule}: Save all timestepped coverage with mosdepth for each amplicon.
-        """
-    shell:
-        """
-        mkdir -p {output.outdir} 2> {log}
-        for fcsv in {input}
-        do
-            cp $fcsv {output.outdir}/$( basename $fcsv ) 2>> {log}
-        done
-        """
-
-
 rule plot_yield_timestep:
     input:
-        indir="results/mosdepth/timestep_coverage",
+        indir="results/mosdepth/timestep_coverage/{sample}",
     output:
         csv=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"),
         png=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"),
@@ -239,7 +189,8 @@ rule plot_yield_timestep:
     log:
         "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log",
     benchmark:
-        repeat("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
+        repeat(
+            "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
             config.get("plot_yield_timestep", {}).get("benchmark_repeats", 1),
         )
     message:
@@ -249,15 +200,16 @@ rule plot_yield_timestep:
     script:
         "../scripts/seq_yield_timestep.py"
 
+
 rule sequali:
     input:
         fastgz1="prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
-        fastgz2= "prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
+        fastgz2="prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
     output:
         html1=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"),
         json1=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"),
-        html2= temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"),
-        json2= temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"),
+        html2=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"),
+        json2=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"),
     resources:
         partition=config.get("sequali", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("sequali", {}).get("time", config["default_resources"]["time"]),
@@ -268,7 +220,8 @@ rule sequali:
     log:
         "results/sequali/{sample}_{type}_sequali.log",
     benchmark:
-        repeat("results/sequali/{sample}_{type}_sequali.benchmark.tsv",
+        repeat(
+            "results/sequali/{sample}_{type}_sequali.benchmark.tsv",
             config.get("sequali", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -282,6 +235,7 @@ rule sequali:
         sequali --html {output.html1} --json {output.json1} {input.fastgz1} 2> {log}
         sequali --html {output.html2} --json {output.json2} {input.fastgz2} 2>> {log}
         """
+
 
 rule yield_per_pool:
     input:
@@ -300,13 +254,15 @@ rule yield_per_pool:
     log:
         "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.log",
     benchmark:
-        repeat("results/mosdepth/{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
+        repeat(
+            "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
             config.get("yield_per_pool", {}).get("benchmark_repeats", 1),
         )
     message:
         "{rule}: Calculate number of reads per pool"
     script:
         "../scripts/yield_per_pool.py"
+
 
 # Picard HsMetrics requires interval file
 rule bed_to_interval_list:
@@ -327,7 +283,8 @@ rule bed_to_interval_list:
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads")
     benchmark:
-        repeat("results/qc/picard/BedToIntervalList.benchmark.tsv",
+        repeat(
+            "results/qc/picard/BedToIntervalList.benchmark.tsv",
             config.get("bed_to_interval_list", {}).get("benchmark_repeats", 1),
         )
     container:

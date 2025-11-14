@@ -22,8 +22,11 @@ reference:
   design_bed:
     "test_data/amplicons.bed"
 
-runfolder: "{{runfolder}}"
-
+runfolder: "test_data"
+batchid: "dummy"
+runid: "ABC123"
+multisample: "False"
+samplesheet: None
 raw_data: "pod5"
 
 dir_models: "dorado_models"

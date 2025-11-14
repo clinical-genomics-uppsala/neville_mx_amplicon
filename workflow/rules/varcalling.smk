@@ -4,6 +4,9 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 import os
+from snakemake.logging import logger
+
+logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
 rule varcall_clairs_to:
@@ -11,7 +14,7 @@ rule varcall_clairs_to:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
+        bed=config.get("clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         snv=temp("snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz"),
         indel=temp("snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz"),
@@ -85,9 +88,9 @@ rule varcall_clairs_to_concat:
 rule varcall_deepsomatic:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai= "alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed")),
+        bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         tmpdir=directory("snv_indels/deepsomatic/{sample}_{type}_tmp"),
         vcf="snv_indels/deepsomatic/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
@@ -122,40 +125,46 @@ rule varcall_deepsomatic:
         """
 
 
-rule varcall_nanocaller:
+rule varcall_savana:
     input:
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
-        vcf="snv_indels/nanocaller/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller.vcf.gz",
+        dummy="cnv_sv/savana/{sample}_{type}_savana.done",
+        outdir=temp(directory("cnv_sv/savana/{sample}_{type}_savana_output")),
     params:
         sample=config.get("sample_id", "sample_T"),
-        extra="--mode all --sequencing ont --preset ont --min_allele_freq 0.005 --output snv_indels/nanocaller",  #  --win_size 50 --maxcov 10000 --ins_threshold 40 --del_threshold 60",
-        prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nanocaller",
+        g1000_vcf="1000g_hg38",
+        extra="",
+        prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.savana",
     log:
-        "snv_indels/nanocaller/{sample}_{type}_nanocaller.log",
+        "cnv_sv/savana/{sample}_{type}_savana.log",
     benchmark:
         repeat(
-            "snv_indels/nanocaller/{sample}_{type}_nanocaller.benchmark.tsv",
-            config.get("nanocaller", {}).get("benchmark_repeats", 1),
+            "cnv_sv/savana/{sample}_{type}_savana.benchmark.tsv",
+            config.get("savana", {}).get("benchmark_repeats", 1),
         )
     resources:
-        partition=config.get("nanocaller", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("nanocaller", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("nanocaller", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("nanocaller", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("nanocaller", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("nanocaller", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("savana", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("savana", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("savana", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("savana", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("savana", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("savana", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("nanocaller", {}).get("container", config["default_container"])
+        config.get("savana", {}).get("container", config["default_container"])
     message:
         """
-        {rule}: Long-read somatic small variant calling in tumor samples only with NanoCaller.
+        {rule}: Long-read somatic small variant and SV calling in tumor samples only with SAVANA.
         """
-    shell:  # Notes about usage: https://github.com/WGLab/NanoCaller/blob/master/docs/Usage.md --> indels of 50 bp max
-        """
-        NanoCaller --help
-        NanoCaller --bam {input.bam} --ref {input.ref} --bed {input.bed} --cpu {resources.threads} --sample {params.sample} --prefix {params.prefix} {params.extra} &> {log}
-        """
+    shell:
+        "savana to"
+        " --tumour {input.bam}"
+        " --outdir {output.outdir}"
+        " --ref {input.ref}"
+        "--g1000_vcf {params.g1000_vcf}"
+        " --chromosomes 2 5 13 15 17"
+        " &> {log}"
+        " && touch {output.dummy}"

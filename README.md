@@ -211,7 +211,7 @@ which is not a problem as long as the GPU resources are correctly set up in the 
 Run the linter to check the code style and the correctness of the Snakefile:
 ```bash
 cd .tests/integration
-snakemake --lint -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data
+snakemake --lint -n -s ../../workflow/Snakefile --configfiles config/config.yaml
 ```
 git checkout 
 ### Dry run
@@ -296,7 +296,7 @@ Default container: ...
 
 ## :judge: Rule Graph
 
-![rule_graph_reference](images/rulegraph.pdf)
+![rule_graph_reference](images/neville_mx_amplicon.png)
 
 ## References
 

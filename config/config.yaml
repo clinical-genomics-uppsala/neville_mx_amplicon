@@ -25,27 +25,31 @@ reference:
 
 # All runs
 runfolder: "{{runfolder}}"
+batchid: "{{batchid}}"
+runid: "{{runid}}"
+multisample: "{{multisample}}"
+samplesheet: "{{samplesheet}}"
 raw_data: "pod5"
 
 dir_models: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/dorado_models"
-dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.0.0"
+dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
 
 amplicons:
-    ["FLT3_ITD_3kb_1", "FLT3_TKD_3kb_1",
-    "IDH1_1", "IDH2_1",
-    "NPM1_5",
-    "TP53_3kb_A1", "TP53_3kb_B1", "TP53_C10", "TP53_J3", "TP53_D2", "TP53_E1", "TP53_F2", "TP53_G4", "TP53_H4", "TP53_I4"
-    ]
+  ["FLT3_ITD_3kb_1", "FLT3_TKD_3kb_1",
+  "IDH1_1", "IDH2_1",
+  "NPM1_5",
+  "TP53_3kb_A1", "TP53_3kb_B1", "TP53_C10", "TP53_J3", "TP53_D2", "TP53_E1", "TP53_F2", "TP53_G4", "TP53_H4", "TP53_I4"
+  ]
 
 extra_regions:
-    ["TP53_3kb_A1_only", "TP53_3kb_B1_only", "TP53_C10_only", "TP53_D2+J3", "TP53_D2_only",
-    "TP53_E1_only", "TP53_F2_only", "TP53_G4_only", "TP53_H4_only", "TP53_I4_only"
-    ]
+  ["TP53_3kb_A1_only", "TP53_3kb_B1_only", "TP53_C10_only", "TP53_D2+J3", "TP53_D2_only",
+  "TP53_E1_only", "TP53_F2_only", "TP53_G4_only", "TP53_H4_only", "TP53_I4_only"
+  ]
 
 pools:
-    1: ["TP53_3kb_A1_only", "TP53_D2_only", "TP53_F2_only", "TP53_I4_only", "FLT3_TKD_3kb_1"]
-    2: ["IDH1_1", "TP53_3kb_B1_only", "TP53_G4_only", "TP53_D2+J3", "NPM1_5"]
-    3: ["IDH2_1", "TP53_C10_only", "TP53_E1_only", "TP53_H4_only", "FLT3_ITD_3kb_1"]
+  1: ["TP53_3kb_A1_only", "TP53_D2_only", "TP53_F2_only", "TP53_I4_only", "FLT3_TKD_3kb_1"]
+  2: ["IDH1_1", "TP53_3kb_B1_only", "TP53_G4_only", "TP53_D2+J3", "NPM1_5"]
+  3: ["IDH2_1", "TP53_C10_only", "TP53_E1_only", "TP53_H4_only", "FLT3_ITD_3kb_1"]
 
 
 # Containers
@@ -69,39 +73,71 @@ bcftools_view:
     vardict:
       extra: "-i 'QUAL>120'"
     sniffles2:
-      extra: "-R /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+      extra: "-R /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-sniffles2.bed"
 
 clairs_to:
   container: "docker://hkubal/clairs-to:latest"
   platform: "ont_r10_dorado_sup_5khz"
   snv_min_af: 0.005
   indel_min_af: 0.005
+  bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-clairs-to.bed"
 
 deepsomatic:
-  container: "docker://google/deepsomatic:1.8.0"
+  container: "docker://google/deepsomatic:1.9.0"
   extra: '--make_examples_extra_args="vsc_min_fraction_snps=0.01,vsc_min_fraction_indels=0.01,small_model_snp_gq_threshold=20,small_model_indel_gq_threshold=20"'
   # filter: '--use_default_pon_filtering=true --qual_filter=0.1'
   bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-exons-deepsomatic.bed"
 
 dorado:
+  container: "docker://ontresearch/dorado:latest"
+
+dorado_basecaller:  # simplex basecalling by default
     container: "docker://ontresearch/dorado:latest"
+    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+    trim: "--trim adapters"
+    extra: "--device cuda:all"
+
+dorado_demux:
+    container: "docker://ontresearch/dorado:latest"
+    kit: "--kit-name SQK-NBD114-24"
+
+dorado_duplex:
+    container: "docker://ontresearch/dorado:latest"
+    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+    trim: "--no-trim-primers --sequencing-kit SQK-LSK114"
+    extra: "--device cuda:all"
+
+dorado_duplex_multisamples:
+    container: "docker://ontresearch/dorado:latest"
+    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+    trim: ""  # no trim because samples are demultiplexed in a later step
+    extra: "--device cuda:all"
+
+dorado_trim:
+    container: "docker://ontresearch/dorado:latest"
+    trim: "--sequencing-kit SQK-NBD114-24"
 
 filter_vcf:
   somatic_soft: "config/config_soft_filter_somatic.yaml"
   somatic_hard: "config/config_hard_filter_somatic.yaml"
 
 filtlong:
-    container: "docker://hydragenetics/filtlong:0.2.1"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
-    min_length: 2000
-    max_length: 4000
+  container: "docker://hydragenetics/filtlong:0.2.1"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
+  min_length: 2000
+  max_length: 4000
 
 mosdepth:
-    container: "docker://hydragenetics/mosdepth:0.3.6"
-    by: "amplicons.bed"
+  container: "docker://hydragenetics/mosdepth:0.3.6"
+  by: "amplicons.bed"
 
 mosdepth_bed:
-    container: "docker://hydragenetics/mosdepth:0.3.2"
-    thresholds: "1,5,100,500,1000"
+  container: "docker://hydragenetics/mosdepth:0.3.2"
+  thresholds: "1,5,100,500,1000"
+
+mosdepth_exons:
+  container: "docker://hydragenetics/mosdepth:0.3.6"
+  bed: "exon_coverage.bed"
+  thresholds: "1,5,100,500,1000"
 
 multiqc:
   container: "docker://hydragenetics/multiqc:1.25.1" # sequali requires 1.25.1, fixes for HsMetrics require 1.21
@@ -130,34 +166,42 @@ multiqc:
         - "results/qc/picard/{sample}_{type}_TP53_J3_only.alignment_summary_metrics.txt"
         - "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt"
 
-nanocaller:
-  container: "docker://genomicslab/nanocaller:latest"  # latest=3.6.2
+gatk_mutect2:
+  container: "docker://hydragenetics/gatk4:4.6.2.0"
 
 picard_collect_hs_metrics:
-    container: "docker://hydragenetics/picard:2.25.4"
+  container: "docker://hydragenetics/picard:2.25.4"
 
 picard_bed_to_interval_list:
-    container: "docker://hydragenetics/picard:2.25.4"
+  container: "docker://hydragenetics/picard:2.25.4"
 
 picard_collect_alignment_summary_metrics:
-    container: "docker://hydragenetics/picard:2.25.4"
+  container: "docker://hydragenetics/picard:2.25.4"
 
 plot_yield_timestep:
-    container: "docker://hydragenetics/common-plots:3.1.1"
+  container: "docker://hydragenetics/common-plots:3.1.1"
 
 pycoqc:
   container: "docker://nanozoo/pycoqc:2.5.0.23--320ecc7"
 
 samtools:
-    container: "docker://hydragenetics/samtools:1.21"
+  container: "docker://hydragenetics/samtools:1.21"
+
+savana:
+  container: "docker://hydragenetics/savana:1.3.5"
+
+scanitd:
+  bed_file: "-t /beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
+  extra: "--ao 3 --aln-mismatches 5 --ins-mismatches 7"
+  container: "docker://hydragenetics/scanitd:0.9.2"
 
 sequali:
-    container: "docker://hydragenetics/sequali:0.12.0"
+  container: "docker://hydragenetics/sequali:0.12.0"
 
 sniffles2_call:
   container: "docker://hydragenetics/sniffles2:2.6.1"
   extra: "--minsvlen 3"
-  # bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/NPM1-FLT3-vardict.bed"
+  # bed_file: Sniffles2 cannot be restricted to specific regions, variant filtering is required post-calling
 
 vardict:
   container: "docker://hydragenetics/vardict:1.8.3"
