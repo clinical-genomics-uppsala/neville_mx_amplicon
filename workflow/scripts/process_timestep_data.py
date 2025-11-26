@@ -25,4 +25,8 @@ for bamfile in os.listdir(snakemake.input.bamdir):
                 f" {snakemake.input.bamdir}/{bamfile}"
                 f" 2>> {snakemake.log}"
             )
-            subprocess.run(mosdepth_cmd, shell=True, check=True, executable="/bin/bash")
+            try:
+                subprocess.run(mosdepth_cmd, shell=True, check=True, executable="/bin/bash")
+            except subprocess.CalledProcessError as e:  # if chr or region not found in the data
+                print(f"Error processing {bamfile} for target {target}: {e}")
+                continue

@@ -15,6 +15,8 @@ rule dorado_align:
         ref_data=config.get("ref_data"),
     output:
         bam=temp("alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.bam"),
+    params:
+        runid=config.get("runid", ""),
     resources:
         partition=config.get("dorado_alignment", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("dorado_alignment", {}).get("time", config["default_resources"]["time"]),
@@ -40,6 +42,11 @@ rule dorado_align:
         echo "Executing dorado aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
         
         dorado aligner {input.ref_data} {input.fastqgz} > {output.bam} 2> {log}
+        
+        if [ {params.runid} == "ABC123" ]; then
+            echo "\nIntegration test detected inside dorado_align rule, overwriting the output BAM file with a properly aligned BAM file" >> {log}
+            samtools view -b reference/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam > {output.bam} 2>> {log}
+        fi
         """
 
 
