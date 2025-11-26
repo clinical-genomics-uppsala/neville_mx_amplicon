@@ -45,7 +45,7 @@ rule dorado_align:
         
         if [ {params.runid} == "ABC123" ]; then
             echo "\nIntegration test detected inside dorado_align rule, overwriting the output BAM file with a properly aligned BAM file" >> {log}
-            samtools view -b reference/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam > {output.bam} 2>> {log}
+            samtools view -b test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam > {output.bam} 2>> {log}
         fi
         """
 

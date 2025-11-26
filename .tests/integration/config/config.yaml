@@ -173,9 +173,9 @@ vardict:
 
 vep:
   container: "docker://hydragenetics/vep:111.0"
-  vep_cache: "reference/vep"
-  mode: "--offline --merged "  # "--database --gencode_basic "
-  extra: " --format vcf --assembly GRCh38 --check_existing --pick --variant_class --everything  --pick_order mane_select,mane_plus_clinical,canonical,biotype,rank,appris,tsl,ccds,length,ensembl,refseq"
+  # vep_cache: "reference/vep"
+  # mode: "--offline --merged "  # "--database --gencode_basic "
+  # extra: " --format vcf --assembly GRCh38 --check_existing --pick --variant_class --everything  --pick_order mane_select,mane_plus_clinical,canonical,biotype,rank,appris,tsl,ccds,length,ensembl,refseq"
 
 vt_decompose:
   container: "docker://hydragenetics/vt:2015.11.10"
