@@ -23,7 +23,7 @@ reference:
     "test_data/bedfiles/amplicons.bed"
 
 runfolder: "test_data"
-batchid: "dummy"
+batchid: "D25-test007"
 runid: "ABC123"
 multisample: "False"
 samplesheet: None
