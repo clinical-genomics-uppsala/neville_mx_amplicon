@@ -5,6 +5,6 @@ rerun-incomplete: True
 local-cores: 1
 use-singularity: True
 default-resources: [gres="", ]
-singularity-args: "--cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache"
+singularity-args: "--cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache"
 singularity-prefix: ".snakemake/singularity/"
 printshellcmds: True

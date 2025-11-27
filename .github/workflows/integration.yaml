@@ -43,6 +43,12 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
+      - name: Prepare test folder
+        run: |
+          mkdir -p .tests/integration/basecalling/dorado_duplex/
+          cp .tests/integration/test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+          mkdir -p .tests/integration/tmp
+          bgzip -d .tests/integration/reference/TP53_chr17_GRCh38.fasta.gz
       - name: Integration test - small dataset
         working-directory: .tests/integration
         run: |

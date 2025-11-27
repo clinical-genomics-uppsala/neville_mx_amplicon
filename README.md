@@ -175,7 +175,7 @@ Create a virtual environment and install the required Python packages:
 cd <root_of_the_repository>
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -I -r requirements.txt
 ```
 
 ### Set up the profile to run the pipeline
@@ -205,7 +205,7 @@ INFO:    Could not find any nv files on this host!
 ```
 which is not a problem as long as the GPU resources are correctly set up in the profile.
 
-## :white_check_mark: Testing (TODO)
+## :white_check_mark: Testing
 
 ### Linting
 Run the linter to check the code style and the correctness of the Snakefile:
@@ -213,7 +213,7 @@ Run the linter to check the code style and the correctness of the Snakefile:
 cd .tests/integration
 snakemake --lint -n -s ../../workflow/Snakefile --configfiles config/config.yaml
 ```
-git checkout 
+
 ### Dry run
 Configure the virtual environment `.venv` and test the pipeline with a dry run to see if the rules are correctly 
 defined and the dependencies are satisfied:
@@ -308,12 +308,21 @@ The test data are located in `.tests/integration/test_data/` and consist of:
 2. Verify that the input files `samples.tsv` and `units.tsv` are present in `.tests/integration/`, 
 otherwise copy there the tsv files provided in `config`: `cp .tests/integration/config/*.tsv .tests/integration/`.
 
-3. If missing, create the temporary directory `.tests/integration/tmp/` to store temporary files:
+3. Set up the preprocessed basecalled BAM file in `.tests/integration/basecalling/dorado_duplex/`:
+```bash
+mkdir -p .tests/integration/basecalling/dorado_duplex/ && \
+cp .tests/integration/test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+```
 
-4. Check the connection to the internet. The test must be run in an environment which can connect to the internet. 
+4. If missing, create the temporary directory `.tests/integration/tmp/` to store temporary files: 
+```bash
+mkdir -p .tests/integration/tmp/
+```
+
+5. Check the connection to the internet. The test must be run in an environment which can connect to the internet. 
 This is necessary to pull the Docker images into Singularity containers.
 
-5. Decompress the reference genome if not done yet:
+6. Decompress the reference genome if not done yet:
 ```bash
 bgzip -d .tests/integration/reference/TP53_chr17_GRCh38.fasta.gz
 ```
@@ -325,18 +334,23 @@ The small integration test can be run as follows on a Linux-based OS
 ```bash
 $ cd .tests/integration/
 $ source ../../.venv/bin/activate
-$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
+$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
 ```
 
 The `--singularity-args` may be replaced by the ones that are suitable for your local OS if needed.
 Optionally, you may add the option `--notemp` to keep all temporary files 
 that are created during the run and inspect them afterwards. 
+These options can be provided in the profile configuration file as well, this profile is OS-specific.
 
-The whole execution takes ca. <time?> on a laptop with 8 CPU cores and 16 GB RAM.
+The whole execution takes ca. 2 minutes on a laptop with the following characteristics:
+ * 22 CPU cores and 32 GiB RAM,
+ * Processor: Intel® Core™ Ultra 7 165H × 22,
+ * OS (64-bit): Ubuntu 22.04.5 LTS.
 
 **Expected DAG output of the execution command**
 
 ```bash
+Building DAG of jobs...
 Using shell: /usr/bin/bash
 Provided cores: 1 (use --cores to define parallelism)
 Rules claiming more threads will be scaled down.
@@ -346,6 +360,7 @@ job                                                             count
 ------------------------------------------------------------  -------
 _copy_bed_files_amplicon                                            1
 _copy_config_yaml                                                   1
+_copy_excel_report                                                  1
 _copy_filtered_fastq                                                1
 _copy_mosdepth_coverage_per_amplicon                                1
 _copy_mosdepth_summary_amplicons                                    1
@@ -354,7 +369,6 @@ _copy_mosdepth_timestep_coverage_per_amplicon_png                   1
 _copy_resources_yaml                                                1
 _copy_samples_tsv                                                   1
 _copy_sniffles2_var_calls                                           1
-_copy_snv_indels_var_calls_ensembled                                1
 _copy_snv_indels_var_calls_ensembled_annotated_soft_filtered        1
 _copy_soft_clipped_bam                                              1
 _copy_soft_clipped_bam_bai                                          1
@@ -368,12 +382,11 @@ all                                                                 1
 bam2fastq                                                           1
 cnv_sv_bgzip                                                        1
 cnv_sv_sniffles2_call                                               1
-cnv_sv_tabix                                                        1
+cnv_sv_tabix                                                        2
 compress_fastq                                                      1
 copy_annotation_vep                                                 1
 dorado_align                                                        1
 filtering_bcftools_include_region                                   1
-filtering_bcftools_view                                             3
 filtering_filter_vcf                                                1
 filtlong                                                            1
 mosdepth_merge                                                      1
@@ -382,18 +395,13 @@ mosdepth_overlap                                                   25
 mosdepth_overlap_timestep                                           1
 plot_yield_timestep                                                 1
 qc_mosdepth_amplicons                                               1
+qc_mosdepth_bed_per_exon                                            1
 rename_vaf_to_af                                                    1
-snv_indels_bcbio_variation_recall_ensemble                          1
+results_report_xlsx                                                 1
 snv_indels_bgzip                                                    2
-snv_indels_tabix                                                    8
-snv_indels_vardict                                                  1
-snv_indels_vt_decompose                                             3
-snv_indels_vt_normalize                                             3
-varcall_clairs_to                                                   1
-varcall_clairs_to_concat                                            1
-varcall_deepsomatic                                                 1
+snv_indels_tabix                                                    3
 yield_per_pool                                                      3
-total                                                              89
+total                                                              73
 
 Select jobs to execute...
 ```
@@ -431,40 +439,47 @@ and that was preliminarily aligned against the reference genome hg38:
 
 ## :rocket: Usage
 
-To use this module in your workflow, follow the description in the
-[snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/modularization.html#modules).
-Add the module to your `Snakefile` like so:
+To execute this pipeline on your own data, you must first [create the sample files](https://hydra-genetics.readthedocs.io/en/latest/run_pipeline/create_sample_files/) `samples.tsv` and `units.tsv`.
+
+To run the pipeline, you can then use a command similar to the one used for the small integration test above.
+
+Those commands and other preliminary steps to the execution can be gathered in a bash script.
+Examples of such script for a HPC cluster with Slurm installed on it are provided in
+`workflow/scripts/start_marvin_multisample.sh` (sequencing run on a MinION flowcell and multiplexed barcoded samples) and 
+`workflow/scripts/start_marvin_single.sh` (sequencing run on a Flongle flowcell and a single non barcoded sample).
+
+**NB**: multiplexed barcoded samples require a [user-defined sample sheet](https://software-docs.nanoporetech.com/dorado/latest/barcoding/sample_sheet/) to be basecalled and demultiplexed.
+**NBB**: Flongle flowcells are to be discontinued by ONT, therefore the script `start_marvin_single.sh` is provided for legacy reasons only.
 
 ```bash
-module prealignment:
-    snakefile:
-        github(
-            "pipeline_pool_amplicon",
-            path="workflow/Snakefile",
-            tag="1.0.0",
-        )
-    config:
-        config
-
-
-use rule * from tmp.pipeline_pool_amplicon as pipeline_pool_amplicon_*
+# create input files for hydra-genetics
+# 
 ```
+
+
 
 If need to remove `__pycache__` for some user-written package: `rm -rf workflow/scripts/futils/__pycache__`.
 
 ### Output files
 
-The following output files should be targeted via another rule:
+Without the `--notemp` option, temporary files are removed after execution of the pipeline.
+Log files and benchmark files for each rule are left in the directories.
+The files that must remain after execution are listed in `config/output_files.yaml`,
+you may modify this file to add or remove some output files.
+The main output files in `Results` are summarized in the table below:
 
-| File | Description |
-|---|---|
-| `pipeline_pool_amplicon/PATH/FILE` | DESCRIPTION |
+| Folder or file    | Description                                                                                             |
+|-------------------|---------------------------------------------------------------------------------------------------------|
+| `Results`         | Folder with results of the analysis as well as the configurations of the pipeline and the sample files. |
+| `Results/Bed`     | Design files used for coverage computation and variant calling.                                         |
+| `Results/Data`    | Aligned and soft-clipped BAM files, VCF files with indels and SVs.                                      |
+| `Results/Reports` | Excel report with quality metrics and prefiltered variant calls.                                        |
 
 Note about mosdepth_bed: using "amplicons.bed" calculates cov per chrom --> values for TP53 are much lower since many amplicons there
 
 ### Program versions
 
-Default container: ...
+Default container: `docker://hydragenetics/common:3.0.0`
 
 | Program     | Version | Container                                                   | Note                                                                                                                                                              |
 |-------------|---------|-------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
