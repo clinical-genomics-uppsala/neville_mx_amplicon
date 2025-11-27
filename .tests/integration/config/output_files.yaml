@@ -40,9 +40,9 @@
      output: "Results/Data/{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
      input: "cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
 
-   - name: "snv_indels_var_calls_ensembled"
-     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
-     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
+#   - name: "snv_indels_var_calls_ensembled"
+#     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
+#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
 
 #   - name: "snv_indels_var_calls_ensembled_annotated"
 #     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
@@ -92,6 +92,6 @@
      output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
      input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
 
-#   - name: "excel_report"
-#     output: "Results/Reports/{sample}_{type}.xlsx"
-#     input: "reports/xlsx/{sample}_{type}.xlsx"
+   - name: "excel_report"
+     output: "Results/Reports/{sample}_{type}.xlsx"
+     input: "reports/xlsx/{sample}_{type}.xlsx"

@@ -313,24 +313,55 @@ logger.info(
     f"{list(workflow.modules.keys())[-1]} module is being parsed"
 )
 
+if config["runid"] == "ABC123":
+    rule copy_annotation_vep:
+        input:
+            snv_indels="test_data/preprocessed/D25-test007_T.ensembled.vep_annotated.vcf.gz",
+            cnv_sv="test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
+        output:
+            snv_indels="snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz",
+            cnv_sv="cnv_sv/sniffles2/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
+        log:
+            "snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz.log",
+        resources:
+            partition=config.get("copy_annotation_vep", {}).get("partition", config["default_resources"]["partition"]),
+            time=config.get("copy_annotation_vep", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("copy_annotation_vep", {}).get("threads", config["default_resources"]["threads"]),
+            mem_mb=config.get("copy_annotation_vep", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            mem_per_cpu=config.get("copy_annotation_vep", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        threads: config.get("copy_annotation_vep", {}).get("threads", config["default_resources"]["threads"])
+        container:
+            config.get("copy_annotation_vep", {}).get("container", config["default_container"])
+        benchmark:
+            repeat(
+                "snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz.benchmark.tsv",
+                config.get("copy_annotation_vep", {}).get("benchmark_repeats", 1),
+            )
+        message:
+            "{rule}: Integration test detected, copying annotated VCF from test_data/preprocessed"
+        shell:
+            "cp {input.snv_indels} {output.snv_indels} && "
+            "cp {input.cnv_sv} {output.cnv_sv} > {log}"
 
-use rule vep from annotation as annotation_vep with:
-    input:
-        cache=config.get("vep", {}).get("vep_cache", ""),
-        fasta=config["ref_data"],
-        tabix="{file}.vcf.gz.tbi",
-        vcf="{file}.vcf.gz",
-    output:
-        vcf=temp("{file}.vep_annotated.vcf"),
-    wildcard_constraints:
-        file="(snv_indels|cnv_sv)/(clairs_to|vardict|deepsomatic|bcbio_variation_recall_ensemble|sniffles2)\/.*",
-    params:
-        extra=config.get("vep", {}).get("extra", "--pick"),
-        mode=config.get("vep", {}).get("mode", "--offline --cache --refseq "),
-    log:
-        "{file}.vep_annotated.vcf.log",
-    benchmark:
-        repeat("{file}.vep_annotated.vcf.benchmark.tsv", config.get("vep", {}).get("benchmark_repeats", 1))
+
+else:
+    use rule vep from annotation as annotation_vep with:
+        input:
+            cache=config.get("vep", {}).get("vep_cache", ""),
+            fasta=config["ref_data"],
+            tabix="{file}.vcf.gz.tbi",
+            vcf="{file}.vcf.gz",
+        output:
+            vcf=temp("{file}.vep_annotated.vcf"),
+        wildcard_constraints:
+            file="(snv_indels|cnv_sv)/(clairs_to|vardict|deepsomatic|bcbio_variation_recall_ensemble|sniffles2)\/.*",
+        params:
+            extra=config.get("vep", {}).get("extra", "--pick"),
+            mode=config.get("vep", {}).get("mode", "--offline --cache --refseq "),
+        log:
+            "{file}.vep_annotated.vcf.log",
+        benchmark:
+            repeat("{file}.vep_annotated.vcf.benchmark.tsv", config.get("vep", {}).get("benchmark_repeats", 1))
 
 
 module filtering:
