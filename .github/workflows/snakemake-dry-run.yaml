@@ -31,10 +31,10 @@ jobs:
       - name: Install requirements.test.txt
         run: |
           pip install -r requirements.test.txt
-      - name: Install bgzip tool
+      - name: Install bgzip tool via tabix
         run: |
           sudo apt-get update
-          sudo apt-get bgzip
+          sudo apt-get install tabix
       - name: Prepare test folder
         run: |
           mkdir -p .tests/integration/basecalling/dorado_duplex/
