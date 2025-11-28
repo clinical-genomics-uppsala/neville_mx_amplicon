@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v3
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Setup Mambaforge
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -43,7 +43,17 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install bgzip tool via tabix
+        run: |
+          sudo apt-get update
+          sudo apt-get install tabix
+      - name: Prepare test folder
+        run: |
+          mkdir -p .tests/integration/basecalling/dorado_duplex/
+          cp .tests/integration/test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+          mkdir -p .tests/integration/tmp
+          bgzip -d .tests/integration/reference/TP53_chr17_GRCh38.fasta.gz
       - name: Integration test - small dataset
         working-directory: .tests/integration
         run: |
-          snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --bind /home/runner "
+          snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --profile ../../profiles/local/ --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --bind /home/runner "

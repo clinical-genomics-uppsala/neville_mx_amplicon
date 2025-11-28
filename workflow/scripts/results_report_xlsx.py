@@ -250,7 +250,6 @@ bed_table = []
 with gzip.open(snakemake.input.mosdepth_exons, "rt") as exons_file:
     for lline in exons_file:
         line = lline.strip().split("\t")
-        print(line)
         gene = line[3].split("_")[0]
         transcript = ""  # "_".join(line[3].split("_")[1:3])
         exon = str(line[3].split("_")[1])
@@ -535,7 +534,6 @@ worksheet_cov.add_table(
 
 """Tables reads counts per amplicon in each pool"""
 for p, tab_pool in enumerate(poolcounts_table):
-    print(tab_pool)
     # letter A = column 1 and letter @ = column 0
     # place the table below coverage and estimated reads counts
     pools_tab_params = {
@@ -549,7 +547,6 @@ for p, tab_pool in enumerate(poolcounts_table):
     pools_table_area = f"{pools_tab_params['first_col']}{pools_tab_params['offset_top']}" \
         + ":" \
         + f"{pools_tab_params['last_col']}{pools_tab_params['height'] + pools_tab_params['offset_top']}"
-    print(pools_table_area)
 
     worksheet_cov.add_table(
         pools_table_area, {

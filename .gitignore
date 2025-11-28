@@ -12,12 +12,13 @@ slurm/*.out
 .parallel/
 Results/
 alignment/
-./basecalling/
+basecalling/
 logs/
 prealignment/
 reports/
 results/
 snv_indels/
+cnv_sv/
 tmp/
 .tests/integration/test_data/mosdepth/
 workflow/scripts/plot_vcf_vaf.py

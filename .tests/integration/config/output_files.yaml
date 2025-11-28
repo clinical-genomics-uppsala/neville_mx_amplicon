@@ -43,7 +43,7 @@
 #   - name: "snv_indels_var_calls_ensembled"
 #     output: "Results/Data/{sample}_{type}.ensembled.vcf.gz"
 #     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"
-#
+
 #   - name: "snv_indels_var_calls_ensembled_annotated"
 #     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
 #     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.vcf.gz"
@@ -52,9 +52,9 @@
 #     output: "Results/Data/{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
 #     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
 
-#   - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
-#     output: "Results/Data/{sample}_{type}.ont_reads.snv-indels.vcf"
-#     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"
+   - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
+     output: "Results/Data/{sample}_{type}.ont_reads.snv-indels.vcf"
+     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"
 #
 #   - name: "sequali_reports"
 #     output: "Results/Reports/{sample}_{type}.ont_reads.filtered.fastq.gz.html"
@@ -91,7 +91,7 @@
    - name: "mosdepth_summary_amplicons"
      output: "Results/Reports/{sample}_{type}_amplicons.mosdepth.summary.txt"
      input: "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
-#
-#   - name: "excel_report"
-#     output: "Results/Reports/{sample}_{type}.xlsx"
-#     input: "reports/xlsx/{sample}_{type}.xlsx"
+
+   - name: "excel_report"
+     output: "Results/Reports/{sample}_{type}.xlsx"
+     input: "reports/xlsx/{sample}_{type}.xlsx"
