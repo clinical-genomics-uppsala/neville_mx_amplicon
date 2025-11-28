@@ -43,6 +43,10 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install bgzip tool
+        run: |
+          sudo apt-get update
+          sudo apt-get bgzip
       - name: Prepare test folder
         run: |
           mkdir -p .tests/integration/basecalling/dorado_duplex/

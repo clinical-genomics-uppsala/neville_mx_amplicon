@@ -18,10 +18,10 @@ prealignment/
 reports/
 results/
 snv_indels/
+cnv_sv/
 tmp/
 .tests/integration/test_data/mosdepth/
 workflow/scripts/plot_vcf_vaf.py
 workflow/scripts/plots_vaf_concordance_ngs_ont.py
 workflow/scripts/plots_read_len_distribution.py
 workflow/scripts/pon_from_vcf.py
-.tests/integration/tmp/

@@ -31,6 +31,10 @@ jobs:
       - name: Install requirements.test.txt
         run: |
           pip install -r requirements.test.txt
+      - name: Install bgzip tool
+        run: |
+          sudo apt-get update
+          sudo apt-get bgzip
       - name: Prepare test folder
         run: |
           mkdir -p .tests/integration/basecalling/dorado_duplex/
