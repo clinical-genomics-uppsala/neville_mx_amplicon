@@ -1,0 +1,2 @@
+sample	type	platform	machine	processing_unit	run_id	barcode	methylation	basecalling_model	bam
+D25-test007	T	ONT	AL439581W-INSTR	ARY499	afd175aaf6fe29541679103202168eecd0d97c44	NA	No	dna_r10.4.1_e8.2_400bps_sup@v5.0.0	./tests/test_data/reads.basecalled.bam
