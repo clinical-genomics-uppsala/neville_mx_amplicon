@@ -2,7 +2,30 @@ import pysam
 import pandas as pd
 import matplotlib.pyplot as plt
 
-af_bins = [0.00,0.005,0.01,0.015,0.02,0.03,0.04,0.05,0.10,0.15,0.20,0.25,0.30,0.35,0.40,0.45,0.5,0.6,0.7,0.8,0.9,1.0]
+af_bins = [
+    0.00,
+    0.005,
+    0.01,
+    0.015,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.10,
+    0.15,
+    0.20,
+    0.25,
+    0.30,
+    0.35,
+    0.40,
+    0.45,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0
+]
 
 min_vaf = 0.1
 vcf_file = f"/home/camille/ampliconthemato/pipeline_pool_amplicon/snv_indels/deepsomatic/min_vaf={min_vaf}/"\
@@ -30,4 +53,3 @@ df_bincounts.plot(kind='bar', rot=90, ax=ax,
 plt.savefig(f"/home/camille/ampliconthemato/pipeline_pool_amplicon/snv_indels/deepsomatic/min_vaf={min_vaf}/histogram.png",
             bbox_inches='tight')
 plt.show()
-

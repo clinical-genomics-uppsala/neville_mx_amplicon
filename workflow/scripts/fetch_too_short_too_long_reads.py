@@ -1,4 +1,3 @@
-#import snakemake
 from futils import *
 
 df = FastxDataFrame(snakemake.input.fastq)

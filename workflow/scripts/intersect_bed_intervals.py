@@ -1,6 +1,4 @@
-import snakemake
 from heapq import merge
-from pybedtools import BedTool
 
 
 def non_overlapping(data):
@@ -18,6 +16,7 @@ def non_overlapping(data):
             out.append(current)
             current = []
     return out
+
 
 def bed_to_list(bed_path: str, chrom) -> list:
     intervals = []
@@ -38,9 +37,8 @@ bedHI = [[7686781, 7689769], [7688621, 7691634]]
 
 
 if __name__ == "__main__":
-    #print_reduced_intervals("/home/camille/ampliconthemato/amplic_ont_hemato/data/primer_data/amplicons.bed")
     spans = bed_to_list("/home/camille/ampliconthemato/amplic_ont_hemato/data/primer_data/amplicons.bed", 17)
     print(spans)
     print(non_overlapping(spans))
-    list_to_bed(non_overlapping(spans), 17,"/home/camille/ampliconthemato/amplic_ont_hemato/data/primer_data/TP53_nonoverlapping.bed")
-
+    list_to_bed(non_overlapping(spans), 17,
+                "/home/camille/ampliconthemato/amplic_ont_hemato/data/primer_data/TP53_nonoverlapping.bed")
