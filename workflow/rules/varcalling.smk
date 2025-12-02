@@ -22,7 +22,7 @@ rule varcall_clairs_to:
         platform=config.get("clairs_to", {}).get("platform", ""),
         snv_min_af=config.get("clairs_to", {}).get("snv_min_af", 0.05),
         indel_min_af=config.get("clairs_to", {}).get("indel_min_af", 0.1),
-        outdir=directory(lambda wildcards, output: os.path.dirname(output.snv)),
+        outdir=directory(lambda wildcards, output: f"{os.path.dirname(output.snv)}/{wildcards.sample}_{wildcards.type}_clairs_to_output"),
     resources:
         partition=config.get("clairs_to", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("clairs_to", {}).get("time", config["default_resources"]["time"]),

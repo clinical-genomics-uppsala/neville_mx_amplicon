@@ -203,24 +203,24 @@ use rule tabix from snv_indels as snv_indels_tabix with:
         file="(snv_indels)\/.*",
 
 
-use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_clairs with:
-    input:
-        vcf="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        ref=config.get("reference", {}).get("fasta", ""),
-    output:
-        vcf=temp("snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz"),
-
-
-use rule whatshap_haplotag from snv_indels as snv_indels_whatshap_haplotag with:
-    input:
-        aln="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        vcf="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz",
-        tbi="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz.tbi",
-        ref=config.get("reference", {}).get("fasta", ""),
-        fai=config.get("reference", {}).get("fai", ""),
+# use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_clairs with:
+#     input:
+#         vcf="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz",
+#         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+#         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+#         ref=config.get("reference", {}).get("fasta", ""),
+#     output:
+#         vcf=temp("snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz"),
+#
+#
+# use rule whatshap_haplotag from snv_indels as snv_indels_whatshap_haplotag with:
+#     input:
+#         aln="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+#         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+#         vcf="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz",
+#         tbi="snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.phased.vcf.gz.tbi",
+#         ref=config.get("reference", {}).get("fasta", ""),
+#         fai=config.get("reference", {}).get("fai", ""),
 
 
 module cnv_sv:
