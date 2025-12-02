@@ -62,11 +62,11 @@
 
    - name: "snv_indels_whatshap_haplotag"
      output: "Results/Data/{sample}_{type}.ont_reads.whatshap.haplotag.bam"
-     input: "snv_indels/whatshap_haplotag/{sample}_{type}.haplotagged.bam"
+     input: "snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.phased.haplotagged.bam"
 
    - name: "snv_indels_whatshap_haplotag_idx"
      output: "Results/Data/{sample}_{type}.ont_reads.whatshap.haplotag.bam.bai"
-     input: "snv_indels/whatshap_haplotag/{sample}_{type}.haplotagged.bam.bai"
+     input: "snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.phased.haplotagged.bam.bai"
 #
 #   - name: "sequali_reports"
 #     output: "Results/Reports/{sample}_{type}.ont_reads.filtered.fastq.gz.html"
