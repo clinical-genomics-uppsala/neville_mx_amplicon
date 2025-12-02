@@ -125,6 +125,10 @@ filtlong:
   min_length: 2000
   max_length: 4000
 
+hiphase:
+  container: "docker://hydragenetics/hiphase:1.4.5"
+  extra: ""
+
 mosdepth:
   container: "docker://hydragenetics/mosdepth:0.3.6"
   by: "amplicons.bed"
@@ -221,6 +225,14 @@ vt_decompose:
 
 vt_normalize:
   container: "docker://hydragenetics/vt:2015.11.10"
+
+whatshap_phase:
+  container: "docker://hydragenetics/whatshap:2.2"
+  extra: ""
+
+whatshap_haplotag:
+  container: "docker://hydragenetics/whatshap:2.2"
+  extra: " --ignore-read-groups --skip-missing-contigs"
 
 # Modules
 
