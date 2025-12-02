@@ -2,13 +2,13 @@
 
 #### A pipeline to filter, align, and analyze Nanopore sequence data from pooled amplicons
 
-![Lint](htt[CODEOWNERS](.github%2FCODEOWNERS)ps://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/lint.yaml/badge.svg?branch=devhttps://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/main/.github/workflows/lint.yaml)
-![Snakefmt](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/snakefmt.yaml/badge.svg?branch=develophttps://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/main/.github/workflows/snakefmt.yaml)
-![snakemake dry run](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/snakemake-dry-run.yaml/badge.svg?branch=develop)
-![integration test](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/integration.yaml/badge.svg?branch=develop)
+[![Lint](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/lint.yaml/badge.svg)](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/lint.yaml)
+![Snakefmt](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/snakefmt.yaml/badge.svg)
+![snakemake dry run](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/snakemake-dry-run.yaml/badge.svg)
+![integration test](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/integration.yaml/badge.svg)
 
-![pycodestyle](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/pycodestyle.yaml/badge.svg?branch=develop)
-![pytest](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/pytest.yaml/badge.svg?branch=develop)
+![pycodestyle](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/pycodestyle.yaml/badge.svg)
+![pytest](https://github.com/hydra-genetics/neville_mx_amplicon/actions/workflows/pytest.yaml/badge.svg)
 
 [![License: GPL-3](https://img.shields.io/badge/License-GPL3-yellow.svg)](https://opensource.org/licenses/gpl-3.0.html)
 
@@ -622,7 +622,7 @@ Default container: `docker://hydragenetics/common:3.0.0`
 | Samtools    | 1.21       | `docker://hydragenetics/samtools:1.21`                      | -                                                                                                                                                                 |
 | Filtlong    | 0.2.1      | `docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4` | The `--min_length` and `--max_length` command line options must be available.                                                                                     |
 | Mosdepth    | 0.3.6      | `docker://hydragenetics/mosdepth:0.3.6`                     | Used to approximate the read counts per target.                                                                                                                   |
-| ClairS-TO   | 0.3.1      | `docker://hkubal/clairs-to:latest`                          | No scientific publication specifically related to ClairS-TO has been found yet.                                                                                   |
+| ClairS-TO   | 0.3.1      | `docker://hkubal/clairs-to:latest`                          | -                                                                                                                                                                 |
 | DeepSomatic | 1.9.0      | `docker://google/deepsomatic:1.9.0`                         | The snakemake command that executes variant calling in the suitable Singularity container must have the binding argument `/usr/lib/locale/:/usr/lib/locale/`.     |
 | VarDict     | 1.8.3      | `docker://hydragenetics/vardict:1.8.3`                      | Originally designed for short-read data but has an "amplicon" mode that seems compatible with ONT data. Many false positive for short indels with low VAF though. |
 | Sniffles2   | 2.6.1      | `docker://hydragenetics/sniffles2:2.6.1`                    | -                                                                                                                                                                 |
