@@ -182,7 +182,7 @@ use rule bgzip from snv_indels as snv_indels_bgzip with:
         )
     wildcard_constraints:
         file="(snv_indels)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled"
-        "|somatic_.+|rename_vaf)",
+        "|somatic_.+|rename_vaf|whatshap_haplotag)",
 
 
 use rule tabix from snv_indels as snv_indels_tabix with:
