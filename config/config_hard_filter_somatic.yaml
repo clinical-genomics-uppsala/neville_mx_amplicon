@@ -1,15 +1,9 @@
-# NB: some hard filtering may be done with bcftools view -i/-e first, that is before annotation:
-# DeepSomatic: filter out all false positives ('QUAL==0' and 'FILTER=="RefCall"'). Soft-filter RefCall:s with uncertain genotypes ('GT=="mis"' i.e. GT=./.) and 'FILTER=="GERMLINE"'
-# ClairS-TO: filter out all false positives (-i 'FILTER!~"NonSomatic"'?)  -e 'FILTER~"NonSomatic" | FILTER=="LowQual" & QUAL==0'?
-# VarDict: how to filter out false positives? See https://balsamic.readthedocs.io/en/v10.0.3/balsamic_filters.html#vardict-filtering. Some quality cut-off? If so, at what threshold? INFO/QUAL=30 & QUAL field>120?
-# Sniffles2: use `bedtools intersect` to filter out variants not located in a target
-
 # The YAML sections below intend to implement filtering based on annotations, that is after variant annotation
 
 filters:
   germline:
     description: "Hard filter germline"
-    expression: "(VEP:gnomADe_AF > 0.005)"
+    expression: "(VEP:gnomADe_AF > 0.005)"  # gnomADe_AF: Frequency of existing variant in gnomAD exomes combined population
     soft_filter: "False"
   ad:
     description: "Hard filter variants with few observations (AD lower than 50)"

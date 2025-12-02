@@ -130,7 +130,7 @@ mosdepth:
   by: "amplicons.bed"
 
 mosdepth_bed:
-  container: "docker://hydragenetics/mosdepth:0.3.2"
+  container: "docker://hydragenetics/mosdepth:0.3.6"
   thresholds: "1,5,100,500,1000"
 
 mosdepth_exons:
