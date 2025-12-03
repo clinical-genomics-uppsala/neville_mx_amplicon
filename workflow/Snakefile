@@ -203,7 +203,7 @@ use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_var
         ref=config["reference"]["fasta"],
     output:
         vcf=temp("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz"),
-        bcbio_work=temp(directory("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled-work/")),
+        bcbio_work=temp(directory("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter-work/")),
     params:
         support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
         sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
