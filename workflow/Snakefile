@@ -270,15 +270,22 @@ use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_ensemble wi
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         fasta=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
+        vcf="snv_indels/whatshap_phase/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
+    log:
+        "snv_indels/whatshap_phase/{sample}_{type}.phased.vcf.gz.log",
+    benchmark:
+        repeat(
+            "snv_indels/whatshap_phase/{sample}_{type}.phased.vcf.gz.benchmark.tsv",
+            config.get("whatshap_phase",{}).get("benchmark_repeats",1),
+        )
 
 
 use rule whatshap_haplotag from snv_indels as snv_indels_whatshap_haplotag with:
     input:
         aln="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
-        tbi="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz.tbi",
+        vcf="snv_indels/whatshap_phase/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
+        tbi="snv_indels/whatshap_phase/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz.tbi",
         ref=config.get("reference", {}).get("fasta", ""),
         fai=config.get("reference", {}).get("fai", ""),
     output:
