@@ -188,6 +188,34 @@ use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_var
         )
 
 
+use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_ensemble_nofilter with:
+    input:
+        vcfs=expand(
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "{caller}.vcf.gz",
+            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+        ),
+        tabix=expand(
+            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "{caller}.vcf.gz.tbi",
+            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+        ),
+        ref=config["reference"]["fasta"],
+    output:
+        vcf=temp("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz"),
+        bcbio_work=temp(directory("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled-work/")),
+    params:
+        support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
+        sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
+    log:
+        "snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.log",
+    benchmark:
+        repeat(
+            "snv_indels/snv_indels_bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
+            config.get("bcbio_variation_ensemble_nofilter", {}).get("benchmark_repeats", 1),
+        )
+
+
 use rule bgzip from snv_indels as snv_indels_bgzip with:
     input:
         vcf="{file}.vcf",
@@ -204,7 +232,7 @@ use rule bgzip from snv_indels as snv_indels_bgzip with:
         )
     wildcard_constraints:
         file="(snv_indels)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled"
-        "|somatic_.+|rename_vaf|whatshap_haplotag)",
+        "|somatic_.+|rename_vaf|nofilter)",
 
 
 use rule tabix from snv_indels as snv_indels_tabix with:
@@ -225,26 +253,26 @@ use rule tabix from snv_indels as snv_indels_tabix with:
         file="(snv_indels)\/.*",
 
 
-use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_clairs with:
+use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_ensemble with:
     input:
-        vcf="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         fasta=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.phased.vcf.gz",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz",
 
 
 use rule whatshap_haplotag from snv_indels as snv_indels_whatshap_haplotag with:
     input:
         aln="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        vcf="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.phased.vcf.gz",
-        tbi="snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.phased.vcf.gz.tbi",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz",
+        tbi="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz.tbi",
         ref=config.get("reference", {}).get("fasta", ""),
         fai=config.get("reference", {}).get("fai", ""),
     output:
-        temp("snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.phased.haplotagged.bam"),
+        temp("snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.nofilter.phased.haplotagged.bam"),
 
 
 module cnv_sv:
