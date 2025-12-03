@@ -254,6 +254,11 @@ use rule tabix from snv_indels as snv_indels_tabix with:
 
 
 use rule bcftools_sort from snv_indels as snv_indels_bcftools_sort_nofilter with:
+    input:
+        vcf="{file}.vcf.gz",
+        tbi="{file}.vcf.gz.tbi",
+    output:
+        vcf=temp("{file}.sorted.vcf.gz"),
     wildcard_constraints:
         file="(snv_indels)\/.*(nofilter)",
 
