@@ -253,26 +253,31 @@ use rule tabix from snv_indels as snv_indels_tabix with:
         file="(snv_indels)\/.*",
 
 
+use rule bcftools_sort from snv_indels as snv_indels_bcftools_sort_nofilter with:
+    wildcard_constraints:
+        file="(snv_indels)\/.*(nofilter)",
+
+
 use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_ensemble with:
     input:
-        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.vcf.gz",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         fasta=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
 
 
 use rule whatshap_haplotag from snv_indels as snv_indels_whatshap_haplotag with:
     input:
         aln="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz",
-        tbi="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.phased.vcf.gz.tbi",
+        vcf="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz",
+        tbi="snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz.tbi",
         ref=config.get("reference", {}).get("fasta", ""),
         fai=config.get("reference", {}).get("fai", ""),
     output:
-        temp("snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.nofilter.phased.haplotagged.bam"),
+        temp("snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.nofilter.sorted.phased.haplotagged.bam"),
 
 
 module cnv_sv:
