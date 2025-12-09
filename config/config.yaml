@@ -125,8 +125,8 @@ filtlong:
   min_length: 2000
   max_length: 4000
 
-hiphase:
-  container: "docker://hydragenetics/hiphase:1.4.5"
+longphase:
+  container: "docker://ontresearch/longphase:latest"
   extra: ""
 
 mosdepth:
@@ -228,7 +228,7 @@ vt_normalize:
 
 whatshap_phase:
   container: "docker://hydragenetics/whatshap:2.2"
-  extra: ""
+  extra: "--ignore-read-groups"
 
 whatshap_haplotag:
   container: "docker://hydragenetics/whatshap:2.2"
