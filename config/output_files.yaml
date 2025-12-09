@@ -78,12 +78,12 @@
 
    - name: "snv_indels_whatshap_phase"
      output: "Results/Data/{sample}_{type}.ont_reads.whatshap.phased.vcf.gz"
-     input: "snv_indels/whatshap_phase/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz"
-     # input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.phased.vcf.gz"
+     # input: "snv_indels/whatshap_phase/{sample}_{type}.ensembled.nofilter.sorted.phased.vcf.gz"
+     input: "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.phased.vcf.gz"
 
    - name: "snv_indels_whatshap_haplotag"
      output: "Results/Data/{sample}_{type}.ont_reads.whatshap.haplotag.bam"
-     input: "snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.nofilter.sorted.phased.haplotagged.bam"
+     input: "snv_indels/whatshap_haplotag/{sample}_{type}.ensembled.phased.haplotagged.bam"
 
    - name: "snv_indels_whatshap_haplotag_idx"
      output: "Results/Data/{sample}_{type}.ont_reads.whatshap.haplotag.bam.bai"
