@@ -188,32 +188,32 @@ use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_var
         )
 
 
-use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_ensemble_nofilter with:
-    input:
-        vcfs=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
-            "{caller}.vcf.gz",
-            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
-        ),
-        tabix=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
-            "{caller}.vcf.gz.tbi",
-            caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
-        ),
-        ref=config["reference"]["fasta"],
-    output:
-        vcf=temp("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz"),
-        bcbio_work=temp(directory("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter-work/")),
-    params:
-        support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
-        sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
-    log:
-        "snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.log",
-    benchmark:
-        repeat(
-            "snv_indels/snv_indels_bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
-            config.get("bcbio_variation_ensemble_nofilter", {}).get("benchmark_repeats", 1),
-        )
+# use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_ensemble_nofilter with:
+#     input:
+#         vcfs=expand(
+#             "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+#             "{caller}.vcf.gz",
+#             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+#         ),
+#         tabix=expand(
+#             "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+#             "{caller}.vcf.gz.tbi",
+#             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
+#         ),
+#         ref=config["reference"]["fasta"],
+#     output:
+#         vcf=temp("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter.vcf.gz"),
+#         bcbio_work=temp(directory("snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.nofilter-work/")),
+#     params:
+#         support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
+#         sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
+#     log:
+#         "snv_indels/bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.log",
+#     benchmark:
+#         repeat(
+#             "snv_indels/snv_indels_bcbio_variation_ensemble_nofilter/{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
+#             config.get("bcbio_variation_ensemble_nofilter", {}).get("benchmark_repeats", 1),
+#         )
 
 
 use rule bgzip from snv_indels as snv_indels_bgzip with:
@@ -253,14 +253,14 @@ use rule tabix from snv_indels as snv_indels_tabix with:
         file="(snv_indels)\/.*",
 
 
-use rule bcftools_sort from snv_indels as snv_indels_bcftools_sort_nofilter with:
-    input:
-        vcf="{file}.vcf.gz",
-        tbi="{file}.vcf.gz.tbi",
-    output:
-        vcf=temp("{file}.sorted.vcf.gz"),
-    wildcard_constraints:
-        file="(snv_indels)\/.*(nofilter)",
+# use rule bcftools_sort from snv_indels as snv_indels_bcftools_sort_nofilter with:
+#     input:
+#         vcf="{file}.vcf.gz",
+#         tbi="{file}.vcf.gz.tbi",
+#     output:
+#         vcf=temp("{file}.sorted.vcf.gz"),
+#     wildcard_constraints:
+#         file="(snv_indels)\/.*(nofilter)",
 
 
 use rule whatshap_phase from snv_indels as snv_indels_whatshap_phase_ensemble with:
