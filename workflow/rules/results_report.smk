@@ -25,7 +25,7 @@ rule results_report_xlsx:
         mosdepth_regions="results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz",
         csv_counts="results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv",
         pool_counts=expand("results/mosdepth/{{sample}}_{{type}}_yield_pool_{pooln}.csv", pooln=config["pools"].keys()),
-        yield_plot="results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png",
+        # yield_plot="results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png",
     output:
         xlsx="reports/xlsx/{sample}_{type}.xlsx",
     params:
