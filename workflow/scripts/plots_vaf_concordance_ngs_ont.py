@@ -11,8 +11,11 @@ import numpy as np
 from sklearn.metrics import r2_score
 import os
 
-vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_251029.csv"
-plot1 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio.png"
+fig_format = "png"
+vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_260126.csv"
+plot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_all.{fig_format}"
+plot2 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_Flongle.{fig_format}"
+plot3 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF-diff-ratio_MinION.{fig_format}"
 
 relabels = {
     'TP53_3kb_A1_only': 'TP53_A',
@@ -99,3 +102,68 @@ if zoomin:
     ax1.indicate_inset_zoom(axins, edgecolor="black")
 
 plt.savefig(plot1, bbox_inches='tight', dpi=600)
+
+
+# Scatterplot for Flongle data only
+
+fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
+df_flongle = df1[df1["flowcell"] == "Flongle"]
+r2_vaf_flongle = r2_score(df_flongle["VAF_SR_TM"], df_flongle["VAF_LR_ONT"])
+g2 = sns.scatterplot(data=df_flongle, x="VAF_SR_TM", y="VAF_LR_ONT", hue="diff_ratio",
+                     ax=ax2,
+                     style="flowcell", markers=marker_map,
+                     palette=cpalette, alpha=0.9, legend=False)
+ax2.plot([0, 100], [0, 100], '--k', label="1:1")
+cax2 = colorbar.make_axes(ax2, orientation='vertical', pad=0.05)
+colorbar.Colorbar(cax2[0], cmap=cpalette,
+                  values=np.linspace(df_flongle["diff_ratio"].min(), df_flongle["diff_ratio"].max(), 10),
+                  ).set_label(label="Magnitude of the difference in VAF", size=18)
+cax2[0].tick_params(labelsize=16)  # size of the tick labels on the colorbar
+ax2.set_xlabel("VAF% NGS", fontsize=18)
+ax2.set_ylabel("VAF% ONT", fontsize=18)
+ax2.tick_params(axis='both', which='major', labelsize=18)
+ax2.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data", fontsize=20)
+plt.annotate(text=f'R²={r2_vaf_flongle:.3f}',
+             xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
+             color='k', fontsize=16)
+legend_elements = [Line2D([0], [0], marker=marker_map['Flongle'], color='w',
+                          label=f"Flongle (n={data_points_counts['Flongle']})",
+                          markerfacecolor='k', markersize=marker_size),
+                   # Line2D([0], [0], marker=marker_map['MinION'], color='w',
+                   #        label=f"MinION (n={data_points_counts['MinION']})",
+                   #        markerfacecolor='k', markersize=marker_size),
+                   ]
+ax2.legend(handles=legend_elements, title="Flowcell type", title_fontsize=14, fontsize=14, loc='upper left')
+plt.savefig(plot2, bbox_inches='tight', dpi=600)
+
+# Scatterplot for MinION data only
+
+fig3, ax3 = plt.subplots(1, 1, figsize=(10, 9))
+df_minion = df1[df1["flowcell"] == "MinION"]
+r2_vaf_minion = r2_score(df_minion["VAF_SR_TM"], df_minion["VAF_LR_ONT"])
+g3 = sns.scatterplot(data=df_minion, x="VAF_SR_TM", y="VAF_LR_ONT", hue="diff_ratio",
+                     ax=ax3,
+                     style="flowcell", markers=marker_map,
+                     palette=cpalette, alpha=0.9, legend=False)
+ax3.plot([0, 100], [0, 100], '--k', label="1:1")
+cax3 = colorbar.make_axes(ax3, orientation='vertical', pad=0.05)
+colorbar.Colorbar(cax3[0], cmap=cpalette,
+                  values=np.linspace(df_minion["diff_ratio"].min(), df_minion["diff_ratio"].max(), 10),
+                  ).set_label(label="Magnitude of the difference in VAF", size=18)
+cax3[0].tick_params(labelsize=16)  # size of the tick labels on the colorbar
+ax3.set_xlabel("VAF% NGS", fontsize=18)
+ax3.set_ylabel("VAF% ONT", fontsize=18)
+ax3.tick_params(axis='both', which='major', labelsize=18)
+ax3.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data", fontsize=20)
+plt.annotate(text=f'R²={r2_vaf_minion:.3f}',
+             xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
+             color='k', fontsize=16)
+legend_elements = [#Line2D([0], [0], marker=marker_map['Flongle'], color='w',
+                   #        label=f"Flongle (n={data_points_counts['Flongle']})",
+                   #        markerfacecolor='k', markersize=marker_size),
+                   Line2D([0], [0], marker=marker_map['MinION'], color='w',
+                          label=f"MinION (n={data_points_counts['MinION']})",
+                          markerfacecolor='k', markersize=marker_size),
+                   ]
+ax3.legend(handles=legend_elements, title="Flowcell type", title_fontsize=14, fontsize=14, loc='upper left')
+plt.savefig(plot3, bbox_inches='tight', dpi=600)
