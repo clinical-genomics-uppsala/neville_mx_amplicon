@@ -82,6 +82,7 @@ module_order:
         - "*/mosdepth_bed/*IDH*"
         - "*/mosdepth_bed/*NPM*"
         - "*/mosdepth_bed/*TP53_*_only*"
+        - - "*/mosdepth_bed/*TP53_J3*"
         # - "*/mosdepth/*mosdepth.summary.txt"
         # - "*/mosdepth_bed/*TP53_*+*"
   - picard:

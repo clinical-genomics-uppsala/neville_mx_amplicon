@@ -333,7 +333,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 .tests/integration/
 ├── basecalling
 │   └── dorado_duplex
-│       └── D25-test007_T_reads.ont_adapt_trim.bam
+│       └── Mtest_D25-test007_T_reads.ont_adapt_trim.bam
 ├── config
 │   ├── config_filter_bcftools.yaml
 │   ├── config_hard_filter_somatic.yaml
@@ -348,7 +348,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 ├── dorado_models
 │   └── dna_r10.4.1_e8.2_400bps_sup@v5.0.0
 ├── reference
-│   ├── D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
+│   ├── Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
 │   ├── TP53_chr17_GRCh38.dict
 │   ├── TP53_chr17_GRCh38.fasta.gz
 │   ├── TP53_chr17_GRCh38.fasta.fai
@@ -356,7 +356,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 ├── samples.tsv
 ├── test_data
 │   ├── bedfiles
-│   ├── D25-test007
+│   ├── Mtest
 │       └── ABC123
 │           ├── bam_pass
 │               ├── ABC123_pass_456_789_0.bam
@@ -365,8 +365,8 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 │               └── ABC123_pass_456_789_1.bam.bai
 │           └── pod5
 │   └── preprocessed
-│       ├── D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
-│       └── D25-test007_T.ensembled.vep_annotated.vcf.gz
+│       ├── Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
+│       └── Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz
 ├── tmp
 │   └── .
 └── units.tsv
@@ -402,7 +402,7 @@ otherwise copy there the tsv files provided in `config`: `cp .tests/integration/
 3. Set up the preprocessed basecalled BAM file in `.tests/integration/basecalling/dorado_duplex/`:
 ```bash
 mkdir -p .tests/integration/basecalling/dorado_duplex/ && \
-cp .tests/integration/test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+cp .tests/integration/test_data/preprocessed/Mtest_D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
 ```
 
 4. If missing, create the temporary directory `.tests/integration/tmp/` to store temporary files: 
@@ -580,7 +580,7 @@ After execution of the small integration test, the directory `.tests/integration
 │   └── bcbio_variation_recall_ensemble
 ├── test_data
 │   ├── bedfiles
-│   ├── D25-test007
+│   ├── Mtest
 │   └── preprocessed
 ├── tmp
 └── units.tsv

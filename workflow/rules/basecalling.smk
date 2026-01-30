@@ -17,7 +17,7 @@ if not config.get("multisample", False):
             pod5=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid"), config.get("raw_data")),
             ref_data=config.get("ref_data"),
         output:
-            bam=temp("basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam"),
+            bam=temp("basecalling/dorado/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:
             model=config.get("dorado_basecaller", {}).get("model", ""),
             trim=config.get("dorado_basecaller", {}).get("trim", ""),
@@ -34,10 +34,10 @@ if not config.get("multisample", False):
         container:
             config.get("dorado_basecaller", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam.log",
+            "basecalling/dorado/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.log",
         benchmark:
             repeat(
-                "basecalling/dorado/{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
+                "basecalling/dorado/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
                 config.get("dorado_basecaller", {}).get("benchmark_repeats", 1),
             )
         message:
@@ -57,7 +57,7 @@ if not config.get("multisample", False):
             pod5=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid"), config.get("raw_data")),
             ref_data=config.get("ref_data"),
         output:
-            bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
+            bam=temp("basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:
             model=config.get("dorado_duplex", {}).get("model", ""),
             trim=config.get("dorado_duplex", {}).get("trim", ""),
@@ -73,13 +73,13 @@ if not config.get("multisample", False):
         threads: config.get("dorado_basecaller", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
             repeat(
-                "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
+                "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
                 config.get("dorado_basecaller", {}).get("benchmark_repeats", 1),
             )
         container:
             config.get("dorado_duplex", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.log",
+            "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.log",
         message:
             "{rule}: Duplex basecalling with dorado from POD5 files. ONT adapters will be trimmed."
         shell:
@@ -186,7 +186,7 @@ if config.get("multisample", False):
             bamdir=os.path.join("basecalling/dorado_demux/", config['batchid']),
             done=f"basecalling/dorado_demux/{config['batchid']}_demux.done",
         output:
-            bam_renamed=temp("basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam"),
+            bam_renamed=temp("basecalling/rename_demux_bam/{experiment}_{sample}_{type}_reads.basecalled.bam"),
         resources:
             partition=config.get("rename_demux_bam", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("rename_demux_bam", {}).get("time", config["default_resources"]["time"]),
@@ -196,13 +196,13 @@ if config.get("multisample", False):
         threads: config.get("rename_demux_bam", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
             repeat(
-                "basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam.benchmark.tsv",
+                "basecalling/rename_demux_bam/{experiment}_{sample}_{type}_reads.basecalled.bam.benchmark.tsv",
                 config.get("rename_demux_bam", {}).get("benchmark_repeats", 1),
             )
         container:
             config.get("rename_demux_bam", {}).get("container", config["default_container"])
         log:
-            "basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam.log",
+            "basecalling/rename_demux_bam/{experiment}_{sample}_{type}_reads.basecalled.bam.log",
         message:
             "{rule}: Renaming demultiplexed BAM files to include sample name and read type."
         shell:
@@ -215,16 +215,16 @@ if config.get("multisample", False):
                 sample=$(echo $filename | cut -d'_' -f2 | cut -d'.' -f1)
                 if [[ $sample == {wildcards.sample} ]]; then
                     echo "Renaming BAM file for $sample and writing to $outdir" &>> {log} 
-                    cp $bam $outdir/${{sample}}_{wildcards.type}_reads.basecalled.bam &>> {log}
+                    cp $bam $outdir/${{experiment}}_{{sample}}_{wildcards.type}_reads.basecalled.bam &>> {log}
                 fi
             done
             """
 
     rule dorado_trim:
         input:
-            bam="basecalling/rename_demux_bam/{sample}_{type}_reads.basecalled.bam",
+            bam="basecalling/rename_demux_bam/{experiment}_{sample}_{type}_reads.basecalled.bam",
         output:
-            bam=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam"),
+            bam=temp("basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam"),
         params:
             trim=config.get("dorado_trim", {}).get("trim", ""),
         resources:
@@ -236,13 +236,13 @@ if config.get("multisample", False):
         threads: config.get("trim_dorado", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
             repeat(
-                "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
+                "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.benchmark.tsv",
                 config.get("trim_dorado", {}).get("benchmark_repeats", 1),
             )
         container:
             config.get("dorado_trim", {}).get("container", config["default_container"])
         log:
-            "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam.log",
+            "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam.log",
         message:
             "{rule}: Trimming demultiplexed reads with dorado."
         shell:
@@ -257,9 +257,9 @@ if config.get("multisample", False):
 
 rule bam2fastq:
     input:
-        bam="basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.bam",
+        bam="basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.bam",
     output:
-        fastq=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq"),
+        fastq=temp("basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq"),
     resources:
         partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
@@ -269,11 +269,11 @@ rule bam2fastq:
     threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"])
     benchmark:
         repeat(
-            "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.benchmark.tsv",
+            "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.benchmark.tsv",
             config.get("samtools", {}).get("benchmark_repeats", 1),
         )
     log:
-        "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.log",
+        "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.log",
     container:
         config.get("samtools", {}).get("container", config["default_container"])
     message:
@@ -286,9 +286,9 @@ rule bam2fastq:
 
 rule compress_fastq:
     input:
-        fastq="basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq",
+        fastq="basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq",
     output:
-        fastqgz=temp("basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.gz"),
+        fastqgz=temp("basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz"),
     resources:
         partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
@@ -298,11 +298,11 @@ rule compress_fastq:
     threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"])
     benchmark:
         repeat(
-            "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.gz.benchmark.tsv",
+            "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz.benchmark.tsv",
             config.get("samtools", {}).get("benchmark_repeats", 1),
         )
     log:
-        "basecalling/dorado_duplex/{sample}_{type}_reads.ont_adapt_trim.fastq.gz.log",
+        "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz.log",
     container:
         config.get("basecalling_compress_fastq", {}).get("container", config["default_container"])
     message:

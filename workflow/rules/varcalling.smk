@@ -11,13 +11,13 @@ logger.info(f"\n{workflow.snakefile} is being parsed")
 
 rule varcall_clairs_to:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=config.get("clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        snv=temp("snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz"),
-        indel=temp("snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz"),
+        snv=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}_snv.vcf.gz"),
+        indel=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}_indel.vcf.gz"),
     params:
         platform=config.get("clairs_to", {}).get("platform", ""),
         snv_min_af=config.get("clairs_to", {}).get("snv_min_af", 0.05),
@@ -31,10 +31,10 @@ rule varcall_clairs_to:
         mem_per_cpu=config.get("clairs_to", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("clairs_to", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "snv_indels/clairs_to/{sample}_{type}_clairs_to.log",
+        "snv_indels/clairs_to/{experiment}_{sample}_{type}_clairs_to.log",
     benchmark:
         repeat(
-            "snv_indels/clairs_to/{sample}_{type}_clairs_to.benchmark.tsv",
+            "snv_indels/clairs_to/{experiment}_{sample}_{type}_clairs_to.benchmark.tsv",
             config.get("clairs_to", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -51,11 +51,11 @@ rule varcall_clairs_to:
 
 rule varcall_clairs_to_concat:
     input:
-        snv="snv_indels/clairs_to/{sample}_{type}_snv.vcf.gz",
-        indel="snv_indels/clairs_to/{sample}_{type}_indel.vcf.gz",
+        snv="snv_indels/clairs_to/{experiment}_{sample}_{type}_snv.vcf.gz",
+        indel="snv_indels/clairs_to/{experiment}_{sample}_{type}_indel.vcf.gz",
     output:
         all=temp(
-            "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"
+            "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"
         ),
     resources:
         partition=config.get("varcall_clairs_to_concat", {}).get("partition", config["default_resources"]["partition"]),
@@ -67,10 +67,10 @@ rule varcall_clairs_to_concat:
     container:
         config.get("varcall_clairs_to_concat", {}).get("container", config["default_container"])
     log:
-        "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log",
+        "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log",
     benchmark:
         repeat(
-            "snv_indels/clairs_to/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
+            "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
             config.get("varcall_clairs_to_concat", {}).get("benchmark_repeats", 1),
         )
     message:
@@ -87,23 +87,23 @@ rule varcall_clairs_to_concat:
 
 rule varcall_deepsomatic:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        tmpdir=directory("snv_indels/deepsomatic/{sample}_{type}_tmp"),
-        vcf="snv_indels/deepsomatic/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
+        tmpdir=directory("snv_indels/deepsomatic/{experiment}_{sample}_{type}_tmp"),
+        vcf="snv_indels/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
     params:
         sample=lambda wildcards: f"{wildcards.sample}",
         model="ONT_TUMOR_ONLY",
         extra=config.get("deepsomatic", {}).get("extra", ""),
         filter=config.get("deepsomatic", {}).get("filter", ""),
     log:
-        "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.log",
+        "snv_indels/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.log",
     benchmark:
         repeat(
-            "snv_indels/deepsomatic/{sample}_{type}_deepsomatic.benchmark.tsv",
+            "snv_indels/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.benchmark.tsv",
             config.get("deepsomatic", {}).get("benchmark_repeats", 1),
         )
     threads: config.get("deepsomatic", {}).get("threads", config["default_resources"]["threads"])
@@ -127,23 +127,23 @@ rule varcall_deepsomatic:
 
 rule varcall_savana:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
-        dummy="cnv_sv/savana/{sample}_{type}_savana.done",
-        outdir=temp(directory("cnv_sv/savana/{sample}_{type}_savana_output")),
+        dummy="cnv_sv/savana/{experiment}_{sample}_{type}_savana.done",
+        outdir=temp(directory("cnv_sv/savana/{experiment}_{sample}_{type}_savana_output")),
     params:
         sample=config.get("sample_id", "sample_T"),
         g1000_vcf="1000g_hg38",
         extra="",
         prefix=lambda w: f"{w.sample}_{w.type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.savana",
     log:
-        "cnv_sv/savana/{sample}_{type}_savana.log",
+        "cnv_sv/savana/{experiment}_{sample}_{type}_savana.log",
     benchmark:
         repeat(
-            "cnv_sv/savana/{sample}_{type}_savana.benchmark.tsv",
+            "cnv_sv/savana/{experiment}_{sample}_{type}_savana.benchmark.tsv",
             config.get("savana", {}).get("benchmark_repeats", 1),
         )
     resources:
