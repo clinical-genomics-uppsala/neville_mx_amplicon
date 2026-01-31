@@ -215,7 +215,7 @@ if config.get("multisample", False):
                 sample=$(echo $filename | cut -d'_' -f2 | cut -d'.' -f1)
                 if [[ $sample == {wildcards.sample} ]]; then
                     echo "Renaming BAM file for $sample and writing to $outdir" &>> {log} 
-                    cp $bam $outdir/${{experiment}}_{{sample}}_{wildcards.type}_reads.basecalled.bam &>> {log}
+                    cp $bam $outdir/{{experiment}}_{{sample}}_{wildcards.type}_reads.basecalled.bam &>> {log}
                 fi
             done
             """
