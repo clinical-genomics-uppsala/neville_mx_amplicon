@@ -425,11 +425,13 @@ use rule multiqc from qc as qc_multiqc with:
         files=lambda wildcards: set(
             [
                 file.format(
+                    experiment=experiment,
                     sample=sample,
                     target=target,
                     type=type,
                 )
                 for file in config["multiqc"]["reports"][wildcards.report]["qc_files"]
+                for experiment in [wildcards.experiment]
                 for sample in [wildcards.sample]
                 for type in [wildcards.type]
                 for target in config["amplicons"] + config["extra_regions"]
