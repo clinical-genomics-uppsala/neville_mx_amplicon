@@ -86,6 +86,7 @@ print(df1Kcumcount)
 df1Kcumcount.to_csv(
     "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time.csv", index=False)
 
+# Plot number of samples above 1000x over time per target and experiment
 m15_2 = df1Kcumcount[df1Kcumcount["experiment_id"] == "M15_2"]
 #print(m15_2)
 mwash4 = df1Kcumcount[df1Kcumcount["experiment_id"] == "Mwash4"]
@@ -109,5 +110,38 @@ for exp_name, exp_data in experiments.items():
     fig1.suptitle(f'Number of samples with coverage >= 1000x over time (Experiment {exp_name}: {exp_data["cumcount"].max()} samples)', y=1.02)
     ax1[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
     plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_{exp_name}.{fig_format}",
+                bbox_inches='tight')
+    plt.close()
+
+# Plot number of samples above 1000x over time per target across all the experiments that have the same group size
+group_sizes = df1Kcumcount["group_size"].unique()
+for group_size in group_sizes:
+    fig2, ax2 = plt.subplots(len(relabels), 1,   # as many rows as targets
+                             figsize=(5, len(relabels) * 1.95),
+                             sharex=True)
+    group_data = df1Kcumcount[df1Kcumcount["group_size"] == group_size].drop(columns=["sample"])
+    nb_experiments = df1Kcumcount[df1Kcumcount["group_size"] == group_size]["experiment_id"].nunique()
+    group_data = dfsup1000[dfsup1000["group_size"] == group_size].drop(columns=["mean_cov"])
+    nb_experiments = dfsup1000[dfsup1000["group_size"] == group_size]["experiment_id"].nunique()
+    for a, lab in enumerate(relabels.keys()):
+        # sns.lineplot(data=group_data[group_data["target"] == lab], x="timestep", y="cumcount", marker="o", ax=ax2[a])
+        sns.histplot(data=group_data[group_data["target"] == lab],#.drop("cumcount", axis=1),
+                     x="timestep",
+                     hue="experiment_id",
+                     stat="count",
+                     discrete=True,
+                     # weights="sample",
+                     bins="timestep",
+                     multiple="stack",
+                     alpha=0.95, ax=ax2[a])
+        ax2[a].set_title(f'Target: {relabels[lab]}')
+        ax2[a].set_xlabel('Time (minutes)')
+        ax2[a].set_ylabel('')
+        # ax2[a].set_yticks(range(0, int(group_size) * nb_experiments + 1 + 1, 1))
+        ax2[a].grid(True)
+    plt.tight_layout()
+    fig2.suptitle(f'Number of samples with coverage >= 1000x over time (Group size: {group_size}', y=1.02)
+    ax2[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
+    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
                 bbox_inches='tight')
     plt.close()

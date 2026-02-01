@@ -80,7 +80,7 @@ rule mosdepth_overlap:
     shell:
         """
         chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam} > {log}
+        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.experiment}_{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam} > {log}
         """
 
 
