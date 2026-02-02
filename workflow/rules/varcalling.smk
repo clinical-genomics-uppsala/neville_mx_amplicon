@@ -44,9 +44,14 @@ rule varcall_clairs_to:
         {rule}: Long-read somatic small variant calling in only tumor samples with ClairS-TO.
         """
     shell:
-        """
-        run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref} --threads {resources.threads} --platform {params.platform} --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed} --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af} --disable_verdict --snv_output_prefix {wildcards.sample}_{wildcards.type}_snv --indel_output_prefix {wildcards.sample}_{wildcards.type}_indel 2> {log}
-        """
+        "run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref}"
+        " --threads {resources.threads} --platform {params.platform}"
+        " --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed}"
+        " --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af}"
+        " --disable_verdict"
+        " --snv_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_snv"
+        " --indel_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_indel"
+        " 2> {log}"
 
 
 rule varcall_clairs_to_concat:
