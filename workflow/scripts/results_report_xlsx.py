@@ -262,7 +262,7 @@ with gzip.open(snakemake.input.mosdepth_exons, "rt") as exons_file:
 
 """ xlsx file with sheets """
 logging.info(f"Creating xlsx file {snakemake.output.xlsx}")
-workbook = xlsxwriter.Workbook(snakemake.output.xlsx)
+workbook = xlsxwriter.Workbook(snakemake.output.xlsx, {"nan_inf_to_errors": True})
 
 worksheet_overview = workbook.add_worksheet("Overview")
 # if sample.lower() == "hd829":
