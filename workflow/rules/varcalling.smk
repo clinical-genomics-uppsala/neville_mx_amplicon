@@ -16,8 +16,8 @@ rule varcall_clairs_to:
         ref=config.get("ref_data"),
         bed=config.get("clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        snv=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}_snv.vcf.gz"),
-        indel=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}_indel.vcf.gz"),
+        snv=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.vcf.gz"),
+        indel=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.vcf.gz"),
     params:
         platform=config.get("clairs_to", {}).get("platform", ""),
         snv_min_af=config.get("clairs_to", {}).get("snv_min_af", 0.05),
@@ -44,7 +44,7 @@ rule varcall_clairs_to:
         {rule}: Long-read somatic small variant calling in only tumor samples with ClairS-TO.
         """
     shell:
-        "run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref}"
+        "echo {params.outdir} && run_clairs_to --tumor_bam_fn {input.bam} --ref_fn {input.ref}"
         " --threads {resources.threads} --platform {params.platform}"
         " --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed}"
         " --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af}"
@@ -56,8 +56,8 @@ rule varcall_clairs_to:
 
 rule varcall_clairs_to_concat:
     input:
-        snv="snv_indels/clairs_to/{experiment}_{sample}_{type}_snv.vcf.gz",
-        indel="snv_indels/clairs_to/{experiment}_{sample}_{type}_indel.vcf.gz",
+        snv="snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.vcf.gz",
+        indel="snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.vcf.gz",
     output:
         all=temp(
             "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"
@@ -87,6 +87,7 @@ rule varcall_clairs_to_concat:
         mkdir -p tmp/snv_indels/clairs_to
         bcftools concat -a -Oz -o tmp/{output.all} {input.snv} {input.indel} 2> {log}
         bcftools sort -Oz -o {output.all} tmp/{output.all}
+        rm -rf tmp/snv_indels
         """
 
 
