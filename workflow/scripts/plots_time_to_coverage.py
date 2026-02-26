@@ -147,4 +147,3 @@ for group_size in group_sizes:
         bbox_inches='tight'
     )
     plt.close()
-
