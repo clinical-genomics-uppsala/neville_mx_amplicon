@@ -56,7 +56,7 @@ for csv in os.listdir(cumcounts):
         dfcum.reset_index(inplace=True, drop=False)
         dfcum = pd.concat([dfcum, df_j3], ignore_index=True)
         dfcum["sample"] = csv.split("_")[0]
-        cumcounts_per_sample.append(dfcum[["target", "timestep", "mean", "sample"]])  #, "experiment_id", "group_size"
+        cumcounts_per_sample.append(dfcum[["target", "timestep", "mean", "sample"]])  # , "experiment_id", "group_size"
 
 df1 = pd.concat(cumcounts_per_sample, ignore_index=True)
 # df1.to_csv("/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/cum_read_counts_1hr_per_target.csv",
@@ -88,11 +88,8 @@ df1Kcumcount.to_csv(
 
 # Plot number of samples above 1000x over time per target and experiment
 m15_2 = df1Kcumcount[df1Kcumcount["experiment_id"] == "M15_2"]
-#print(m15_2)
 mwash4 = df1Kcumcount[df1Kcumcount["experiment_id"] == "Mwash4"]
-print(mwash4)
 
-experiments = dict([("M15_2", m15_2), ("Mwash4", mwash4)])
 experiments = dict([(exp, df1Kcumcount[df1Kcumcount["experiment_id"] == exp]) for exp in df1Kcumcount["experiment_id"]])
 
 for exp_name, exp_data in experiments.items():
@@ -109,7 +106,8 @@ for exp_name, exp_data in experiments.items():
     plt.tight_layout()
     fig1.suptitle(f'Number of samples with coverage >= 1000x over time (Experiment {exp_name}: {exp_data["cumcount"].max()} samples)', y=1.02)
     ax1[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
-    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_{exp_name}.{fig_format}",
+    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/"
+                f"targets_above_1000x_over_time_{exp_name}.{fig_format}",
                 bbox_inches='tight')
     plt.close()
 
@@ -124,13 +122,11 @@ for group_size in group_sizes:
     group_data = dfsup1000[dfsup1000["group_size"] == group_size].drop(columns=["mean_cov"])
     nb_experiments = dfsup1000[dfsup1000["group_size"] == group_size]["experiment_id"].nunique()
     for a, lab in enumerate(relabels.keys()):
-        # sns.lineplot(data=group_data[group_data["target"] == lab], x="timestep", y="cumcount", marker="o", ax=ax2[a])
-        sns.histplot(data=group_data[group_data["target"] == lab],#.drop("cumcount", axis=1),
+        sns.histplot(data=group_data[group_data["target"] == lab],
                      x="timestep",
                      hue="experiment_id",
                      stat="count",
                      discrete=True,
-                     # weights="sample",
                      bins="timestep",
                      multiple="stack",
                      alpha=0.95, ax=ax2[a])
@@ -142,6 +138,8 @@ for group_size in group_sizes:
     plt.tight_layout()
     fig2.suptitle(f'Number of samples with coverage >= 1000x over time (Group size: {group_size}', y=1.02)
     ax2[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
-    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
+    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/"
+                f"targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
                 bbox_inches='tight')
     plt.close()
+    
