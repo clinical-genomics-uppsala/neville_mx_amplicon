@@ -181,9 +181,8 @@ def compile_output_file_list(wildcards):
         outputpaths = set(
             [
                 f["output"].format(
-                    experiment=experiment, sample=sample, type=unit_type,
-                    target=target, report=report,
-                    caller=caller)
+                    experiment=experiment, sample=sample, type=unit_type, target=target, report=report, caller=caller
+                )
                 for experiment in [config["batchid"]]
                 for sample in get_samples(samples)
                 for unit_type in get_unit_types(units, sample)
