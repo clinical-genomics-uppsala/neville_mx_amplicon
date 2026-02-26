@@ -24,7 +24,9 @@ rule results_report_xlsx:
         mosdepth_exons="results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz",
         mosdepth_regions="results/mosdepth/{experiment}_{sample}_{type}_amplicons.regions.bed.gz",
         csv_counts="results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv",
-        pool_counts=expand("results/mosdepth/{{experiment}}_{{sample}}_{{type}}_yield_pool_{pooln}.csv", pooln=config["pools"].keys()),
+        pool_counts=expand(
+            "results/mosdepth/{{experiment}}_{{sample}}_{{type}}_yield_pool_{pooln}.csv", pooln=config["pools"].keys()
+        ),
         # yield_plot="results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png",
     output:
         xlsx="reports/xlsx/{experiment}_{sample}_{type}.xlsx",
