@@ -25,7 +25,9 @@ include: "rules/results_report.smk"
 
 
 if not config.get("multisample", False):
+
     ruleorder: pycoqc > dorado_basecaller
+
 
 ruleorder: fetch_filtered_reads > dorado_align
 ruleorder: aligning_create_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
@@ -91,7 +93,9 @@ use rule vardict from snv_indels as snv_indels_vardict with:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         regions=config.get("vardict", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        vcf=temp("snv_indels/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
+        vcf=temp(
+            "snv_indels/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"
+        ),
     params:
         extra=config.get("vardict", {}).get("extra", "-Q 1"),
         bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
@@ -100,7 +104,9 @@ use rule vardict from snv_indels as snv_indels_vardict with:
     log:
         "snv_indels/vardict/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
-        repeat("snv_indels/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1))
+        repeat(
+            "snv_indels/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1)
+        )
 
 
 use rule vt_decompose from snv_indels as snv_indels_vt_decompose with:
@@ -224,7 +230,9 @@ use rule scanitd from cnv_sv as cnv_sv_scanitd with:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/scanitd/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"),
+        vcf=temp(
+            "cnv_sv/scanitd/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"
+        ),
     params:
         region_bed=config.get("scanitd", {}).get("bed_file", ""),
         extra=config.get("scanitd", {}).get("extra", ""),
@@ -243,8 +251,12 @@ use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
-        snf=temp("cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
+        vcf=temp(
+            "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"
+        ),
+        snf=temp(
+            "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"
+        ),
     params:
         sample_id=lambda wildcards: f"{wildcards.sample}",
         tandem_repeats="",  # f'--tandem-repeats {config.get("sniffles2_call", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed"))}',
