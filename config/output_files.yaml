@@ -100,13 +100,13 @@
      output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_3.csv"
      input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_3.csv"
 
-#   - name: "mosdepth_timestep_coverage_per_amplicon_csv"
-#     output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"
-#     input: "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+   - name: "mosdepth_timestep_coverage_per_amplicon_csv"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"
+     input: "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"
 
-#   - name: "mosdepth_timestep_coverage_per_amplicon_png"
-#     output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
-#     input: "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
+   - name: "mosdepth_timestep_coverage_per_amplicon_png"
+     output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
+     input: "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
 
    - name: "mosdepth_summary_amplicons"
      output: "Results/Reports/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"

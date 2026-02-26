@@ -8,7 +8,7 @@ highlight_regex: true # set to true to use regex patterns
 
 extra_fn_clean_exts:
   - type: regex
-    pattern: "^D.+T_"
+    pattern: ".+_D.+T_"
   - type: remove
     pattern: "_reads.ont_adapt_trim.filtered"
 
@@ -82,7 +82,7 @@ module_order:
         - "*/mosdepth_bed/*IDH*"
         - "*/mosdepth_bed/*NPM*"
         - "*/mosdepth_bed/*TP53_*_only*"
-        - - "*/mosdepth_bed/*TP53_J3*"
+        - "*/mosdepth_bed/*TP53_J3*"
         # - "*/mosdepth/*mosdepth.summary.txt"
         # - "*/mosdepth_bed/*TP53_*+*"
   - picard:

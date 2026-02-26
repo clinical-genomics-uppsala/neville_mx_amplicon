@@ -92,3 +92,4 @@ snakemake --profile profiles/slurm/ -s workflow/Snakefile \
 ENDTIME=$(date +%s)
 RUNTIME=$((ENDTIME - STARTTIME))
 echo "Pipeline finished in $RUNTIME seconds."
+echo "Pipeline finished in $RUNTIME seconds." > ${batchId}_neville_mx_amplicon_elapsed_time.out
