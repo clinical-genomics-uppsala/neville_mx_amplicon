@@ -17,7 +17,7 @@ rule dorado_align:
         bam=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.bam"),
     params:
         runid=config.get("runid", ""),
-        extra=config.get("dorado_align", {}).get("extra", "")
+        extra=config.get("dorado_align", {}).get("extra", ""),
     resources:
         partition=config.get("dorado_alignment", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("dorado_alignment", {}).get("time", config["default_resources"]["time"]),
@@ -110,7 +110,9 @@ rule aligning_bam_softclip:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.bam",
         amplibed=os.path.join(config.get("bed_files"), "amplicons-primers.bed"),
     output:
-        bamclip=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"),
+        bamclip=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
+        ),
         bamclipidx=temp(
             "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
         ),
@@ -146,7 +148,9 @@ rule aligning_split_bam_by_target:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         amplibed=os.path.join(config.get("bed_files"), "{target}.bed"),
     output:
-        bam=temp("alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"),
+        bam=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
+        ),
         bai=temp(
             "alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
         ),
@@ -231,8 +235,12 @@ rule aligning_samtools_calmd:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
     output:
-        bam=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam"),
-        bai=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai"),
+        bam=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam"
+        ),
+        bai=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai"
+        ),
     log:
         "alignment/dorado_align/{experiment}_{sample}_{type}_samtools_calmd.output.log",
     benchmark:
