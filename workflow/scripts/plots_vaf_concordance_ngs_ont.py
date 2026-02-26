@@ -158,7 +158,7 @@ ax3.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data
 plt.annotate(text=f'R²={r2_vaf_minion:.3f}',
              xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
              color='k', fontsize=16)
-legend_elements = [#Line2D([0], [0], marker=marker_map['Flongle'], color='w',
+legend_elements = [  # Line2D([0], [0], marker=marker_map['Flongle'], color='w',
                    #        label=f"Flongle (n={data_points_counts['Flongle']})",
                    #        markerfacecolor='k', markersize=marker_size),
                    Line2D([0], [0], marker=marker_map['MinION'], color='w',
