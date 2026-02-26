@@ -104,7 +104,10 @@ for exp_name, exp_data in experiments.items():
         ax1[a].set_yticks(range(0, exp_data["cumcount"].max() + 1 + 1, 1))
         ax1[a].grid(True)
     plt.tight_layout()
-    fig1.suptitle(f'Number of samples with coverage >= 1000x over time (Experiment {exp_name}: {exp_data["cumcount"].max()} samples)', y=1.02)
+    fig1.suptitle(
+        f'Number of samples with coverage >= 1000x over time (Experiment {exp_name}: {exp_data["cumcount"].max()} samples)',
+        y=1.02
+    )
     ax1[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
     plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/"
                 f"targets_above_1000x_over_time_{exp_name}.{fig_format}",
@@ -138,8 +141,9 @@ for group_size in group_sizes:
     plt.tight_layout()
     fig2.suptitle(f'Number of samples with coverage >= 1000x over time (Group size: {group_size}', y=1.02)
     ax2[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
-    plt.savefig(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/"
-                f"targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
-                bbox_inches='tight')
+    plt.savefig(
+        f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
+        bbox_inches='tight'
+    )
     plt.close()
     
