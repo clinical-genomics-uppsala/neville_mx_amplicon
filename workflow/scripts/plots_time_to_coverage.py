@@ -142,8 +142,9 @@ for group_size in group_sizes:
     fig2.suptitle(f'Number of samples with coverage >= 1000x over time (Group size: {group_size}', y=1.02)
     ax2[len(relabels) // 2].set_ylabel('Number of samples with coverage >= 1000x')
     plt.savefig(
-        f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
+        f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/"
+        f"targets_above_1000x_over_time_groupsize_{group_size}.{fig_format}",
         bbox_inches='tight'
     )
     plt.close()
-    
+
