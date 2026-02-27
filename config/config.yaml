@@ -90,38 +90,42 @@ deepsomatic:
 dorado:
   container: "docker://ontresearch/dorado:latest"
 
+dorado_align:
+  container: "docker://ontresearch/dorado:latest"
+  # extra: '--mm2-opts "-x sr"' # "-x sr": alignment for short-read data without splicing (from gDNA), otherwise default "-x lr:hq" preset for ONT long-read
+
 dorado_basecaller:  # simplex basecalling by default
-    container: "docker://ontresearch/dorado:latest"
-    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
-    trim: "--trim adapters"
-    extra: "--device cuda:all"
+  container: "docker://ontresearch/dorado:latest"
+  model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+  trim: "--trim adapters"
+  extra: "--device cuda:all"
 
 dorado_demux:
-    container: "docker://ontresearch/dorado:latest"
-    kit: "--kit-name SQK-NBD114-24"
+  container: "docker://ontresearch/dorado:latest"
+  kit: "--kit-name SQK-NBD114-24"
 
 dorado_duplex:
-    container: "docker://ontresearch/dorado:latest"
-    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
-    trim: "--no-trim-primers --sequencing-kit SQK-LSK114"
-    extra: "--device cuda:all"
+  container: "docker://ontresearch/dorado:latest"
+  model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+  trim: "--no-trim-primers --sequencing-kit SQK-LSK114"
+  extra: "--device cuda:all"
 
 dorado_duplex_multisamples:
-    container: "docker://ontresearch/dorado:latest"
-    model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
-    trim: ""  # no trim because samples are demultiplexed in a later step
-    extra: "--device cuda:all"
+  container: "docker://ontresearch/dorado:latest"
+  model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
+  trim: ""  # no trim because samples are demultiplexed in a later step
+  extra: "--device cuda:all"
 
 dorado_trim:
-    container: "docker://ontresearch/dorado:latest"
-    trim: "--sequencing-kit SQK-NBD114-24"
+  container: "docker://ontresearch/dorado:latest"
+  trim: "--sequencing-kit SQK-NBD114-24"
 
 filter_vcf:
   somatic_soft: "config/config_soft_filter_somatic.yaml"
   somatic_hard: "config/config_hard_filter_somatic.yaml"
 
 filtlong:
-  container: "docker://hydragenetics/filtlong:0.2.1"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
+  container: "docker://hydragenetics/filtlong:0.2.1"
   min_length: 2000
   max_length: 4000
 
@@ -144,26 +148,26 @@ multiqc:
     amplicons:
       config: "config/multiqc_config.yaml"
       qc_files:
-        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"
-        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"
-        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"
-        - "results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"
-        - "results/pycoqc/{sample}_{type}_report_sequencing_summary.json"
-        - "prealignment/filtlong/{sample}_{type}.filtlong.log"
-        - "results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz"
-        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.global.dist.txt"
-        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.region.dist.txt"
-        - "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"
-        - "results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.summary.txt"
-        - "results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.region.dist.txt"
-        - "results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz"
-        - "results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz"
-        - "results/mosdepth_bed/{sample}_{type}_{target}.thresholds.bed.gz"
-        - "results/qc/samtools_ampliconclip/{sample}_{type}_ampliconclip.txt"
-        - "results/qc/picard/{sample}_{type}_HsMetrics.txt"
-        - "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt"
-        - "results/qc/picard/{sample}_{type}_TP53_J3_only.alignment_summary_metrics.txt"
-        - "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt"
+        - "results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"
+        - "results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"
+        - "results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"
+        - "results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"
+        - "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.json"
+        - "prealignment/filtlong/{experiment}_{sample}_{type}.filtlong.log"
+        - "results/mosdepth/{experiment}_{sample}_{type}_amplicons.regions.bed.gz"
+        - "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.global.dist.txt"
+        - "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.region.dist.txt"
+        - "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"
+        - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.mosdepth.summary.txt"
+        - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.mosdepth.region.dist.txt"
+        - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.regions.bed.gz"
+        - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.per-base.bed.gz"
+        - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.thresholds.bed.gz"
+        - "results/qc/samtools_ampliconclip/{experiment}_{sample}_{type}_ampliconclip.txt"
+        - "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt"
+        - "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt"
+        - "results/qc/picard/{experiment}_{sample}_{type}_TP53_J3_only.alignment_summary_metrics.txt"
+        - "results/qc/picard/{experiment}_{sample}_{type}.alignment_summary_metrics.txt"
 
 gatk_mutect2:
   container: "docker://hydragenetics/gatk4:4.6.2.0"

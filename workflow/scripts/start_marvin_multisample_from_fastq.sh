@@ -17,15 +17,10 @@ projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/amplicon
 runFolder=$1
 batchId=$2
 flowcellId=$3
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_MWash1_250804
-# batchId=MWash1
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M21_wash2_250806
-# batchId=M21
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Mwash3_250811
-# batchId=Mwash3
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Wash4_250813
-# batchId=Wash4
-# flowcellId=FBB06783
+
+# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2025_22_exp2_251212_RO
+# batchId=CGU_2025_22_exp2
+# flowcellId=FBE72298
 
 runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
 sampleSheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv
@@ -37,26 +32,43 @@ while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id
   # strip whitespace characters at the end of the CSV fields
   barcode="${barcode%[[:space:]]}"
   echo "${sample_id} has barcode $barcode."
+  # bash ${projFolder}/workflow/scripts/fastq_to_rehead_bam.sh ${runFolder} ${batchId} ${flowcellId} pass
+  # bash ${projFolder}/workflow/scripts/fastq_to_rehead_bam.sh ${runFolder} ${batchId} ${flowcellId} fail
   mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_merged
-  echo "Merging BAM files found for ${sample_id} into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
+  echo "Merging pass BAM files found for ${sample_id} into ${runFolder}/${sample_id}/${runId}/bam_pass_merged"
   if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam" ]
   then
-    cd ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}
+    cd ${runFolder}/${sample_id}/${runId}/bam_pass
     ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
     samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam -b bam_list.txt
   fi
+  mkdir -p ${runFolder}/${sample_id}/${runId}/bam_fail_merged
+  echo "Merging fail BAM files found for ${sample_id} into ${runFolder}/${sample_id}/${runId}/bam_fail_merged"
+  if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_fail_merged/reads.basecalled.bam" ]
+  then
+    cd ${runFolder}/${sample_id}/${runId}/bam_fail
+    ls -1 . | grep -iE '.+bam$' > "bam_list.txt"
+    samtools merge -o ${runFolder}/${sample_id}/${runId}/bam_fail_merged/reads.basecalled.bam -b bam_list.txt
+  fi
   # Restructure time-stepped BAM files to be per sample
   cd ${runFolder}/${sample_id}/${runId}
-  mkdir -p bam_pass
-  rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}/* ./bam_pass/
+  mkdir -p ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged
+  echo "Merging fail BAM files found for ${sample_id} into ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged"
+  if [ ! -f "${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged/reads.basecalled.bam" ]
+  then
+  	samtools merge -f -o ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged/reads.basecalled.bam ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam ${runFolder}/${sample_id}/${runId}/bam_fail_merged/reads.basecalled.bam
+  fi
+  # mkdir -p bam_pass
+  # rsync -ruv ${runFolder}/${batchId}/${runId}/bam_pass/${barcode}/* ./bam_pass/
   # Prep
   cd ${projFolder}
   # Set merged BAM file as input for the pipeline to start
-  mkdir -p basecalling/dorado_duplex
-  cp ${runFolder}/${sample_id}/${runId}/bam_pass_merged/reads.basecalled.bam ./basecalling/dorado_duplex/${sample_id}_T_reads.basecalled.bam
+  mkdir -p basecalling/dorado_duplex && mkdir -p basecalling/rename_demux_bam
+  cp ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged/reads.basecalled.bam ./basecalling/dorado_duplex/${sample_id}_T_reads.basecalled.bam
+  cp ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged/reads.basecalled.bam ./basecalling/rename_demux_bam/${sample_id}_T_reads.basecalled.bam
   # Create input files to the pipeline per sample
   source .venv/bin/activate
-  hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_merged/ -t T -p ONT -f
+  hydra-genetics create-input-files -d ${runFolder}/${sample_id}/${runId}/bam_pass_fail_merged/ -t T -p ONT -f
   cp units.tsv units_$alias.tsv
   cat samples.tsv | cut -d$'\t' -f1 > samples_$alias.tsv
 done < <(tail -n +2 ${sampleSheet}) # skip header line while reading csv

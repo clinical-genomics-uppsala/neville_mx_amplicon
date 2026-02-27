@@ -136,6 +136,7 @@ validate(output_spec, schema="../schemas/output_files.schema.yaml")
 
 ### Set wildcard constraints
 wildcard_constraints:
+    experiment=config["batchid"],
     sample="|".join(samples.index),
     type="N|T",
     report="amplicons",
@@ -179,7 +180,10 @@ def compile_output_file_list(wildcards):
         # that the output strings should be formatted with.
         outputpaths = set(
             [
-                f["output"].format(sample=sample, type=unit_type, target=target, report=report, caller=caller)
+                f["output"].format(
+                    experiment=experiment, sample=sample, type=unit_type, target=target, report=report, caller=caller
+                )
+                for experiment in [config["batchid"]]
                 for sample in get_samples(samples)
                 for unit_type in get_unit_types(units, sample)
                 for target in config.get("amplicons") + config.get("extra_regions")

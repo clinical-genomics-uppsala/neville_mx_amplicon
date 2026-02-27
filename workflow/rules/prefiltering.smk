@@ -10,19 +10,19 @@ logger.info(f"\n{workflow.snakefile} is being parsed")
 
 rule filtering_bcftools_view:
     input:
-        vcf="snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
-        tbi="snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
+        vcf="snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
+        tbi="snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
     output:
         vcf=temp(
-            "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
+            "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
         ),
     params:
         extra=lambda wildcards: config.get("bcftools_view", {}).get("filter", {}).get(f"{wildcards.caller}", {}).get("extra", ""),
     log:
-        "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
+        "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
     benchmark:
         repeat(
-            "snv_indels/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
+            "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
             config.get("bcftools_view", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
@@ -46,19 +46,19 @@ rule filtering_bcftools_view:
 
 rule filtering_bcftools_include_region:
     input:
-        vcf="cnv_sv/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
-        tbi="cnv_sv/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
+        vcf="cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
+        tbi="cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
     output:
         vcf=temp(
-            "cnv_sv/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
+            "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
         ),
     params:
         extra=lambda wildcards: config.get("bcftools_view", {}).get("filter", {}).get(f"{wildcards.caller}", {}).get("extra", ""),
     log:
-        "cnv_sv/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
+        "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
     benchmark:
         repeat(
-            "cnv_sv/{caller}/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
+            "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
             config.get("bcftools_view", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
