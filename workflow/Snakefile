@@ -64,24 +64,24 @@ logger.info(
 
 use rule gatk_mutect2 from snv_indels as snv_indels_gatk_mutect2 with:
     input:
-        map="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        map="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         fasta=config.get("reference", {}).get("fasta", ""),
         bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        bam=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.bam"),
-        bai=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.bai"),
-        stats=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz.stats"),
-        vcf=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz"),
-        tbi=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz.tbi"),
-        f1f2=temp("snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.f1r2.tar.gz"),
+        bam=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.bam"),
+        bai=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.bai"),
+        stats=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz.stats"),
+        vcf=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz"),
+        tbi=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz.tbi"),
+        f1f2=temp("snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.f1r2.tar.gz"),
     params:
         extra="",
     log:
-        "snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz.log",
+        "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz.log",
     benchmark:
         repeat(
-            "snv_indels/gatk_mutect2/{sample}_{type}.unfiltered.vcf.gz.benchmark.tsv",
+            "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz.benchmark.tsv",
             config.get("gatk_mutect2", {}).get("benchmark_repeats", 1),
         )
 
@@ -89,20 +89,24 @@ use rule gatk_mutect2 from snv_indels as snv_indels_gatk_mutect2 with:
 use rule vardict from snv_indels as snv_indels_vardict with:
     input:
         reference=config.get("reference", {}).get("fasta", ""),
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         regions=config.get("vardict", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
-        vcf=temp("snv_indels/vardict/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"),
+        vcf=temp(
+            "snv_indels/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.vcf"
+        ),
     params:
         extra=config.get("vardict", {}).get("extra", "-Q 1"),
         bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
         allele_frequency_threshold=config.get("vardict", {}).get("allele_frequency_threshold", "0.01"),
         sample_name=lambda wildcards: f"{wildcards.sample}",
     log:
-        "snv_indels/vardict/{sample}_{type}.vcf.log",
+        "snv_indels/vardict/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
-        repeat("snv_indels/vardict/{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1))
+        repeat(
+            "snv_indels/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1)
+        )
 
 
 use rule vt_decompose from snv_indels as snv_indels_vt_decompose with:
@@ -141,27 +145,27 @@ use rule vt_normalize from snv_indels as snv_indels_vt_normalize with:
 use rule bcbio_variation_recall_ensemble from snv_indels as snv_indels_bcbio_variation_recall_ensemble with:
     input:
         vcfs=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "snv_indels/{caller}/{{experiment}}_{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
             "{caller}.bcftools_view.decomposed.normalized.vcf.gz",
             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
         ),
         tabix=expand(
-            "snv_indels/{caller}/{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
+            "snv_indels/{caller}/{{experiment}}_{{sample}}_{{type}}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped."
             "{caller}.bcftools_view.decomposed.normalized.vcf.gz.tbi",
             caller=config.get("bcbio_variation_recall_ensemble", {}).get("callers", []),
         ),
         ref=config["reference"]["fasta"],
     output:
-        vcf=temp("snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz"),
-        bcbio_work=temp(directory("snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled-work/")),
+        vcf=temp("snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vcf.gz"),
+        bcbio_work=temp(directory("snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled-work/")),
     params:
         support=config.get("bcbio_variation_recall_ensemble", {}).get("support", "1"),
         sort_order=",".join(config.get("bcbio_variation_recall_ensemble", {}).get("callers", "")),
     log:
-        "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz.log",
+        "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vcf.gz.log",
     benchmark:
         repeat(
-            "snv_indels/bcbio_variation_recall_ensemble/{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
+            "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vcf.gz.benchmark.tsv",
             config.get("bcbio_variation_recall_ensemble", {}).get("benchmark_repeats", 1),
         )
 
@@ -222,40 +226,46 @@ logger.info(
 
 use rule scanitd from cnv_sv as cnv_sv_scanitd with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/scanitd/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"),
+        vcf=temp(
+            "cnv_sv/scanitd/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.scanitd.vcf"
+        ),
     params:
         region_bed=config.get("scanitd", {}).get("bed_file", ""),
         extra=config.get("scanitd", {}).get("extra", ""),
     log:
-        "cnv_sv/scanitd/{sample}_{type}.vcf.log",
+        "cnv_sv/scanitd/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
         repeat(
-            "cnv_sv/scanitd/{sample}_{type}.output.benchmark.tsv",
+            "cnv_sv/scanitd/{experiment}_{sample}_{type}.output.benchmark.tsv",
             config.get("scanitd", {}).get("benchmark_repeats", 1),
         )
 
 
 use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        vcf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"),
-        snf=temp("cnv_sv/sniffles2/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"),
+        vcf=temp(
+            "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.vcf"
+        ),
+        snf=temp(
+            "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.snf"
+        ),
     params:
         sample_id=lambda wildcards: f"{wildcards.sample}",
         tandem_repeats="",  # f'--tandem-repeats {config.get("sniffles2_call", {}).get("bed_file", os.path.join(config.get("bed_files"),"amplicons.bed"))}',
         extra=config.get("sniffles2_call", {}).get("extra", ""),
     log:
-        "cnv_sv/sniffles2/{sample}_{type}.vcf.log",
+        "cnv_sv/sniffles2/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
         repeat(
-            "cnv_sv/sniffles2/{sample}_{type}.output.benchmark.tsv",
+            "cnv_sv/sniffles2/{experiment}_{sample}_{type}.output.benchmark.tsv",
             config.get("sniffles2_call", {}).get("benchmark_repeats", 1),
         )
 
@@ -317,13 +327,13 @@ if config["runid"] == "ABC123":
 
     rule copy_annotation_vep:
         input:
-            snv_indels="test_data/preprocessed/D25-test007_T.ensembled.vep_annotated.vcf.gz",
-            cnv_sv="test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
+            snv_indels="test_data/preprocessed/Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz",
+            cnv_sv="test_data/preprocessed/Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
         output:
-            snv_indels="snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz",
-            cnv_sv="cnv_sv/sniffles2/D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
+            snv_indels="snv_indels/bcbio_variation_recall_ensemble/Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz",
+            cnv_sv="cnv_sv/sniffles2/Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
         log:
-            "snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz.log",
+            "snv_indels/bcbio_variation_recall_ensemble/Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz.log",
         resources:
             partition=config.get("copy_annotation_vep", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("copy_annotation_vep", {}).get("time", config["default_resources"]["time"]),
@@ -335,7 +345,7 @@ if config["runid"] == "ABC123":
             config.get("copy_annotation_vep", {}).get("container", config["default_container"])
         benchmark:
             repeat(
-                "snv_indels/bcbio_variation_recall_ensemble/D25-test007_T.ensembled.vep_annotated.vcf.gz.benchmark.tsv",
+                "snv_indels/bcbio_variation_recall_ensemble/Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz.benchmark.tsv",
                 config.get("copy_annotation_vep", {}).get("benchmark_repeats", 1),
             )
         message:
@@ -425,62 +435,64 @@ use rule multiqc from qc as qc_multiqc with:
         files=lambda wildcards: set(
             [
                 file.format(
+                    experiment=experiment,
                     sample=sample,
                     target=target,
                     type=type,
                 )
                 for file in config["multiqc"]["reports"][wildcards.report]["qc_files"]
+                for experiment in [wildcards.experiment]
                 for sample in [wildcards.sample]
                 for type in [wildcards.type]
                 for target in config["amplicons"] + config["extra_regions"]
             ]
         ),
     output:
-        html="results/qc/multiqc/{sample}_{type}_multiqc_{report}.html",
-        data=directory("results/qc/multiqc/{sample}_{type}_multiqc_{report}_data"),
+        html="results/qc/multiqc/{experiment}_{sample}_{type}_multiqc_{report}.html",
+        data=directory("results/qc/multiqc/{experiment}_{sample}_{type}_multiqc_{report}_data"),
     log:
-        "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html.log",
+        "results/qc/multiqc/{experiment}_{sample}_{type}_multiqc_{report}.html.log",
     benchmark:
         repeat(
-            "results/qc/multiqc/{sample}_{type}_multiqc_{report}.html.benchmark.tsv",
+            "results/qc/multiqc/{experiment}_{sample}_{type}_multiqc_{report}.html.benchmark.tsv",
             config.get("multiqc", {}).get("benchmark_repeats", 1),
         )
 
 
 use rule picard_collect_hs_metrics from qc as qc_picard_collect_hs_metrics with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         bait_intervals=config.get("reference", {}).get("design_intervals", ""),
         reference=config["ref_data"],
         target_intervals=config.get("reference", {}).get("design_intervals", ""),
     output:
-        metrics="results/qc/picard/{sample}_{type}_HsMetrics.txt",
+        metrics="results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt",
     params:
         extra=config.get("picard_collect_hs_metrics", {}).get("extra", "COVERAGE_CAP=25000"),
     log:
-        "results/qc/picard/{sample}_{type}_HsMetrics.txt.log",
+        "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt.log",
     benchmark:
         repeat(
-            "results/qc/picard/{sample}_{type}_HsMetrics.txt.benchmark.tsv",
+            "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt.benchmark.tsv",
             config.get("picard_collect_hs_metrics", {}).get("benchmark_repeats", 1),
         )
 
 
 use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_alignment_summary_metrics with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        metrics="results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt",
+        metrics="results/qc/picard/{experiment}_{sample}_{type}.alignment_summary_metrics.txt",
     params:
         extra=config.get("picard_collect_alignment_summary_metrics", {}).get("extra", ""),
     log:
-        "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt.log",
+        "results/qc/picard/{experiment}_{sample}_{type}.alignment_summary_metrics.txt.log",
     benchmark:
         repeat(
-            "results/qc/picard/{sample}_{type}.alignment_summary_metrics.txt.benchmark.tsv",
+            "results/qc/picard/{experiment}_{sample}_{type}.alignment_summary_metrics.txt.benchmark.tsv",
             config.get("picard_collect_alignment_summary_metrics", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
@@ -489,18 +501,18 @@ use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_a
 
 use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_alignment_summary_metrics_per_target with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("reference", {}).get("fasta", ""),
     output:
-        metrics="results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt",
+        metrics="results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt",
     params:
         extra=config.get("picard_collect_alignment_summary_metrics", {}).get("extra", ""),
     log:
-        "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt.log",
+        "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt.log",
     benchmark:
         repeat(
-            "results/qc/picard/{sample}_{type}_{target}.alignment_summary_metrics.txt.benchmark.tsv",
+            "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt.benchmark.tsv",
             config.get("picard_collect_alignment_summary_metrics", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
@@ -509,22 +521,22 @@ use rule picard_collect_alignment_summary_metrics from qc as qc_picard_collect_a
 
 use rule mosdepth from qc as qc_mosdepth_amplicons with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
     output:
-        bed=temp("results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz"),
-        csi=temp("results/mosdepth/{sample}_{type}_amplicons.regions.bed.gz.csi"),
-        glob=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt"),
+        bed=temp("results/mosdepth/{experiment}_{sample}_{type}_amplicons.regions.bed.gz"),
+        csi=temp("results/mosdepth/{experiment}_{sample}_{type}_amplicons.regions.bed.gz.csi"),
+        glob=temp("results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"),
     params:
         by=os.path.join(config["bed_files"], config.get("mosdepth", {}).get("by", "")),
         extra=config.get("mosdepth", {}).get("extra", ""),
     log:
-        "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt.log",
+        "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt.log",
     benchmark:
         repeat(
-            "results/mosdepth/{sample}_{type}_amplicons.mosdepth.summary.txt.benchmark.tsv",
+            "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt.benchmark.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
@@ -533,26 +545,26 @@ use rule mosdepth from qc as qc_mosdepth_amplicons with:
 
 use rule mosdepth_bed from qc as qc_mosdepth_bed_per_target with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         bed=lambda wildcards: os.path.join(config.get("bed_files", ""), f"{wildcards.target}.bed".replace("_only", "")),
     output:
-        bed=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz"),
-        bed_csi=temp("results/mosdepth_bed/{sample}_{type}_{target}.regions.bed.gz.csi"),
-        coverage=temp("results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz"),
-        coverage_csi=temp("results/mosdepth_bed/{sample}_{type}_{target}.per-base.bed.gz.csi"),
-        thresholds=temp("results/mosdepth_bed/{sample}_{type}_{target}.thresholds.bed.gz"),
-        glob=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth_bed/{sample}_{type}_{target}.mosdepth.summary.txt"),
+        bed=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.regions.bed.gz"),
+        bed_csi=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.regions.bed.gz.csi"),
+        coverage=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.per-base.bed.gz"),
+        coverage_csi=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.per-base.bed.gz.csi"),
+        thresholds=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.thresholds.bed.gz"),
+        glob=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.mosdepth.summary.txt"),
     params:
         thresholds=config.get("mosdepth_bed", {}).get("thresholds", ""),
         extra=config.get("mosdepth", {}).get("extra", ""),
     log:
-        "results/mosdepth_bed/{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.log",
+        "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.log",
     benchmark:
         repeat(
-            "results/mosdepth_bed/{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.benchmark.tsv",
+            "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}_thresholds.mosdepth.summary.txt.benchmark.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
@@ -561,26 +573,26 @@ use rule mosdepth_bed from qc as qc_mosdepth_bed_per_target with:
 
 use rule mosdepth_bed from qc as qc_mosdepth_bed_per_exon with:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bai="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         bed=os.path.join(config.get("bed_files", ""), config.get("mosdepth_exons", {}).get("bed", "")),
     output:
-        bed=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz"),
-        bed_csi=temp("results/mosdepth_bed_per_exon/{sample}_{type}.regions.bed.gz.csi"),
-        coverage=temp("results/mosdepth_bed_per_exon/{sample}_{type}.per-base.bed.gz"),
-        coverage_csi=temp("results/mosdepth_bed_per_exon/{sample}_{type}.per-base.bed.gz.csi"),
-        thresholds=temp("results/mosdepth_bed_per_exon/{sample}_{type}.thresholds.bed.gz"),
-        glob=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth_bed_per_exon/{sample}_{type}.mosdepth.summary.txt"),
+        bed=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz"),
+        bed_csi=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz.csi"),
+        coverage=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.per-base.bed.gz"),
+        coverage_csi=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.per-base.bed.gz.csi"),
+        thresholds=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.thresholds.bed.gz"),
+        glob=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.summary.txt"),
     params:
         thresholds=config.get("mosdepth_exons", {}).get("thresholds", ""),
         extra=config.get("mosdepth_exons", {}).get("extra", ""),
     log:
-        "results/mosdepth_bed_per_exon/{sample}_{type}_thresholds.mosdepth.summary.txt.log",
+        "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}_thresholds.mosdepth.summary.txt.log",
     benchmark:
         repeat(
-            "results/mosdepth_bed_per_exon/{sample}_{type}_thresholds.mosdepth.summary.txt.benchmark.tsv",
+            "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}_thresholds.mosdepth.summary.txt.benchmark.tsv",
             config.get("mosdepth_exons", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:

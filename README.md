@@ -16,9 +16,17 @@
 
 ## :speech_balloon: Introduction
 
+<<<<<<< HEAD
+This module implements a workflow with Snakemake for the analysis of Nanopore sequence data from pooled amplicons
+at Clinical Genomics Uppsala (CGU) in view of supporting the diagnostics of Acute Myeloid Leukemia (AML).
+The module consists of ... build upon [hydra-genetics]().
+Multiplexed amplicon sequencing: severral targets are amplified in **multiplexed PCR** settings. 
+The **sample** to be analyzed is **not multiplexed** with other ones.
+=======
 This pipeline implements a workflow with Snakemake for the analysis of Oxford Nanopore Technologies (ONT) sequence data 
 from pooled amplicons at Clinical Genomics Uppsala (CGU) in view of supporting 
 the rapid diagnostics of Acute Myeloid Leukemia (AML).
+>>>>>>> 9b9ec211fc4d56a1fac1a7ec8b0badee8521ff8b
 
 The pipeline is partly build upon the tools and modules available in [hydra-genetics](https://github.com/hydra-genetics).
 The steps that are specific to the analysis of pooled amplicons are implemented in this repository,
@@ -75,7 +83,6 @@ and annotation of the variants with [_VEP_](https://www.ensembl.org/info/docs/to
   - Counts and proportion of reads for each amplicon relatively to the pool it belongs to (custom script),
   - Proportion of off-target bases after alignment with [Picard](https://broadinstitute.github.io/picard/).
     Motivation for using Picard tools on long-read data: https://www.agilent.com/cs/library/applications/an-long-read-sureselect-xt-hs2-5994-7612en-agilent.pdf
-
 
 8. Reporting the results of variant calling and variant filtering in an Excel file.
 
@@ -326,7 +333,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 .tests/integration/
 ├── basecalling
 │   └── dorado_duplex
-│       └── D25-test007_T_reads.ont_adapt_trim.bam
+│       └── Mtest_D25-test007_T_reads.ont_adapt_trim.bam
 ├── config
 │   ├── config_filter_bcftools.yaml
 │   ├── config_hard_filter_somatic.yaml
@@ -341,7 +348,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 ├── dorado_models
 │   └── dna_r10.4.1_e8.2_400bps_sup@v5.0.0
 ├── reference
-│   ├── D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
+│   ├── Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
 │   ├── TP53_chr17_GRCh38.dict
 │   ├── TP53_chr17_GRCh38.fasta.gz
 │   ├── TP53_chr17_GRCh38.fasta.fai
@@ -349,7 +356,7 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 ├── samples.tsv
 ├── test_data
 │   ├── bedfiles
-│   ├── D25-test007
+│   ├── Mtest
 │       └── ABC123
 │           ├── bam_pass
 │               ├── ABC123_pass_456_789_0.bam
@@ -358,8 +365,8 @@ The repository contains a setup for a small test in `.tests/integration` (struct
 │               └── ABC123_pass_456_789_1.bam.bai
 │           └── pod5
 │   └── preprocessed
-│       ├── D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
-│       └── D25-test007_T.ensembled.vep_annotated.vcf.gz
+│       ├── Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam
+│       └── Mtest_D25-test007_T.ensembled.vep_annotated.vcf.gz
 ├── tmp
 │   └── .
 └── units.tsv
@@ -385,6 +392,7 @@ The test data are located in `.tests/integration/test_data/` and consist of:
   after variants were called with ClairS-TO, DeepSomatic, VarDict, and Sniffles2.
   This file is copied as output instead of running the VEP-annotation step in the test pipeline.
   
+
 #### Preparation (Ubuntu-based OS)
 1. Make sure that the virtual environment `.venv` is correctly set up as described above.
 
@@ -394,7 +402,7 @@ otherwise copy there the tsv files provided in `config`: `cp .tests/integration/
 3. Set up the preprocessed basecalled BAM file in `.tests/integration/basecalling/dorado_duplex/`:
 ```bash
 mkdir -p .tests/integration/basecalling/dorado_duplex/ && \
-cp .tests/integration/test_data/preprocessed/D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+cp .tests/integration/test_data/preprocessed/Mtest_D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
 ```
 
 4. If missing, create the temporary directory `.tests/integration/tmp/` to store temporary files: 
@@ -572,7 +580,7 @@ After execution of the small integration test, the directory `.tests/integration
 │   └── bcbio_variation_recall_ensemble
 ├── test_data
 │   ├── bedfiles
-│   ├── D25-test007
+│   ├── Mtest
 │   └── preprocessed
 ├── tmp
 └── units.tsv

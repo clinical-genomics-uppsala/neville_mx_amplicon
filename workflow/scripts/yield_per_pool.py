@@ -5,7 +5,7 @@ df = pd.read_csv(snakemake.input.csv, sep=',', index_col="target")
 counts = dict([(target, round(df.loc[target, "mean"]))
                for target in df.index
                if
-               target.replace(f"{snakemake.wildcards.sample}_{snakemake.wildcards.type}_", "")
+               target.replace(f"{snakemake.wildcards.experiment}_{snakemake.wildcards.sample}_{snakemake.wildcards.type}_", "")
                in snakemake.config.get("pools")[int(snakemake.wildcards.pooln)]
                # dirty fix to not include the sample's name in the target's label
                ])
