@@ -262,7 +262,7 @@ with gzip.open(snakemake.input.mosdepth_exons, "rt") as exons_file:
 
 """ xlsx file with sheets """
 logging.info(f"Creating xlsx file {snakemake.output.xlsx}")
-workbook = xlsxwriter.Workbook(snakemake.output.xlsx)
+workbook = xlsxwriter.Workbook(snakemake.output.xlsx, {"nan_inf_to_errors": True})
 
 worksheet_overview = workbook.add_worksheet("Overview")
 # if sample.lower() == "hd829":
@@ -558,10 +558,12 @@ for p, tab_pool in enumerate(poolcounts_table):
     )
 
 """Lineplot with sequencing throughput"""
-worksheet_cov.insert_image(f"{convert_columns_to_letter(len(regionscov_table['headers']) + tab_margin)}{top_row}",
-                           snakemake.input.yield_plot,
-                           {"x_scale": 0.65, "y_scale": 0.85}
-                           )
+# no data if starting the pipeline fom fastq/uBAM files
+# logging.debug(f"Inserting yield plot in coverage sheet")
+# worksheet_cov.insert_image(f"{convert_columns_to_letter(len(regionscov_table['headers']) + tab_margin)}{top_row}",
+#                            snakemake.input.yield_plot,
+#                            {"x_scale": 0.65, "y_scale": 0.85}
+#                            )
 
 """ Exon coverage sheet"""
 logging.debug(f"Exon coverage sheet")

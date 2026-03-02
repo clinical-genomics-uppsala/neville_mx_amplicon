@@ -12,9 +12,9 @@ rule pycoqc:
     input:
         seq_run_dir=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid")),
     output:
-        html=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.html"),
-        json=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.json"),
-        txt=temp("results/pycoqc/{sample}_{type}_report_sequencing_summary.txt"),
+        html=temp("results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.html"),
+        json=temp("results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.json"),
+        txt=temp("results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.txt"),
     resources:
         partition=config.get("pycoqc", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("pycoqc", {}).get("time", config["default_resources"]["time"]),
@@ -23,10 +23,10 @@ rule pycoqc:
         mem_per_cpu=config.get("pycoqc", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("pycoqc", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "results/pycoqc/{sample}_{type}_report_sequencing_summary.log",
+        "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.log",
     benchmark:
         repeat(
-            "results/pycoqc/{sample}_{type}_report_sequencing_summary.benchmark.tsv",
+            "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.benchmark.tsv",
             config.get("pycoqc", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -45,15 +45,15 @@ rule pycoqc:
 
 rule mosdepth_overlap:
     input:
-        bam="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
-        bamidx="alignment/dorado_align/{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bamidx="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         amplibed=os.path.join(config.get("bed_files"), "{target}.bed"),
     output:
-        bed=temp("results/mosdepth/{sample}_{type}_{target}.regions.bed.gz"),
-        csi=temp("results/mosdepth/{sample}_{type}_{target}.regions.bed.gz.csi"),
-        glob=temp("results/mosdepth/{sample}_{type}_{target}.mosdepth.global.dist.txt"),
-        region=temp("results/mosdepth/{sample}_{type}_{target}.mosdepth.region.dist.txt"),
-        summary=temp("results/mosdepth/{sample}_{type}_{target}.mosdepth.summary.txt"),
+        bed=temp("results/mosdepth/{experiment}_{sample}_{type}_{target}.regions.bed.gz"),
+        csi=temp("results/mosdepth/{experiment}_{sample}_{type}_{target}.regions.bed.gz.csi"),
+        glob=temp("results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.global.dist.txt"),
+        region=temp("results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.region.dist.txt"),
+        summary=temp("results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.summary.txt"),
     params:
         prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
         threads=20,
@@ -65,10 +65,10 @@ rule mosdepth_overlap:
         mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "results/mosdepth/{sample}_{type}_{target}.mosdepth.log",
+        "results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.log",
     benchmark:
         repeat(
-            "results/mosdepth/{sample}_{type}_{target}.mosdepth.benchmark.tsv",
+            "results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.benchmark.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -80,18 +80,18 @@ rule mosdepth_overlap:
     shell:
         """
         chrom=$( cat {input.amplibed} | cut -d$'\t' -f1 )
-        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam} > {log}
+        mosdepth -t {params.threads} -c $chrom -b {input.amplibed}  {params.prefix_out}/{wildcards.experiment}_{wildcards.sample}_{wildcards.type}_{wildcards.target} {input.bam} > {log}
         """
 
 
 rule mosdepth_merge:
     input:
         expand(
-            "results/mosdepth/{{sample}}_{{type}}_{target}.mosdepth.summary.txt",
+            "results/mosdepth/{{experiment}}_{{sample}}_{{type}}_{target}.mosdepth.summary.txt",
             target=config.get("amplicons") + config.get("extra_regions"),
         ),
     output:
-        csv=temp("results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv"),
+        csv=temp("results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv"),
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -100,10 +100,10 @@ rule mosdepth_merge:
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads")
     log:
-        "results/mosdepth/{sample}_{type}_coverage_per_amplicon.log",
+        "results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.log",
     benchmark:
         repeat(
-            "results/mosdepth/{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
+            "results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
             config.get("mosdepth_merge", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -119,7 +119,7 @@ rule mosdepth_overlap_timestep:
         bamdir=os.path.join(config["runfolder"], "{sample}", config["runid"], "bam_pass"),
         amplibed=[f"{config.get('bed_files')}/{target}.bed" for target in config.get("amplicons") + config.get("extra_regions")],
     output:
-        outdir=temp(directory("results/mosdepth/timestep/{sample}")),
+        outdir=temp(directory("results/mosdepth/timestep/{experiment}_{sample}")),
     resources:
         partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
@@ -128,10 +128,10 @@ rule mosdepth_overlap_timestep:
         mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "results/mosdepth/timestep/{sample}.log",
+        "results/mosdepth/timestep/{experiment}_{sample}.log",
     benchmark:
         repeat(
-            "results/mosdepth/timestep/{sample}.tsv",
+            "results/mosdepth/timestep/{experiment}_{sample}.tsv",
             config.get("mosdepth", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -146,9 +146,9 @@ rule mosdepth_overlap_timestep:
 
 rule mosdepth_merge_timestep:
     input:
-        indir="results/mosdepth/timestep/{sample}",
+        indir="results/mosdepth/timestep/{experiment}_{sample}",
     output:
-        outdir=temp(directory("results/mosdepth/timestep_coverage/{sample}")),
+        outdir=temp(directory("results/mosdepth/timestep_coverage/{experiment}_{sample}")),
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -159,10 +159,10 @@ rule mosdepth_merge_timestep:
     container:
         config.get("mosdepth_merge", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/timestep_coverage/{sample}/timestep_coverage.log",
+        "results/mosdepth/timestep_coverage/{experiment}_{sample}/timestep_coverage.log",
     benchmark:
         repeat(
-            "results/mosdepth/timestep_coverage/{sample}/timestep_coverage.benchmark.tsv",
+            "results/mosdepth/timestep_coverage/{experiment}_{sample}/timestep_coverage.benchmark.tsv",
             config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
         )
     message:
@@ -173,10 +173,10 @@ rule mosdepth_merge_timestep:
 
 rule plot_yield_timestep:
     input:
-        indir="results/mosdepth/timestep_coverage/{sample}",
+        indir="results/mosdepth/timestep_coverage/{experiment}_{sample}",
     output:
-        csv=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.csv"),
-        png=temp("results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.png"),
+        csv=temp("results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"),
+        png=temp("results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"),
     resources:
         partition=config["default_resources"]["partition"],
         time=config["default_resources"]["time"],
@@ -187,10 +187,10 @@ rule plot_yield_timestep:
     container:
         config.get("plot_yield_timestep", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.log",
+        "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.log",
     benchmark:
         repeat(
-            "results/mosdepth/timestep_coverage_images/{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
+            "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
             config.get("plot_yield_timestep", {}).get("benchmark_repeats", 1),
         )
     message:
@@ -203,13 +203,13 @@ rule plot_yield_timestep:
 
 rule sequali:
     input:
-        fastgz1="prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
-        fastgz2="prealignment/filtlong/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
+        fastgz1="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
+        fastgz2="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
     output:
-        html1=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"),
-        json1=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"),
-        html2=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"),
-        json2=temp("results/sequali/{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"),
+        html1=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"),
+        json1=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.json"),
+        html2=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"),
+        json2=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"),
     resources:
         partition=config.get("sequali", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("sequali", {}).get("time", config["default_resources"]["time"]),
@@ -218,10 +218,10 @@ rule sequali:
         mem_per_cpu=config.get("sequali", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("sequali", {}).get("threads", config["default_resources"]["threads"])
     log:
-        "results/sequali/{sample}_{type}_sequali.log",
+        "results/sequali/{experiment}_{sample}_{type}_sequali.log",
     benchmark:
         repeat(
-            "results/sequali/{sample}_{type}_sequali.benchmark.tsv",
+            "results/sequali/{experiment}_{sample}_{type}_sequali.benchmark.tsv",
             config.get("sequali", {}).get("benchmark_repeats", 1),
         )
     container:
@@ -239,9 +239,9 @@ rule sequali:
 
 rule yield_per_pool:
     input:
-        csv="results/mosdepth/{sample}_{type}_coverage_per_amplicon.csv",
+        csv="results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv",
     output:
-        csv=temp("results/mosdepth/{sample}_{type}_yield_pool_{pooln}.csv"),
+        csv=temp("results/mosdepth/{experiment}_{sample}_{type}_yield_pool_{pooln}.csv"),
     resources:
         partition=config.get("default_resources").get("partition"),
         time=config.get("default_resources").get("time"),
@@ -252,10 +252,10 @@ rule yield_per_pool:
     container:
         config.get("yield_per_pool", {}).get("container", config["default_container"])
     log:
-        "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.log",
+        "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_{pooln}.log",
     benchmark:
         repeat(
-            "results/mosdepth/{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
+            "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
             config.get("yield_per_pool", {}).get("benchmark_repeats", 1),
         )
     message:

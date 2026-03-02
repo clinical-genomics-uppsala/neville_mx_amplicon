@@ -13,17 +13,24 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import r2_score
 import os
+import re
 
 mqc_data = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/multiqc_data"
 qscores = "sequali_per_sequence_quality_scores_plot.txt"
+img_fmt = "svg"
 
-# f"{mqc_data}/D24-00846_MinION_T_multiqc_amplicons_data/"
 qsequence_data = {}
 
 for sample_flowcell in os.listdir(mqc_data):
-    sample = sample_flowcell.split("_")[0]
-    flowcell = sample_flowcell.split("_")[1]
-    seq_file = f"{mqc_data}/{sample}_{flowcell}_T_multiqc_amplicons_data/{qscores}"
+    if sample_flowcell.endswith("multiqc_amplicons_data"):
+        print(sample_flowcell)
+        sample = re.compile(r'D\d{2}\-\d{5}(\-\d)*').search(sample_flowcell).group()
+        print(sample)
+        experiment = sample_flowcell.split(f"_{sample}")[0]
+        flowcell = sample_flowcell.split(sample)[1].split("_")[1]
+        print(flowcell)
+        seq_file = f"{mqc_data}/{experiment}_{sample}_{flowcell}_T_multiqc_amplicons_data/{qscores}"
+        print('\n')
 
     if os.path.exists(seq_file):
         df = pd.read_csv(seq_file, sep="\t").iloc[0][1:].str.split(pat=", ", expand=True)
@@ -52,7 +59,7 @@ plt.xlabel('Mean Q-Score')
 plt.ylabel('Percentage of Reads (%)')
 plt.xlim(0, 50)
 plt.grid(True)
-plt.savefig(f"{mqc_data}/multiqc_amplicons_data_{qscores}".replace(".txt", ".png"),
+plt.savefig(f"{mqc_data}/multiqc_amplicons_data_{qscores}".replace(".txt", f".{img_fmt}"),
             bbox_inches='tight')
 plt.close()
 
@@ -109,6 +116,6 @@ plt.xlabel('Mean Q-Score')
 plt.ylabel('Percentage of Reads (%)')
 plt.xlim(0, 50)
 plt.grid(True)
-plt.savefig(f"{mqc_data}/multiqc_amplicons_data_{qscores}".replace(".txt", "_aggregated.png"),
+plt.savefig(f"{mqc_data}/multiqc_amplicons_data_{qscores}".replace(".txt", f"_aggregated.{img_fmt}"),
             bbox_inches='tight')
 plt.close()
