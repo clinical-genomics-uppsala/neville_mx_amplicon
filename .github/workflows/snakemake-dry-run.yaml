@@ -1,0 +1,47 @@
+name: Snakemake dry run
+
+# Controls when the action will run.
+on:
+   # Triggers the workflow on push or pull request events but only for the master and develop branch
+  push:
+    branches:
+     - develop
+     - main
+  pull_request:
+    branches:
+     - develop
+     - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  snakemake-dry-run:
+    name: Run snakemake dry run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+      - name: Install requirements.txt
+        run: |
+          pip install -r requirements.txt
+      - name: Install requirements.test.txt
+        run: |
+          pip install -r requirements.test.txt
+      - name: Install bgzip tool via tabix
+        run: |
+          sudo apt-get update
+          sudo apt-get install tabix
+      - name: Prepare test folder
+        run: |
+          mkdir -p .tests/integration/basecalling/dorado_duplex/
+          cp .tests/integration/test_data/preprocessed/Mtest_D25-test007_T_reads.ont_adapt_trim.bam .tests/integration/basecalling/dorado_duplex/
+          mkdir -p .tests/integration/tmp
+          bgzip -d .tests/integration/reference/TP53_chr17_GRCh38.fasta.gz
+      - name: snakemake dry run
+        working-directory: .tests/integration
+        run: |
+          snakemake -n -s ../../workflow/Snakefile --configfile config/config.yaml --config runfolder=../../.tests/integration/test_data

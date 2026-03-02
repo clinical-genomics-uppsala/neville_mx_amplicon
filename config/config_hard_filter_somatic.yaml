@@ -1,0 +1,15 @@
+# The YAML sections below intend to implement filtering based on annotations, that is after variant annotation
+
+filters:
+  germline:
+    description: "Hard filter germline"
+    expression: "(VEP:gnomADe_AF > 0.005)"  # gnomADe_AF: Frequency of existing variant in gnomAD exomes combined population
+    soft_filter: "False"
+  ad:
+    description: "Hard filter variants with few observations (AD lower than 50)"
+    expression: "(FORMAT:AD:1 < 50 or FORMAT:AD:0 < 50)"
+    soft_filter: "False"
+  snp_type:
+    description: "Hard filter variants that are not SNVs"
+    expression: "(!exist[SNV, VEP:VARIANT_CLASS])"
+    soft_filter: "False"

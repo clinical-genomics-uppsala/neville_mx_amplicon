@@ -1,0 +1,10 @@
+jobs: 1
+keep-going: True
+restart-times: 0
+rerun-incomplete: True
+local-cores: 1
+use-singularity: True
+default-resources: [gres="", ]
+singularity-args: "--cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache"
+singularity-prefix: ".snakemake/singularity/"
+printshellcmds: True
