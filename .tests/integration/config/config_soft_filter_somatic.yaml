@@ -1,0 +1,57 @@
+# NB: some hard filtering may be done with bcftools view -i/-e first, that is before annotation:
+# DeepSomatic: filter out all false positives ('QUAL==0' and 'FILTER=="RefCall"'). Soft-filter RefCall:s with uncertain genotypes ('GT=="mis"' i.e. GT=./.) and 'FILTER=="GERMLINE"'
+# ClairS-TO: filter out all false positives (-i 'FILTER!~"NonSomatic"'?)  -e 'FILTER~"NonSomatic" | FILTER=="LowQual" & QUAL==0'?
+# VarDict: how to filter out false positives? See https://balsamic.readthedocs.io/en/v10.0.3/balsamic_filters.html#vardict-filtering. Some quality cut-off? If so, at what threshold? INFO/QUAL=30 & QUAL field>120?
+# Sniffles2: use `bedtools intersect` to filter out variants not located in a target
+
+# The YAML sections below intend to implement filtering based on annotations, that is after variant annotation
+
+filters:
+  intron:
+    description: " Soft filter intronic variants except if also splice, and/or has a cosmic id on the position"
+    expression: "(exist[intron_variant, VEP:Consequence] and !exist[splice, VEP:Consequence] and !exist[COSV[0-9]+, VEP:Existing_variation])"
+    soft_filter_flag: "Intron"
+    soft_filter: "True"
+  vaf:
+    description: "Soft filter variants with low vaf (AF lower than 0.01)"
+    expression: "(FORMAT:AF:0 < 0.01)"
+    soft_filter_flag: "VAF"
+    soft_filter: "True"
+  consequences:
+    description: >
+      Soft filter variants which consequence is deemed irrelevant
+      (intergenic_variant, NMD_transcript_variant, non_coding_transcript_variant, upstream_gene_variant,
+      downstream_gene_variant, TFBS_ablation, TFBS_amplification, TF_binding_site_variant, regulatory_region_ablation,
+      regulatory_region_amplification, regulatory_region_variant)
+    expression:
+      "(exist[intergenic_variant, VEP:Consequence] or exist[NMD_transcript_variant, VEP:Consequence] or
+      exist[non_coding_transcript_variant, VEP:Consequence] or
+      exist[upstream_gene_variant, VEP:Consequence] or
+      exist[downstream_gene_variant, VEP:Consequence] or
+      exist[TFBS_ablation, VEP:Consequence] or
+      exist[TFBS_amplification, VEP:Consequence] or
+      exist[TF_binding_site_variant, VEP:Consequence] or
+      exist[regulatory_region_ablation, VEP:Consequence] or
+      exist[regulatory_region_amplification, VEP:Consequence] or
+      exist[regulatory_region_variant, VEP:Consequence])"
+    soft_filter_flag: "Consequence"
+    soft_filter: "True"
+  germline:
+    description: "Soft filter germline if >2% in any population from 1000 genomes, ESP or gnomADe"
+    expression: "(VEP:MAX_AF > 0.02)"
+    soft_filter_flag: "PopAF_0.02"
+  protein_coding:
+    description: "Soft filter variants not annotated as protein_coding"
+    expression: (VEP:BIOTYPE != protein_coding)
+    soft_filter_flag: "Biotype"
+    soft_filter: "True"
+#  artifacts:
+#    description: "hard filter position that occurs in 4 or more normal samples and AF is less than 5 sd from median af in normalpool"
+#    expression: "((INFO:Artifact:0 > 3 and INFO:ArtifactNrSD:0 < 5) or (INFO:Artifact:1 > 3 and INFO:ArtifactNrSD:1 < 5))"
+#    hard_filter_flag: "Artifact_gt_3"
+#    hard_filter: "True"
+#  background:
+#    description: "hard filter variants where AF is closer than 4 s.d. from the background noise"
+#    expression: "(INFO:PositionNrSD < 4)"
+#    hard_filter_flag: "Background_lt_4"
+#    hard_filter: "True"

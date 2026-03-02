@@ -2,9 +2,19 @@ from xopen import xopen
 import pysam
 import pandas as pd
 
+
 class FastxDataFrame(object):
     """
-
+    Class to read a FASTQ file and convert it into a pandas DataFrame.
+    :param fastx_path: path to the FASTQ file
+    :return: a pandas DataFrame containing information from the reads in the following columns:
+    - sequence: the nucleotide sequence of the read
+    - comment: the comment associated with the read (if any)
+    - quality: the quality string of the read
+    - phred_scores: the quality scores of the read as a list of integers
+    - length: the length of the read (calculated property)
+    - q_score: the average quality score of the read (calculated property)
+    The class provides methods to filter reads based on their length and to write the DataFrame back to a FASTQ file.
     """
     def __init__(self, fastx_path):
         self.fastxf = pysam.FastxFile(fastx_path)
@@ -57,8 +67,10 @@ def write_frame_to_fastq(dframe, pathout):
 
 
 if __name__ == "__main__":
-    fastx_path = "/pipeline_pool_amplicon/run/20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.fastq.gz"
-    fastqshort =  "/home/camille/ampliconthemato/pipeline_pool_amplicon/run/20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.short.fastq.gz"
+    fastx_path = "/pipeline_pool_amplicon/run/"\
+                 "20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.fastq.gz"
+    fastqshort = "/home/camille/ampliconthemato/pipeline_pool_amplicon/run/"\
+                 "20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.short.fastq.gz"
     df = FastxDataFrame(fastx_path)
     df.set_read_length
     df.set_read_phred_score
@@ -71,4 +83,3 @@ if __name__ == "__main__":
     print(dshort.head()["length"])
     print(dlong.head()["length"])
     write_frame_to_fastq(dshort, fastqshort)
-

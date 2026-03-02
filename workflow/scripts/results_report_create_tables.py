@@ -55,9 +55,6 @@ def extract_vcf_values(record, csq_index):
 
         return_dict["dp"] = sum([int(cov) for cov in record.info["COVERAGE"]]) / len(record.info["COVERAGE"])
 
-    print(return_dict["af"])
-    print(record.samples.values()[0].items())
-
     try:
         return_dict["svlen"] = int(record.info["SVLEN"])
     except KeyError:
@@ -65,13 +62,20 @@ def extract_vcf_values(record, csq_index):
 
     try:
         return_dict["artifact_callers"] = (
-            str(record.info["Artifact"]).replace("(", "").replace(")", "").replace(", ", ";").replace("'", "")
+            str(record.info["Artifact"])
+            .replace("(", "")
+            .replace(")", "")
+            .replace(", ", ";")
+            .replace("'", "")
         )
         if type(record.info["ArtifactMedian"]) == str:
             return_dict["artifact_median"] = str(round(float(record.info["ArtifactMedian"]), 3))
         else:
             return_dict["artifact_median"] = ";".join([str(round(float(x), 3)) for x in record.info["ArtifactMedian"]])
-        return_dict["artifact_nr_sd"] = str(record.info["ArtifactNrSD"]).replace("(", "").replace(")", "").replace(", ", ";")
+        return_dict["artifact_nr_sd"] = (str(record.info["ArtifactNrSD"])
+                                         .replace("(", "")
+                                         .replace(")", "")
+                                         .replace(", ", ";"))
     except KeyError:
         pass
 
@@ -324,13 +328,3 @@ class VariantTable(object):
 
     def get_table_cnv_sv(self):
         return self.table_cnv_sv
-
-if __name__ == "__main__":
-    vcf1="/home/camille/ampliconthemato/pipeline_pool_amplicon/snv_indels/bcbio_variation_recall_ensemble/D19-07233_T.ensembled.vep_annotated.rename_vaf.vcf.gz"
-    vcf2 = "/home/camille/ampliconthemato/pipeline_pool_amplicon/cnv_sv/sniffles2/D19-07233_T_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
-    var_tab = VariantTable(vcf_snv_indels=vcf1)
-    var_tab.create_snv_table(sequenceid="M17_2")
-    print(var_tab.get_table_snv_indels())
-    print(var_tab.sv_records)
-    var_tab.create_sv_table(sequenceid="M17_2")
-    print(var_tab.get_table_cnv_sv())
