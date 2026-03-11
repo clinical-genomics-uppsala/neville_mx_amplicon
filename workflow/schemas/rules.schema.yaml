@@ -2,3 +2,25 @@ $schema: "http://json-schema.org/draft-04/schema#"
 description: snakemake rule input and output files description file
 type: object
 properties:
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_dorado_align:
+    type: object
+    description: input and output parameters for alignment_ont_dummy_rule
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastqgz:
+            type: string
+            description: fastq.gz file to be aligned
+          ref_data:
+            type: string
+            description: reference data to be used for alignment
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file from alignment

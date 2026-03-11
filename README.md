@@ -417,7 +417,7 @@ The small integration test can be run as follows on a Linux-based OS
 ```bash
 $ cd .tests/integration/
 $ source ../../.venv/bin/activate
-$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
+$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-prefix .snakemake/singularity/ --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
 ```
 
 The `--singularity-args` may be replaced by the ones that are suitable for your local OS if needed.

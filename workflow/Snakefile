@@ -17,7 +17,7 @@ logger.info(
 include: "rules/common.smk"
 include: "rules/basecalling.smk"
 include: "rules/prealignment.smk"
-include: "rules/aligning.smk"
+include: "rules/alignment_ont.smk"
 include: "rules/qc.smk"
 include: "rules/varcalling.smk"
 include: "rules/prefiltering.smk"
@@ -29,8 +29,8 @@ if not config.get("multisample", False):
     ruleorder: pycoqc > dorado_basecaller
 
 
-ruleorder: fetch_filtered_reads > dorado_align
-ruleorder: aligning_create_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
+ruleorder: fetch_filtered_reads > alignment_ont_dorado_align
+ruleorder: alignment_ont_split_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
 ruleorder: mosdepth_overlap > qc_mosdepth_amplicons > varcall_clairs_to
 ruleorder: filtlong > sequali
 ruleorder: mosdepth_merge > qc_multiqc

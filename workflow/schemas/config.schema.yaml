@@ -15,6 +15,20 @@ properties:
   default_container:
     type: string
     description: name or path to a default docker/singularity container
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_dorado_align:
+    type: object
+    description: parameters for alignment_ont_dummy_rule
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
 
 required:
   - samples

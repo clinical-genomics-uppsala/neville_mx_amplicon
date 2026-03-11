@@ -54,6 +54,12 @@ pools:
 
 default_container: "docker://hydragenetics/common:3.0.0"
 
+alignment_ont_dorado_align:
+  container: "docker://ontresearch/dorado:latest"
+
+##########################################################
+##########################################################
+
 bcbio_variation_recall_ensemble:
   container: "docker://hydragenetics/bcbio-vc:0.2.6"
   callers:

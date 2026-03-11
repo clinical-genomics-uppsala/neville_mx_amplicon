@@ -7,6 +7,16 @@ default_resources:
   mem_per_cpu: 3072
   partition: "core"
 
+alignment_ont_dorado_align:
+  partition: "core"
+  time: "00:45:00"
+  threads: 20
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
+####################################################
+####################################################
+
 clairs_to:
   partition: "core"
   time: "00:45:00"
