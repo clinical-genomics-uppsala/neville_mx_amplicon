@@ -29,7 +29,7 @@ demux_dorado:
   mem_per_cpu: 6144
 
 dorado_basecaller:
-  partition: "GPU_low"
+  partition: "GPU_hi"
   time: "72:00:00"
   gres: "--gres=gres:gpu:4"
   threads: 40
