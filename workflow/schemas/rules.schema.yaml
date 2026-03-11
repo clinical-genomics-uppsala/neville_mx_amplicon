@@ -3,6 +3,17 @@ description: snakemake rule input and output files description file
 type: object
 properties:
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_index:
+    type: object
+    description: input and output parameters for alignment_ont_bam_index
+    properties:
+      input:
+        type: string
+        description: input sorted bam file to be indexed
+      output:
+        type: string
+        description: output bam index file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   alignment_ont_bam_sort:
     type: object
     description: input and output parameters for alignment_ont_bam_sort
