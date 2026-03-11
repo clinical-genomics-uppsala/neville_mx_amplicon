@@ -54,6 +54,9 @@ pools:
 
 default_container: "docker://hydragenetics/common:3.0.0"
 
+alignment_ont_bam_sort:
+  container: "docker://hydragenetics/samtools:1.21"
+
 alignment_ont_dorado_align:
   container: "docker://ontresearch/dorado:latest"
 

@@ -7,6 +7,13 @@ default_resources:
   mem_per_cpu: 3072
   partition: "core"
 
+alignment_ont_bam_sort:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
 alignment_ont_dorado_align:
   partition: "core"
   time: "00:45:00"
