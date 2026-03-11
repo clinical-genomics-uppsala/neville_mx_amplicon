@@ -16,17 +16,9 @@
 
 ## :speech_balloon: Introduction
 
-<<<<<<< HEAD
-This module implements a workflow with Snakemake for the analysis of Nanopore sequence data from pooled amplicons
-at Clinical Genomics Uppsala (CGU) in view of supporting the diagnostics of Acute Myeloid Leukemia (AML).
-The module consists of ... build upon [hydra-genetics]().
-Multiplexed amplicon sequencing: severral targets are amplified in **multiplexed PCR** settings. 
-The **sample** to be analyzed is **not multiplexed** with other ones.
-=======
 This pipeline implements a workflow with Snakemake for the analysis of Oxford Nanopore Technologies (ONT) sequence data 
 from pooled amplicons at Clinical Genomics Uppsala (CGU) in view of supporting 
 the rapid diagnostics of Acute Myeloid Leukemia (AML).
->>>>>>> 9b9ec211fc4d56a1fac1a7ec8b0badee8521ff8b
 
 The pipeline is partly build upon the tools and modules available in [hydra-genetics](https://github.com/hydra-genetics).
 The steps that are specific to the analysis of pooled amplicons are implemented in this repository,
