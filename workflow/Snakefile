@@ -26,7 +26,7 @@ include: "rules/results_report.smk"
 
 if not config.get("multisample", False):
 
-    ruleorder: pycoqc > dorado_basecaller
+    ruleorder: pycoqc > basecalling_dorado_basecaller
 
 
 ruleorder: fetch_filtered_reads > alignment_ont_dorado_align

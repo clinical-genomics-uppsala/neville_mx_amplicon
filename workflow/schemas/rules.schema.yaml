@@ -140,3 +140,47 @@ properties:
             description: > 
               output text file for amplicon J3 with what reads IDs were written 
               in the output bam file for that amplicon
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_basecaller:
+    type: object
+    description: input and output parameters for basecalling_dorado_basecaller. Basecalling in simplex mode with adapter trimming.
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          pod5:
+            type: string
+            description: pod5 file to be basecalled
+          ref_data:
+            type: string
+            description: reference data to be used for basecalling
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file from basecalling in simplex mode with adapter trimming
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex:
+    type: object
+    description: input and output parameters for basecalling_dorado_duplex. Basecalling in duplex mode with adapter trimming.
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          pod5:
+            type: string
+            description: pod5 file to be basecalled
+          ref_data:
+            type: string
+            description: reference data to be used for basecalling
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file from basecalling in duplex mode with adapter trimming

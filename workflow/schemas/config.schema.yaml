@@ -99,6 +99,34 @@ properties:
       extra:
         type: string
         description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_basecaller:
+    type: object
+    description: parameters for basecalling_dorado_basecaller
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex:
+    type: object
+    description: parameters for basecalling_dorado_duplex
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
 
 required:
   - samples

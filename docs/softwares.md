@@ -130,3 +130,47 @@ Introduction to alignment_ont_split_bam_target_j3
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__alignment_ont_split_bam_target_j3#
+
+
+## [basecalling_dorado_basecaller](https://software-docs.nanoporetech.com/dorado/latest/basecaller/simplex/)
+Introduction to basecalling_dorado_basecaller
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_basecaller#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_basecaller#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_basecaller#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_basecaller#
+
+
+## [basecalling_dorado_duplex](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
+Introduction to basecalling_dorado_duplex
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_duplex#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_duplex#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_duplex#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_duplex#
