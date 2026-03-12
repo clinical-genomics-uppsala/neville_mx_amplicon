@@ -164,6 +164,26 @@ properties:
         type: string
         description: GPU-related extra parameters to be forwarded to slurm when submitting a job
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_demux:
+    type: object
+    description: resource definitions for basecalling_dorado_demux
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   basecalling_dorado_duplex:
     type: object
     description: resource definitions for basecalling_dorado_duplex
@@ -186,6 +206,69 @@ properties:
       slurm_extra:
         type: string
         description: GPU-related extra parameters to be forwarded to slurm when submitting a job
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex_multisamples:
+    type: object
+    description: resource definitions for basecalling_dorado_duplex_multisamples
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+      slurm_extra:
+        type: string
+        description: GPU-related extra parameters to be forwarded to slurm when submitting a job
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_trim:
+    type: object
+    description: resource definitions for basecalling_dorado_trim
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_rename_demux_bam:
+    type: object
+    description: resource definitions for basecalling_rename_demux_bam
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
 
 required:
   - default_resources

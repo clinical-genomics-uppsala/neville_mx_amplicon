@@ -154,6 +154,28 @@ Introduction to basecalling_dorado_basecaller
 #RESOURCESSCHEMA__basecalling_dorado_basecaller#
 
 
+## [basecalling_dorado_demux](https://software-docs.nanoporetech.com/dorado/latest/barcoding/barcoding/)
+Introduction to basecalling_dorado_demux
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_demux#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_demux#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_demux#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_demux#
+
+
 ## [basecalling_dorado_duplex](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
 Introduction to basecalling_dorado_duplex
 
@@ -174,3 +196,71 @@ Introduction to basecalling_dorado_duplex
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__basecalling_dorado_duplex#
+
+
+## [basecalling_dorado_duplex_multisamples](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
+Introduction to basecalling_dorado_duplex_multisamples
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_duplex_multisamples#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_duplex_multisamples#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_duplex_multisamples#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_duplex_multisamples#
+
+
+## [basecalling_dorado_trim](https://software-docs.nanoporetech.com/dorado/latest/basecaller/read_trimming/)
+Introduction to basecalling_dorado_trim
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_trim#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_trim#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_trim#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_trim#
+
+
+## [basecalling_rename_demux_bam](...)
+Introduction to basecalling_rename_demux_bam
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_rename_demux_bam#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_rename_demux_bam#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_rename_demux_bam#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_rename_demux_bam#
+
+

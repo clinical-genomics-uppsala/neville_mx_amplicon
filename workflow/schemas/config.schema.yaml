@@ -114,9 +114,65 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_demux:
+    type: object
+    description: parameters for basecalling_dorado_demux
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   basecalling_dorado_duplex:
     type: object
     description: parameters for basecalling_dorado_duplex
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex_multisamples:
+    type: object
+    description: parameters for basecalling_dorado_duplex_multisamples
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_trim:
+    type: object
+    description: parameters for basecalling_dorado_trim
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_rename_demux_bam:
+    type: object
+    description: parameters for basecalling_rename_demux_bam
     properties:
       benchmark_repeats:
         type: integer

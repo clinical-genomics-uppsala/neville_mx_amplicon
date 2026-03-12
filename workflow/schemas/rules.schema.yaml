@@ -163,6 +163,32 @@ properties:
             type: string
             description: output bam file from basecalling in simplex mode with adapter trimming
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_demux:
+    type: object
+    description: input and output parameters for basecalling_dorado_demux
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be demultiplexed
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bamdir:
+            type: string
+            description: >
+              output directory where the bam files resulting from demultiplexing will be written.
+              One bam file per sample.
+          done:
+            type: string
+            description: >
+              empty file to be written when demultiplexing is done, 
+              used as a flag for downstream rules to start processing the demultiplexed bam files
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   basecalling_dorado_duplex:
     type: object
     description: input and output parameters for basecalling_dorado_duplex. Basecalling in duplex mode with adapter trimming.
@@ -184,3 +210,67 @@ properties:
           bam:
             type: string
             description: output bam file from basecalling in duplex mode with adapter trimming
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex_multisamples:
+    type: object
+    description: input and output parameters for basecalling_dorado_duplex_multisamples
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          pod5:
+            type: string
+            description: pod5 file to be basecalled
+          ref_data:
+            type: string
+            description: reference data to be used for basecalling
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file from basecalling in duplex mode with adapter trimming
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_trim:
+    type: object
+    description: input and output parameters for basecalling_dorado_trim
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be trimmed
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file from trimming
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_rename_demux_bam:
+    type: object
+    description: input and output parameters for basecalling_rename_demux_bam
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bamdir:
+            type: string
+            description: directory where the bam files resulting from demultiplexing are located
+          done:
+            type: string
+            description: >
+              empty file that is written when demultiplexing is done.
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam_renamed:
+            type: string
+            description: output bam file renamed with experment ID and sample ID
