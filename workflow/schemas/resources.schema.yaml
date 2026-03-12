@@ -141,6 +141,46 @@ properties:
         type: string
         description: max execution time
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_bam_to_fastq:
+    type: object
+    description: resource definitions for basecalling_bam_to_fastq
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_compress_fastq:
+    type: object
+    description: resource definitions for basecalling_compress_fastq
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   basecalling_dorado_basecaller:
     type: object
     description: resource definitions for basecalling_dorado_basecaller

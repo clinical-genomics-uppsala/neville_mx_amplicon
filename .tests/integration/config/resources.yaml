@@ -49,6 +49,20 @@ alignment_ont_split_bam_target_j3:
   mem_mb: 6144
   mem_per_cpu: 6144
 
+basecalling_bam_to_fastq:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+basecalling_compress_fastq:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
 basecalling_dorado_basecaller:
   partition: "GPU_hi"
   time: "72:00:00"

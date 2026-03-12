@@ -141,6 +141,44 @@ properties:
               output text file for amplicon J3 with what reads IDs were written 
               in the output bam file for that amplicon
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_bam_to_fastq:
+    type: object
+    description: input and output parameters for basecalling_bam_to_fastq
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be converted to fastq
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          fastq:
+            type: string
+            description: output fastq file resulting from converting the input bam file to fastq
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_compress_fastq:
+    type: object
+    description: input and output parameters for basecalling_compress_fastq
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastq:
+            type: string
+            description: input fastq file to be compressed to fastq.gz
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          fastqgz:
+            type: string
+            description: output fastq.gz file resulting from compressing the input fastq file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   basecalling_dorado_basecaller:
     type: object
     description: input and output parameters for basecalling_dorado_basecaller. Basecalling in simplex mode with adapter trimming.
@@ -273,4 +311,4 @@ properties:
         properties:
           bam_renamed:
             type: string
-            description: output bam file renamed with experment ID and sample ID
+            description: output bam file renamed with experiment ID and sample ID

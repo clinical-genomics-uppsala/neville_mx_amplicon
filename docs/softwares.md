@@ -132,6 +132,50 @@ Introduction to alignment_ont_split_bam_target_j3
 #RESOURCESSCHEMA__alignment_ont_split_bam_target_j3#
 
 
+## [basecalling_bam_to_fastq](https://www.htslib.org/doc/samtools-fasta.html)
+Introduction to basecalling_bam_to_fastq
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_bam_to_fastq#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_bam_to_fastq#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_bam_to_fastq#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_bam_to_fastq#
+
+
+## [basecalling_compress_fastq](https://www.htslib.org/doc/samtools-view.html)
+Introduction to basecalling_compress_fastq
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_compress_fastq#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_compress_fastq#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_compress_fastq#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_compress_fastq#
+
+
 ## [basecalling_dorado_basecaller](https://software-docs.nanoporetech.com/dorado/latest/basecaller/simplex/)
 Introduction to basecalling_dorado_basecaller
 
@@ -262,5 +306,4 @@ Introduction to basecalling_rename_demux_bam
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__basecalling_rename_demux_bam#
-
 
