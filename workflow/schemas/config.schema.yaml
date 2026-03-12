@@ -30,6 +30,20 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_softclip:
+    type: object
+    description: parameters for alignment_ont_bam_softclip
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   alignment_ont_bam_sort:
     type: object
     description: parameters for alignment_ont_bam_sort
@@ -47,6 +61,34 @@ properties:
   alignment_ont_dorado_align:
     type: object
     description: parameters for alignment_ont_dorado_align
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_by_target:
+    type: object
+    description: parameters for alignment_ont_dorado_align
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_target_j3:
+    type: object
+    description: parameters for alignment_ont_split_bam_target_j3
     properties:
       benchmark_repeats:
         type: integer

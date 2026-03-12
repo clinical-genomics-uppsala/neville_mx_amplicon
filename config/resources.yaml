@@ -14,6 +14,13 @@ alignment_ont_bam_index:
   mem_mb: 6144
   mem_per_cpu: 6144
 
+alignment_ont_bam_softclip:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
 alignment_ont_bam_sort:
   partition: "core"
   time: "00:15:00"
@@ -28,6 +35,19 @@ alignment_ont_dorado_align:
   mem_mb: 122880
   mem_per_cpu: 6144
 
+alignment_ont_split_bam_by_target:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+  alignment_ont_split_bam_target_j3:
+    partition: "core"
+    time: "00:15:00"
+    threads: 1
+    mem_mb: 6144
+    mem_per_cpu: 6144
 ####################################################
 ####################################################
 

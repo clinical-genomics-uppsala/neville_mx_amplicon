@@ -14,6 +14,34 @@ properties:
         type: string
         description: output bam index file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_softclip:
+    type: object
+    description: input and output parameters for alignment_ont_bam_softclip
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be softclipped
+          amplibed:
+            type: string
+            description: bed file wih the coordinates of the amplicons to be used for softclipping
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bamclip:
+            type: string
+            description: output bam file from softclipping
+          bamclipidx:
+            type: string
+            description: output bam index file from softclipping
+          summary:
+            type: string
+            description: output summary file with stats about the softclipping
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   alignment_ont_bam_sort:
     type: object
     description: input and output parameters for alignment_ont_bam_sort
@@ -46,3 +74,69 @@ properties:
           bam:
             type: string
             description: output bam file from alignment
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_by_target:
+    type: object
+    description: input and output parameters for alignment_ont_split_bam_by_target
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be split by target
+          bai:
+            type: string
+            description: input bam index file to be used for splitting
+          amplibed:
+            type: string
+            description: bed file wih the coordinates of the amplicons to be used for splitting
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file for each target amplicon
+          bai:
+            type: string
+            description: output bam index file from splitting by target
+          txt:
+            type: string
+            description: > 
+              output text file for each amplicon with what reads IDs were written 
+              in the output bam file for that amplicon
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_target_j3:
+    type: object
+    description: input and output parameters for alignment_ont_split_bam_target_j3
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be split for target J3 only
+          bai:
+            type: string
+            description: input bam index file to be used for splitting
+          amplibed:
+            type: string
+            description: bed file wih the coordinates of the amplicons to be used for splitting
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output bam file for target amplicon J3 only
+          bai:
+            type: string
+            description: output bam index file from splitting by target
+          txt:
+            type: string
+            description: > 
+              output text file for amplicon J3 with what reads IDs were written 
+              in the output bam file for that amplicon

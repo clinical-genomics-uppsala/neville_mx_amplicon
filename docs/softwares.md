@@ -44,6 +44,28 @@ Introduction to alignment_ont_bam_index
 #RESOURCESSCHEMA__alignment_ont_bam_index#
 
 
+## [alignment_ont_bam_softclip](https://www.htslib.org/doc/samtools-ampliconclip.html)
+Introduction to alignment_ont_bam_softclip
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_bam_softclip#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__alignment_ont__alignment_ont_bam_softclip#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_bam_softclip#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_bam_softclip#
+
+
 ## [alignment_ont_bam_sort](https://www.htslib.org/doc/samtools-sort.html)
 Introduction to alignment_ont_bam_sort
 
@@ -64,3 +86,47 @@ Introduction to alignment_ont_bam_sort
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__alignment_ont_bam_sort#
+
+
+## [alignment_ont_split_bam_by_target](https://www.htslib.org/doc/samtools-view.html)
+Introduction to alignment_ont_split_bam_by_target
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_split_bam_by_target#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__alignment_ont__alignment_ont_split_bam_by_target#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_split_bam_by_target#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_split_bam_by_target#
+
+
+## [alignment_ont_split_bam_target_j3](https://www.htslib.org/doc/samtools-view.html)
+Introduction to alignment_ont_split_bam_target_j3
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_split_bam_target_j3#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__alignment_ont__alignment_ont_split_bam_target_j3#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_split_bam_target_j3#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_split_bam_target_j3#

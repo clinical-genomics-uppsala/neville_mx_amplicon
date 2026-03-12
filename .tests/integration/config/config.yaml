@@ -57,11 +57,20 @@ default_container: "docker://hydragenetics/common:3.0.0"
 alignment_ont_bam_index:
   container: "docker://hydragenetics/samtools:1.21"
 
+alignment_ont_bam_softclip:
+  container: "docker://hydragenetics/samtools:1.21"
+
 alignment_ont_bam_sort:
   container: "docker://hydragenetics/samtools:1.21"
 
 alignment_ont_dorado_align:
   container: "docker://ontresearch/dorado:latest"
+
+alignment_ont_split_bam_by_target:
+  container: "docker://hydragenetics/samtools:1.21"
+
+alignment_ont_split_bam_target_j3:
+  container: "docker://hydragenetics/samtools:1.21"
 
 ##########################################################
 ##########################################################
