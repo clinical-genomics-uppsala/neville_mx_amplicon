@@ -97,6 +97,20 @@ basecalling_dorado_demux:
   mem_mb: 122880
   mem_per_cpu: 6144
 
+prealignment_ont_filtlong:
+  partition: "core"
+  time: "00:25:00"
+  threads: 8
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
+prealignment_ont_fetch_filtered_reads:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
 ###############################################################
 ###############################################################
 

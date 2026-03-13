@@ -312,3 +312,72 @@ properties:
           bam_renamed:
             type: string
             description: output bam file renamed with experiment ID and sample ID
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_filtlong:
+    type: object
+    description: input and output parameters for prealignment_ont_filtlong
+    properties:
+      input:
+        type: string
+        description: input fastq.gz file to be filtered with filtlong before alignment
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          fastq:
+            type: string
+            description: output fastq file resulting from filtering the input fastq.gz file with filtlong before alignment
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_filtered_reads:
+    type: object
+    description: input and output parameters for prealignment_ont_fetch_filtered_reads
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastq1:
+            type: string
+            description: >
+              input fastq.gz file that was filtered with filtlong. 
+              Used for fetching the read IDs of the reads that passed the filtering step
+          fastq2:
+            type: string
+            description: input fastq.gz file before filtering with filtlong.
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          txt:
+            type: string
+            description: output text file with the read IDs of the reads that passed the filtering step with filtlong
+          bam:
+            type: string
+            description: output bam file with the reads that did NOT pass the filtering step with filtlong
+          fastq:
+            type: string
+            description: output fastq.gz file with the reads that did NOT pass the filtering step with filtlong
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_too_short_too_long_reads:
+    type: object
+    description: input and output parameters for prealignment_ont_fetch_too_short_too_long_reads
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastq:
+            type: string
+            description: >
+              input fastq.gz file that was filtered with filtlong. 
+              Used for fetching the read IDs of the reads that passed the filtering step
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          fshort:
+            type: string
+            description: output fastq.gz file with the reads that are too short according to the filtering step with filtlong
+          flong:
+            type: string
+            description: output fastq.gz file with the reads that are too long according to the filtering step with filtlong

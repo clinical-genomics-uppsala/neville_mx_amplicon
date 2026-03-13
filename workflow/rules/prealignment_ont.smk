@@ -14,8 +14,8 @@ rule prealignment_ont_filtlong:
     output:
         fastq=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz"),
     params:
-        min_length=config.get("prealignment_ont_filtlong", {}).get("min_length", 150),
-        max_length=config.get("prealignment_ont_filtlong", {}).get("max_length", 8000),
+        min_length=config.get("prealignment_ont_filtlong", {}).get("min_length", 50),
+        max_length=config.get("prealignment_ont_filtlong", {}).get("max_length", 30000),
     log:
         "prealignment/filtlong/{experiment}_{sample}_{type}.filtlong.log",
     resources:
@@ -97,7 +97,7 @@ rule prealignment_ont_fetch_too_short_too_long_reads:
     benchmark:
         repeat(
             "prealignment/filtlong/{experiment}_{sample}_{type}.fetch_too_short_too_long_reads.benchmark.tsv",
-            config.get("filtlong", {}).get("benchmark_repeats", 1),
+            config.get("prealignment_ont_fetch_too_short_too_long_reads", {}).get("benchmark_repeats", 1),
         )
     container:
         config["default_container"]

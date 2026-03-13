@@ -105,6 +105,14 @@ basecalling_dorado_trim:
   container: "docker://ontresearch/dorado:latest"
   trim: "--sequencing-kit SQK-NBD114-24"
 
+prealignment_ont_filtlong:
+    container: "docker://hydragenetics/filtlong:0.2.1"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
+    min_length: 2000
+    max_length: 4000
+
+prealignment_ont_fetch_filtered_reads:
+  container: "docker://hydragenetics/samtools:1.21"
+
 ################################################################
 ################################################################
 

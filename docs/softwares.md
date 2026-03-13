@@ -307,3 +307,46 @@ Introduction to basecalling_rename_demux_bam
 
 #RESOURCESSCHEMA__basecalling_rename_demux_bam#
 
+
+## [prealignment_ont_filtlong](https://github.com/rrwick/Filtlong)
+Introduction to prealignment_ont_filtlong
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__prealignment_ont_filtlong#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__prealignment_ont_filtlong#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prealignment_ont_filtlong#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prealignment_ont_filtlong#
+
+
+## [prealignment_ont_fetch_filtered_reads](https://www.htslib.org/doc/samtools.html)
+Introduction to prealignment_ont_fetch_filtered_reads
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__prealignment_ont_fetch_filtered_reads#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__prealignment_ont_fetch_filtered_reads#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prealignment_ont_fetch_filtered_reads#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prealignment_ont_fetch_filtered_reads#

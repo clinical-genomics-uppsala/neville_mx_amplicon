@@ -211,6 +211,48 @@ properties:
       extra:
         type: string
         description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_filtlong:
+    type: object
+    description: parameters for prealignment_ont_filtlong
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_filtered_reads:
+    type: object
+    description: parameters for prealignment_ont_fetch_filtered_reads
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_too_short_too_long_reads:
+    type: object
+    description: parameters for prealignment_ont_fetch_too_short_too_long_reads
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
 
 required:
   - samples
