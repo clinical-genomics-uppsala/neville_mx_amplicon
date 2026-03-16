@@ -450,3 +450,118 @@ properties:
           vcf:
             type: string
             description: output vcf file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to:
+    type: object
+    description: input and output parameters for snv_indels_svs_clairs_to
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be used for variant calling with clairs_to
+          bai:
+            type: string
+            description: input bam index file to be used for variant calling with clairs_to
+          ref:
+            type: string
+            description: reference fasta file to be used for variant calling with clairs_to
+          bed:
+            type: string
+            description: bed file with the coordinates of the regions to be used for variant calling with clairs_to
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          snv:
+            type: string
+            description: output vcf file with the SNV variants called with clairs_to
+          indel:
+            type: string
+            description: output vcf file with the indel variants called with clairs_to
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to_concat:
+    type: object
+    description: input and output parameters for snv_indels_svs_clairs_to_concat
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          snv:
+            type: string
+            description: input vcf file with the SNV variants called with clairs_to
+          indel:
+            type: string
+            description: input vcf file with the indel variants called with clairs_to
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          all:
+            type: string
+            description: output vcf file with all the SNV and indel variants called with clairs_to
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_deepsomatic:
+    type: object
+    description: input and output parameters for snv_indels_svs_deepsomatic
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be used for variant calling with deepsomatic
+          bai:
+            type: string
+            description: input bam index file to be used for variant calling with deepsomatic
+          ref:
+            type: string
+            description: reference fasta file to be used for variant calling with deepsomatic
+          bed:
+            type: string
+            description: bed file with the coordinates of the regions to be used for variant calling with deepsomatic
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          tmpdir:
+            type: string
+            description: output temporary directory where the intermediate files from variant calling will be written
+          vcf:
+            type: string
+            description: output vcf file with the SNV and indel variants called with deepsomatic
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_savana:
+    type: object
+    description: input and output parameters for snv_indels_svs_savana
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be used for variant calling with savana
+          bai:
+            type: string
+            description: input bam index file to be used for variant calling with savana
+          ref:
+            type: string
+            description: reference fasta file to be used for variant calling with savana
+          bed:
+            type: string
+            description: bed file with the coordinates of the regions to be used for variant calling with savana
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          done:
+            type: string
+            description: empty file to be written when variant calling with savana is done, used as a flag for downstream rules
+          outdir:
+            type: string
+            description: output directory where the vcf file with the SV variants called with savana will be written

@@ -66,6 +66,10 @@ See the [documentation for Filtlong](https://github.com/rrwick/Filtlong/tree/mai
   - the software [VarDict](https://academic.oup.com/nar/article/44/11/e108/2468301),
   - the software [Sniffles2](https://www.nature.com/articles/s41587-023-02024-y),
 
+**NB**: Savana (SV calling in long-read data) ot working yet for amplicon data, 
+but we keep it here for future use when the tool will be updated to handle amplicon data
+(see https://github.com/cortes-ciriano-lab/savana/issues/97).
+
 6. Decomposition of the variants with the software [_VT_](https://github.com/atks/vt) 
 and annotation of the variants with [_VEP_](https://www.ensembl.org/info/docs/tools/vep/index.html),
 

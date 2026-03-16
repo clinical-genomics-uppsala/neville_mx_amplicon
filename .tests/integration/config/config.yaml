@@ -126,6 +126,22 @@ prefiltering_bcftools_view:
     vardict:
       extra: "-i 'QUAL>120'"
 
+snv_indels_svs_clairs_to:
+  container: "docker://hkubal/clairs-to:latest"
+  platform: "ont_r10_dorado_sup_5khz"
+  snv_min_af: 0.005
+  indel_min_af: 0.005
+  bed_file: "test_data/bedfiles/amplicons-clairs-to.bed"
+
+snv_indels_svs_deepsomatic:
+  container: "docker://google/deepsomatic:1.8.0"
+  extra: '--make_examples_extra_args="vsc_min_fraction_snps=0.01,vsc_min_fraction_indels=0.01,small_model_snp_gq_threshold=20,small_model_indel_gq_threshold=20"'
+  # filter: '--use_default_pon_filtering=true --qual_filter=0.1'
+  bed_file: "test_data/bedfiles/amplicons-exons-deepsomatic.bed"
+
+snv_indels_svs_savana:
+  container: "docker://hydragenetics/savana:1.3.5"
+
 ##########################################################
 ##########################################################
 

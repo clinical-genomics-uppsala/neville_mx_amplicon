@@ -416,3 +416,93 @@ Introduction to prefiltering_rename_vaf_to_af
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__prefiltering_rename_vaf_to_af#
+
+
+## [snv_indels_svs_clairs_to](https://github.com/HKU-BAL/ClairS-TO/tree/main)
+Introduction to snv_indels_svs_clairs_to
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__snv_indels_svs__snv_indels_svs_clairs_to#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__snv_indels_svs__snv_indels_svs_clairs_to#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__snv_indels_svs_clairs_to#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_clairs_to#
+
+
+## [snv_indels_svs_clairs_to_concat](https://samtools.github.io/bcftools/bcftools.html#concat)
+Introduction to snv_indels_svs_clairs_to_concat
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__snv_indels_svs__snv_indels_svs_clairs_to_concat#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__snv_indels_svs__snv_indels_svs_clairs_to_concat#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__snv_indels_svs_clairs_to_concat#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_clairs_to_concat#
+
+
+## [snv_indels_svs_deepsomatic](https://github.com/google/deepsomatic)
+Introduction to snv_indels_svs_deepsomatic
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__snv_indels_svs__snv_indels_svs_deepsomatic#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__snv_indels_svs__snv_indels_svs_deepsomatic#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__snv_indels_svs_deepsomatic#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_deepsomatic#
+
+
+## [snv_indels_svs_savana](https://github.com/cortes-ciriano-lab/savana)
+Introduction to snv_indels_svs_savana. Not working yet for amplicon data, 
+but we keep it here for future use when the tool will be updated to handle amplicon data
+(see https://github.com/cortes-ciriano-lab/savana/issues/97).
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__snv_indels_svs__snv_indels_svs_savana#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__snv_indels_svs__snv_indels_svs_savana#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__snv_indels_svs_savana#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_savana#

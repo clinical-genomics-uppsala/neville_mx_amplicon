@@ -111,6 +111,26 @@ prealignment_ont_fetch_filtered_reads:
   mem_mb: 6144
   mem_per_cpu: 6144
 
+snv_indels_svs_clairs_to:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+snv_indels_svs_deepsomatic:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
+
+snv_indels_svs_savana:
+  partition: "core"
+  time: "00:45:00"
+  threads: 40
+  mem_mb: 245760
+  mem_per_cpu: 6144
 ###############################################################
 ###############################################################
 
