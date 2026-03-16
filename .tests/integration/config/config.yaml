@@ -112,6 +112,20 @@ prealignment_ont_filtlong:
 prealignment_ont_fetch_filtered_reads:
   container: "docker://hydragenetics/samtools:1.21"
 
+prefiltering_bcftools_include_region:
+  filter:
+    sniffles2:
+      extra: "-R test_data/bedfiles/amplicons.bed"
+
+prefiltering_bcftools_view:
+  filter:
+    deepsomatic:
+      extra: "-i 'QUAL>0'"
+    clairs_to:
+      extra: "-e 'FILTER==\"LowQual\" & QUAL==0'"
+    vardict:
+      extra: "-i 'QUAL>120'"
+
 ##########################################################
 ##########################################################
 

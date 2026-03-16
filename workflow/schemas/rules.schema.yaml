@@ -381,3 +381,72 @@ properties:
           flong:
             type: string
             description: output fastq.gz file with the reads that are too long according to the filtering step with filtlong
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_include_region:
+    type: object
+    description: input and output parameters for prefiltering_bcftools_include_region
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          vcf:
+            type: string
+            description: input vcf file to be filtered with bcftools view with custom settings per variant caller
+          tbi:
+            type: string
+            description: input vcf index file
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          vcf:
+            type: string
+            description: output variant-prefiltered vcf file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_view:
+    type: object
+    description: input and output parameters for prefiltering_bcftools_view
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          vcf:
+            type: string
+            description: input vcf file to be filtered with bcftools view with custom settings per variant caller
+          tbi:
+            type: string
+            description: input vcf index file
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          vcf:
+            type: string
+            description: output variant-prefiltered vcf file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_rename_vaf_to_af:
+    type: object
+    description: input and output parameters for prefiltering_rename_vaf_to_af
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          vcf:
+            type: string
+            description: input vcf file in which the VAF INFO field needs to be renamed to AF
+          tbi:
+            type: string
+            description: input vcf index file
+          txt:
+            type: string
+            description: input text file with the string patterns to replace in the INFO field of the input vcf file
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          vcf:
+            type: string
+            description: output vcf file

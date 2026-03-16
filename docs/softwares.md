@@ -350,3 +350,69 @@ Introduction to prealignment_ont_fetch_filtered_reads
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__prealignment_ont_fetch_filtered_reads#
+
+
+## [prefiltering_bcftools_include_region](https://samtools.github.io/bcftools/bcftools.html#view)
+Introduction to prefiltering_bcftools_include_region
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_include_region#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_include_region#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prefiltering_bcftools_include_region#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prefiltering_bcftools_include_region#
+
+
+## [prefiltering_bcftools_view](https://samtools.github.io/bcftools/bcftools.html#view)
+Introduction to prefiltering_bcftools_view
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_view#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_view#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prefiltering_bcftools_view#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prefiltering_bcftools_view#
+
+
+## [prefiltering_rename_vaf_to_af](https://samtools.github.io/bcftools/bcftools.html#annotate)
+Introduction to prefiltering_rename_vaf_to_af
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_rename_vaf_to_af#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_rename_vaf_to_af#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prefiltering_rename_vaf_to_af#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prefiltering_rename_vaf_to_af#
