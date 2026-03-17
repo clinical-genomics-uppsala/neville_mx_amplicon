@@ -451,6 +451,219 @@ properties:
             type: string
             description: output vcf file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_bed_to_interval_list:
+    type: object
+    description: input and output parameters for qc_ont_bed_to_interval_list
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bed:
+            type: string
+            description: input bed file with the coordinates of the regions to be converted to interval list format
+          dict:
+            type: string
+            description: input dict file with the contig names and lengths to be used for converting the input bed file
+      output:
+        type: string
+        description: output interval list file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge:
+    type: object
+    description: input and output parameters for qc_ont_mosdepth_merge
+    properties:
+      input:
+        type: object
+        description: list of input summary files from mosdepth to be merged into one summary table
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          csv:
+            type: string
+            description: output csv file with the merged summary table from mosdepth with the coverage metrics for all the targets
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge_timestep:
+    type: object
+    description: input and output parameters for qc_ont_mosdepth_merge_timestep
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          indir:
+            type: string
+            description: input directory where the summary files from mosdepth at increasing timesteps are located
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          outdir:
+            type: string
+            description: output directory where the output csv files with the merged summary tables from mosdepth will be written
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap:
+    type: object
+    description: input and output parameters for qc_ont_mosdepth_overlap
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file to be used for calculating the coverage with mosdepth
+          bamidx:
+            type: string
+            description: input bam index file to be used for calculating the coverage with mosdepth
+          amplibed:
+            type: string
+            description: bed file with the coordinates of the regions to be used for calculating the coverage
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bed:
+            type: string
+            description: output bed file with the coverage calculated with mosdepth for the regions in the input bed file
+          csi:
+            type: string
+            description: output csi index file for the output bed file with the coverage
+          glob:
+            type: string
+            description: output text file with the global coverage metrics calculated with mosdepth
+          region:
+            type: string
+            description: output text file with the coverage metrics calculated with mosdepth for the regions in the input bed file
+          summary:
+            type: string
+            description: output text file with the summary of the coverage metrics calculated with mosdepth
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap_timestep:
+    type: object
+    description: input and output parameters for qc_ont_mosdepth_overlap_timestep
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bamdir:
+            type: string
+            description: input directory where the bam files from MinKNOW at increasing timesteps are located
+          amplibed:
+            type: string
+            description: bed file with the coordinates of the regions to be used for calculating the coverage
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          outdir:
+            type: string
+            description: > 
+              output directory where the output bed files with the coverage 
+              calculated with mosdepth for the regions in the input bed file will be written, 
+              one bed file per timestep
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_plot_yield_timestep:
+    type: object
+    description: input and output parameters for qc_ont_plot_yield_timestep
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          indir:
+            type: string
+            description: input directory where the summary tables with coverage for each target at increasing timesteps are located
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          csv:
+            type: string
+            description: >
+              output csv file with the summary table with the coverage for each target at increasing timesteps.
+              Used for plotting the coverage over time
+          png:
+            type: string
+            description: output png file with the plot of the coverage for each target at increasing timesteps
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_pycoqc:
+    type: object
+    description: input and output parameters for qc_ont_pycoqc
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          seq_run_dir:
+            type: string
+            description: input sequencing run directory that contains the sequencing summary file from MinKNOW
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          html:
+            type: string
+            description: output html report file from pycoQC with the QC metrics of the sequencing run
+          json:
+            type: string
+            description: output json report file from pycoQC with the QC metrics of the sequencing run
+          txt:
+            type: string
+            description: output text file from pycoQC with the QC metrics of the sequencing run
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_sequali:
+    type: object
+    description: input and output parameters for qc_ont_sequali
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastqgz1:
+            type: string
+            description: input filtered fastq.gz file to be used for calculating the sequencing quality metrics with sequali
+          fastqgz2:
+            type: string
+            description: input outfiltered fastq.gz file to be used for calculating the sequencing quality metrics with sequali
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          html1:
+            type: string
+            description: output html report file from sequali with the QC metrics of the filtered fastq.gz file
+          json1:
+            type: string
+            description: output json report file from sequali with the QC metrics of the filtered fastq
+          html2:
+            type: string
+            description: output html report file from sequali with the QC metrics of the outfiltered fastq.gz file
+          json2:
+            type: string
+            description: output json report file from sequali with the QC metrics of the outfiltered fastq.gz file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_yield_per_pool:
+    type: object
+    description: input and output parameters for qc_ont_yield_per_pool
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          csv:
+            type: string
+            description: input csv file with the summary table with the coverage for each target
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          csv:
+            type: string
+            description: output csv file per pool with the summary table with the coverage for each target
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: input and output parameters for snv_indels_svs_clairs_to

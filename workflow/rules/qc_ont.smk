@@ -8,7 +8,7 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
-rule pycoqc:
+rule qc_ont_pycoqc:
     input:
         seq_run_dir=os.path.join(config.get("runfolder"), config.get("batchid"), config.get("runid")),
     output:
@@ -16,21 +16,21 @@ rule pycoqc:
         json=temp("results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.json"),
         txt=temp("results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.txt"),
     resources:
-        partition=config.get("pycoqc", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("pycoqc", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("pycoqc", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("pycoqc", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("pycoqc", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("pycoqc", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("qc_ont_pycoqc", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("qc_ont_pycoqc", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("qc_ont_pycoqc", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("qc_ont_pycoqc", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("qc_ont_pycoqc", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("qc_ont_pycoqc", {}).get("threads", config["default_resources"]["threads"])
     log:
         "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.log",
     benchmark:
         repeat(
             "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.benchmark.tsv",
-            config.get("pycoqc", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_pycoqc", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("pycoqc", {}).get("container", config["default_container"])
+        config.get("qc_ont_pycoqc", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Report graphically for the sequencing run.
@@ -43,7 +43,7 @@ rule pycoqc:
         """
 
 
-rule mosdepth_overlap:
+rule qc_ont_mosdepth_overlap:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bamidx="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
@@ -58,21 +58,21 @@ rule mosdepth_overlap:
         prefix_out=lambda wildcards, output: os.path.dirname(output.summary),
         threads=20,
     resources:
-        partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("mosdepth", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("qc_ont_mosdepth_overlap", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("qc_ont_mosdepth_overlap", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("qc_ont_mosdepth_overlap", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("qc_ont_mosdepth_overlap", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("qc_ont_mosdepth_overlap", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("qc_ont_mosdepth_overlap", {}).get("threads", config["default_resources"]["threads"])
     log:
         "results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.log",
     benchmark:
         repeat(
             "results/mosdepth/{experiment}_{sample}_{type}_{target}.mosdepth.benchmark.tsv",
-            config.get("mosdepth", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_mosdepth_overlap", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("mosdepth", {}).get("container", config["default_container"])
+        config.get("qc_ont_mosdepth_overlap", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Compute coverage with mosdepth for each amplicon.
@@ -84,7 +84,7 @@ rule mosdepth_overlap:
         """
 
 
-rule mosdepth_merge:
+rule qc_ont_mosdepth_merge:
     input:
         expand(
             "results/mosdepth/{{experiment}}_{{sample}}_{{type}}_{target}.mosdepth.summary.txt",
@@ -104,38 +104,38 @@ rule mosdepth_merge:
     benchmark:
         repeat(
             "results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.benchmark.tsv",
-            config.get("mosdepth_merge", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_mosdepth_merge", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("mosdepth_merge", {}).get("container", config["default_container"])
+        config.get("qc_ont_mosdepth_merge", {}).get("container", config["default_container"])
     message:
         "{rule}: Create merged report for mosdepth"
     script:
         "../scripts/mosdepth_merge.py"
 
 
-rule mosdepth_overlap_timestep:
+rule qc_ont_mosdepth_overlap_timestep:
     input:
         bamdir=os.path.join(config["runfolder"], "{sample}", config["runid"], "bam_pass"),
         amplibed=[f"{config.get('bed_files')}/{target}.bed" for target in config.get("amplicons") + config.get("extra_regions")],
     output:
         outdir=temp(directory("results/mosdepth/timestep/{experiment}_{sample}")),
     resources:
-        partition=config.get("mosdepth", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("mosdepth", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("mosdepth", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("mosdepth", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("mosdepth", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("qc_ont_mosdepth_overlap_timestep", {}).get("threads", config["default_resources"]["threads"])
     log:
         "results/mosdepth/timestep/{experiment}_{sample}.log",
     benchmark:
         repeat(
             "results/mosdepth/timestep/{experiment}_{sample}.tsv",
-            config.get("mosdepth", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_mosdepth_overlap_timestep", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("mosdepth", {}).get("container", config["default_container"])
+        config.get("qc_ont_mosdepth_overlap_timestep", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Compute coverage with mosdepth for each amplicon.
@@ -144,7 +144,7 @@ rule mosdepth_overlap_timestep:
         "../scripts/process_timestep_data.py"
 
 
-rule mosdepth_merge_timestep:
+rule qc_ont_mosdepth_merge_timestep:
     input:
         indir="results/mosdepth/timestep/{experiment}_{sample}",
     output:
@@ -157,13 +157,13 @@ rule mosdepth_merge_timestep:
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads")
     container:
-        config.get("mosdepth_merge", {}).get("container", config["default_container"])
+        config.get("qc_ont_mosdepth_merge_timestep", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/timestep_coverage/{experiment}_{sample}/timestep_coverage.log",
     benchmark:
         repeat(
             "results/mosdepth/timestep_coverage/{experiment}_{sample}/timestep_coverage.benchmark.tsv",
-            config.get("mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_mosdepth_merge_timestep", {}).get("benchmark_repeats", 1),
         )
     message:
         "{rule}: Create merged report for mosdepth"
@@ -171,7 +171,7 @@ rule mosdepth_merge_timestep:
         "../scripts/mosdepth_merge_timestep.py"
 
 
-rule plot_yield_timestep:
+rule qc_ont_plot_yield_timestep:
     input:
         indir="results/mosdepth/timestep_coverage/{experiment}_{sample}",
     output:
@@ -185,13 +185,13 @@ rule plot_yield_timestep:
         mem_per_cpu=config["default_resources"]["mem_per_cpu"],
     threads: config["default_resources"]["threads"]
     container:
-        config.get("plot_yield_timestep", {}).get("container", config["default_container"])
+        config.get("qc_ont_plot_yield_timestep", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.log",
     benchmark:
         repeat(
             "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.benchmark.tsv",
-            config.get("plot_yield_timestep", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_plot_yield_timestep", {}).get("benchmark_repeats", 1),
         )
     message:
         """
@@ -201,7 +201,7 @@ rule plot_yield_timestep:
         "../scripts/seq_yield_timestep.py"
 
 
-rule sequali:
+rule qc_ont_sequali:
     input:
         fastgz1="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
         fastgz2="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
@@ -237,7 +237,7 @@ rule sequali:
         """
 
 
-rule yield_per_pool:
+rule qc_ont_yield_per_pool:
     input:
         csv="results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv",
     output:
@@ -250,13 +250,13 @@ rule yield_per_pool:
         mem_per_cpu=config.get("default_resources").get("mem_per_cpu"),
     threads: config.get("default_resources").get("threads")
     container:
-        config.get("yield_per_pool", {}).get("container", config["default_container"])
+        config.get("qc_ont_yield_per_pool", {}).get("container", config["default_container"])
     log:
         "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_{pooln}.log",
     benchmark:
         repeat(
             "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_{pooln}.benchmark.tsv",
-            config.get("yield_per_pool", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_yield_per_pool", {}).get("benchmark_repeats", 1),
         )
     message:
         "{rule}: Calculate number of reads per pool"
@@ -265,7 +265,7 @@ rule yield_per_pool:
 
 
 # Picard HsMetrics requires interval file
-rule bed_to_interval_list:
+rule qc_ont_picard_bed_to_interval_list:
     input:
         bed=os.path.join(config["bed_files"], "amplicons.bed"),
         dict=config["reference"]["sequence_dict"],
@@ -285,9 +285,9 @@ rule bed_to_interval_list:
     benchmark:
         repeat(
             "results/qc/picard/BedToIntervalList.benchmark.tsv",
-            config.get("bed_to_interval_list", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_picard_bed_to_interval_list", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("picard_bed_to_interval_list", {}).get("container", config["default_container"])
+        config.get("qc_ont_picard_bed_to_interval_list", {}).get("container", config["default_container"])
     wrapper:
         "v5.0.1/bio/picard/bedtointervallist"

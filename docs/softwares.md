@@ -418,6 +418,116 @@ Introduction to prefiltering_rename_vaf_to_af
 #RESOURCESSCHEMA__prefiltering_rename_vaf_to_af#
 
 
+## [qc_ont_picard_bed_to_interval_list](https://snakemake-wrappers.readthedocs.io/en/v3.13.8/wrappers/picard/bedtointervallist.html)
+Introduction to qc_ont_picard_bed_to_interval_list
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_picard_bed_to_interval_list#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_picard_bed_to_interval_list#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_picard_bed_to_interval_list#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_picard_bed_to_interval_list#
+
+
+## [qc_ont_mosdepth_overlap](https://github.com/brentp/mosdepth)
+Introduction to qc_ont_mosdepth_overlap
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_mosdepth_overlap#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_mosdepth_overlap#
+
+
+## [qc_ont_mosdepth_overlap_timestep](https://github.com/brentp/mosdepth)
+Introduction to qc_ont_mosdepth_overlap_timestep
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap_timestep#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap_timestep#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_mosdepth_overlap_timestep#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_mosdepth_overlap_timestep#
+
+
+## [qc_ont_pycoqc](https://github.com/a-slide/pycoQC)
+Introduction to qc_ont_pycoqc
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_pycoqc#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_pycoqc#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_pycoqc#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_pycoqc#
+
+
+## [qc_ont_sequali](https://github.com/rhpvorderman/sequali)
+Introduction to qc_ont_sequali
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_sequali#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_sequali#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_sequali#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_sequali#
+
+
 ## [snv_indels_svs_clairs_to](https://github.com/HKU-BAL/ClairS-TO/tree/main)
 Introduction to snv_indels_svs_clairs_to
 
@@ -506,3 +616,4 @@ but we keep it here for future use when the tool will be updated to handle ampli
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__snv_indels_svs_savana#
+

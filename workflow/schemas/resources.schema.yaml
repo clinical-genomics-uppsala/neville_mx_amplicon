@@ -430,6 +430,166 @@ properties:
         type: string
         description: max execution time
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_merge
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge_timestep:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_merge_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_overlap
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap_timestep:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_overlap_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_plot_yield_timestep:
+    type: object
+    description: resource definitions for qc_ont_plot_yield_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_pycoqc:
+    type: object
+    description: resource definitions for qc_ont_pycoqc
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_sequali:
+    type: object
+    description: resource definitions for qc_ont_sequali
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_yield_per_pool:
+    type: object
+    description: resource definitions for qc_ont_yield_per_pool
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: resource definitions for snv_indels_svs_clairs_to

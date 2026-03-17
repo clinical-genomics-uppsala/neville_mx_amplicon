@@ -18,7 +18,7 @@ include: "rules/common.smk"
 include: "rules/basecalling.smk"
 include: "rules/prealignment_ont.smk"
 include: "rules/alignment_ont.smk"
-include: "rules/qc.smk"
+include: "rules/qc_ont.smk"
 include: "rules/snv_indels_svs.smk"
 include: "rules/prefiltering.smk"
 include: "rules/results_report.smk"
@@ -26,15 +26,15 @@ include: "rules/results_report.smk"
 
 if not config.get("multisample", False):
 
-    ruleorder: pycoqc > basecalling_dorado_basecaller
+    ruleorder: qc_ont_pycoqc > basecalling_dorado_basecaller
 
 
 ruleorder: prealignment_ont_fetch_filtered_reads > alignment_ont_dorado_align
 ruleorder: alignment_ont_split_bam_target_j3 > qc_mosdepth_bed_per_target > _copy_soft_clipped_bam
-ruleorder: mosdepth_overlap > qc_mosdepth_amplicons > snv_indels_svs_clairs_to
-ruleorder: prealignment_ont_filtlong > sequali
-ruleorder: mosdepth_merge > qc_multiqc
-ruleorder: mosdepth_overlap > snv_indels_svs_clairs_to
+ruleorder: qc_ont_mosdepth_overlap > qc_mosdepth_amplicons > snv_indels_svs_clairs_to
+ruleorder: prealignment_ont_filtlong > qc_ont_sequali
+ruleorder: qc_ont_mosdepth_merge > qc_multiqc
+ruleorder: qc_ont_mosdepth_overlap > snv_indels_svs_clairs_to
 
 
 # 'All' rule, must be specified before any other modules are

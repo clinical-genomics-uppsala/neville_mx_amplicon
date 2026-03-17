@@ -296,6 +296,132 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_picard_bed_to_interval_list:
+    type: object
+    description: parameters for qc_ont_picard_bed_to_interval_list
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge:
+    type: object
+    description: parameters for qc_ont_mosdepth_merge
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge_timestep:
+    type: object
+    description: parameters for qc_ont_mosdepth_merge_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap:
+    type: object
+    description: parameters for qc_ont_mosdepth_overlap
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap_timestep:
+    type: object
+    description: parameters for qc_ont_mosdepth_overlap_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_plot_yield_timestep:
+    type: object
+    description: parameters for qc_ont_plot_yield_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_pycoqc:
+    type: object
+    description: parameters for qc_ont_pycoqc
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_sequali:
+    type: object
+    description: parameters for qc_ont_sequali
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_yield_per_pool:
+    type: object
+    description: parameters for qc_ont_yield_per_pool
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: parameters for snv_indels_svs_clairs_to

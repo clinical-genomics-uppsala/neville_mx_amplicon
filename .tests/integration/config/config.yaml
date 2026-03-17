@@ -126,6 +126,26 @@ prefiltering_bcftools_view:
     vardict:
       extra: "-i 'QUAL>120'"
 
+qc_ont_mosdepth_overlap:
+    container: "docker://hydragenetics/mosdepth:0.3.6"
+    by: "amplicons.bed"
+
+qc_ont_mosdepth_overlap_timestep:
+    container: "docker://hydragenetics/mosdepth:0.3.6"
+    by: "amplicons.bed"
+
+qc_ont_picard_bed_to_interval_list:
+  container: "docker://hydragenetics/picard:2.25.4"
+
+qc_ont_plot_yield_timestep:
+  container: "docker://hydragenetics/common-plots:3.1.1"
+
+qc_ont_pycoqc:
+  container: "docker://nanozoo/pycoqc:2.5.0.23--320ecc7"
+
+qc_ont_sequali:
+  container: "docker://hydragenetics/sequali:0.12.0"
+
 snv_indels_svs_clairs_to:
   container: "docker://hkubal/clairs-to:latest"
   platform: "ont_r10_dorado_sup_5khz"

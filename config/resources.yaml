@@ -111,6 +111,34 @@ prealignment_ont_fetch_filtered_reads:
   mem_mb: 6144
   mem_per_cpu: 6144
 
+qc_ont_mosdepth_overlap:
+  partition: "core"
+  time: "02:00:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+qc_ont_mosdepth_overlap_timestep:
+  partition: "core"
+  time: "02:00:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+qc_ont_pycoqc:
+  partition: "core"
+  time: "01:00:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+qc_ont_sequali:
+  partition: "core"
+  time: "00:05:00"
+  threads: 10
+  mem_mb: 61440
+  mem_per_cpu: 6144
+
 snv_indels_svs_clairs_to:
   partition: "core"
   time: "00:45:00"
