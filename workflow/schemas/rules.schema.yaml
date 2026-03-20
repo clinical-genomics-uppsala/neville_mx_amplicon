@@ -664,6 +664,81 @@ properties:
             type: string
             description: output csv file per pool with the summary table with the coverage for each target
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_copy_bed:
+    type: object
+    description: input and output parameters for results_report_copy_bed
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bed_files:
+            type: array
+            items:
+              type: string
+            description: input bed files to be copied
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          outdir:
+            type: string
+            description: output directory where bed files are copied
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_xlsx:
+    type: object
+    description: input and output parameters for results_report_xlsx
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          vcf_snv_indels:
+            type: string
+            description: input vcf file for snv and indels
+          vcf_snv_indels_tbi:
+            type: string
+            description: input vcf index file for snv and indels
+          vcf_cnv_svs:
+            type: string
+            description: input vcf file for cnv and svs
+          vcf_cnv_svs_tbi:
+            type: string
+            description: input vcf index file for cnv and svs
+          bedfile:
+            type: string
+            description: reference bedfile
+          deepsomatic_bed:
+            type: string
+            description: deepsomatic bed file
+          vardict_bed:
+            type: string
+            description: vardict bed file
+          mosdepth_summary:
+            type: string
+            description: mosdepth summary file
+          mosdepth_exons:
+            type: string
+            description: mosdepth exons file
+          mosdepth_regions:
+            type: string
+            description: mosdepth regions file
+          csv_counts:
+            type: string
+            description: csv counts file
+          pool_counts:
+            type: array
+            items:
+              type: string
+            description: list of pool count csv files
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          xlsx:
+            type: string
+            description: output excel report file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: input and output parameters for snv_indels_svs_clairs_to

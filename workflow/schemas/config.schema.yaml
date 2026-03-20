@@ -422,6 +422,34 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_copy_bed:
+    type: object
+    description: parameters for results_report_copy_bed
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_xlsx:
+    type: object
+    description: parameters for results_report_xlsx
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: parameters for snv_indels_svs_clairs_to

@@ -590,6 +590,46 @@ properties:
         type: string
         description: max execution time
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_copy_bed:
+    type: object
+    description: resource definitions for results_report_copy_bed
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_xlsx:
+    type: object
+    description: resource definitions for results_report_xlsx
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   snv_indels_svs_clairs_to:
     type: object
     description: resource definitions for snv_indels_svs_clairs_to
