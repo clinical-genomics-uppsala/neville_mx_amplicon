@@ -8,7 +8,7 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
-rule filtering_bcftools_view:
+rule prefiltering_bcftools_view:
     input:
         vcf="snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
         tbi="snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
@@ -17,25 +17,28 @@ rule filtering_bcftools_view:
             "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
         ),
     params:
-        extra=lambda wildcards: config.get("bcftools_view", {}).get("filter", {}).get(f"{wildcards.caller}", {}).get("extra", ""),
+        extra=lambda wildcards: config.get("prefiltering_bcftools_view", {})
+        .get("filter", {})
+        .get(f"{wildcards.caller}", {})
+        .get("extra", ""),
     log:
         "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
     benchmark:
         repeat(
             "snv_indels/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
-            config.get("bcftools_view", {}).get("benchmark_repeats", 1),
+            config.get("prefiltering_bcftools_view", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
         caller="(clairs_to|vardict|deepsomatic)",
-    threads: config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("prefiltering_bcftools_view", {}).get("threads", config["default_resources"]["threads"])
     resources:
-        mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("bcftools_view", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("bcftools_view", {}).get("partition", config["default_resources"]["partition"]),
-        threads=config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
-        time=config.get("bcftools_view", {}).get("time", config["default_resources"]["time"]),
+        mem_mb=config.get("prefiltering_bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("prefiltering_bcftools_view", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("prefiltering_bcftools_view", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("prefiltering_bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("prefiltering_bcftools_view", {}).get("time", config["default_resources"]["time"]),
     container:
-        config.get("bcftools_view", {}).get("container", config["default_container"])
+        config.get("prefiltering_bcftools_view", {}).get("container", config["default_container"])
     message:
         "{rule}: Use bcftools view to get subset or filter {input.vcf}"
     shell:
@@ -44,7 +47,7 @@ rule filtering_bcftools_view:
         """
 
 
-rule filtering_bcftools_include_region:
+rule prefiltering_bcftools_include_region:
     input:
         vcf="cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz",
         tbi="cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.vcf.gz.tbi",
@@ -53,25 +56,32 @@ rule filtering_bcftools_include_region:
             "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.gz"
         ),
     params:
-        extra=lambda wildcards: config.get("bcftools_view", {}).get("filter", {}).get(f"{wildcards.caller}", {}).get("extra", ""),
+        extra=lambda wildcards: config.get("prefiltering_bcftools_include_region", {})
+        .get("filter", {})
+        .get(f"{wildcards.caller}", {})
+        .get("extra", ""),
     log:
         "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.log",
     benchmark:
         repeat(
             "cnv_sv/{caller}/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.{caller}.bcftools_view.vcf.benchmark.tsv",
-            config.get("bcftools_view", {}).get("benchmark_repeats", 1),
+            config.get("prefiltering_bcftools_include_region", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
         caller="sniffles2",
-    threads: config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("prefiltering_bcftools_include_region", {}).get("threads", config["default_resources"]["threads"])
     resources:
-        mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("bcftools_view", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("bcftools_view", {}).get("partition", config["default_resources"]["partition"]),
-        threads=config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
-        time=config.get("bcftools_view", {}).get("time", config["default_resources"]["time"]),
+        mem_mb=config.get("prefiltering_bcftools_include_region", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("prefiltering_bcftools_include_region", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+        partition=config.get("prefiltering_bcftools_include_region", {}).get(
+            "partition", config["default_resources"]["partition"]
+        ),
+        threads=config.get("prefiltering_bcftools_include_region", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("prefiltering_bcftools_include_region", {}).get("time", config["default_resources"]["time"]),
     container:
-        config.get("bcftools_view", {}).get("container", config["default_container"])
+        config.get("prefiltering_bcftools_include_region", {}).get("container", config["default_container"])
     message:
         "{rule}: Use bcftools view to get subset or filter {input.vcf}"
     shell:
@@ -80,7 +90,7 @@ rule filtering_bcftools_include_region:
         """
 
 
-rule rename_vaf_to_af:
+rule prefiltering_rename_vaf_to_af:
     input:
         vcf="{file}.vcf.gz",
         tbi="{file}.vcf.gz.tbi",
@@ -94,17 +104,17 @@ rule rename_vaf_to_af:
     benchmark:
         repeat(
             "{file}.rename_vaf.vcf.gz.benchmark.tsv",
-            config.get("vt_decompose", {}).get("benchmark_repeats", 1),
+            config.get("prefiltering_rename_vaf_to_af", {}).get("benchmark_repeats", 1),
         )
     resources:
-        mem_mb=config.get("rename_vaf_to_af", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("rename_vaf_to_af", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("rename_vaf_to_af", {}).get("partition", config["default_resources"]["partition"]),
-        threads=config.get("rename_vaf_to_af", {}).get("threads", config["default_resources"]["threads"]),
-        time=config.get("rename_vaf_to_af", {}).get("time", config["default_resources"]["time"]),
-    threads: config.get("rename_vaf_to_af", {}).get("threads", config["default_resources"]["threads"])
+        mem_mb=config.get("prefiltering_rename_vaf_to_af", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("prefiltering_rename_vaf_to_af", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("prefiltering_rename_vaf_to_af", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("prefiltering_rename_vaf_to_af", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("prefiltering_rename_vaf_to_af", {}).get("time", config["default_resources"]["time"]),
+    threads: config.get("prefiltering_rename_vaf_to_af", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("rename_vaf_to_af", {}).get("container", config["default_container"])
+        config.get("prefiltering_rename_vaf_to_af", {}).get("container", config["default_container"])
     message:
         "{rule}: Use bcftools view to rename VAF to AF"
     shell:

@@ -20,5 +20,695 @@ properties:
       time:
         type: string
         description: default max execution time for a rule
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_index:
+    type: object
+    description: resource definitions for alignment_ont_bam_index
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_softclip:
+    type: object
+    description: resource definitions for alignment_ont_bam_softclip
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_sort:
+    type: object
+    description: resource definitions for alignment_ont_bam_sort
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_dorado_align:
+    type: object
+    description: resource definitions for alignment_ont_dorado_align
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_by_target:
+    type: object
+    description: resource definitions for alignment_ont_split_bam_by_target
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_target_j3:
+    type: object
+    description: resource definitions for alignment_ont_split_bam_target_j3
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_bam_to_fastq:
+    type: object
+    description: resource definitions for basecalling_bam_to_fastq
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_compress_fastq:
+    type: object
+    description: resource definitions for basecalling_compress_fastq
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_basecaller:
+    type: object
+    description: resource definitions for basecalling_dorado_basecaller
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+      slurm_extra:
+        type: string
+        description: GPU-related extra parameters to be forwarded to slurm when submitting a job
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_demux:
+    type: object
+    description: resource definitions for basecalling_dorado_demux
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex:
+    type: object
+    description: resource definitions for basecalling_dorado_duplex
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+      slurm_extra:
+        type: string
+        description: GPU-related extra parameters to be forwarded to slurm when submitting a job
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex_multisamples:
+    type: object
+    description: resource definitions for basecalling_dorado_duplex_multisamples
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+      slurm_extra:
+        type: string
+        description: GPU-related extra parameters to be forwarded to slurm when submitting a job
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_trim:
+    type: object
+    description: resource definitions for basecalling_dorado_trim
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_rename_demux_bam:
+    type: object
+    description: resource definitions for basecalling_rename_demux_bam
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_filtlong:
+    type: object
+    description: resource definitions for prealignment_ont_filtlong
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_filtered_reads:
+    type: object
+    description: resource definitions for prealignment_ont_fetch_filtered_reads
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_too_short_too_long_reads:
+    type: object
+    description: resource definitions for prealignment_ont_fetch_too_short_too_long_reads
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_include_region:
+    type: object
+    description: resource definitions for prefiltering_bcftools_include_region
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_view:
+    type: object
+    description: resource definitions for prefiltering_bcftools_view
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_rename_vaf_to_af:
+    type: object
+    description: resource definitions for prefiltering_rename_vaf_to_af
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_merge
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge_timestep:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_merge_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_overlap
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap_timestep:
+    type: object
+    description: resource definitions for qc_ont_mosdepth_overlap_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_plot_yield_timestep:
+    type: object
+    description: resource definitions for qc_ont_plot_yield_timestep
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_pycoqc:
+    type: object
+    description: resource definitions for qc_ont_pycoqc
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_sequali:
+    type: object
+    description: resource definitions for qc_ont_sequali
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_yield_per_pool:
+    type: object
+    description: resource definitions for qc_ont_yield_per_pool
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_copy_bed:
+    type: object
+    description: resource definitions for results_report_copy_bed
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_xlsx:
+    type: object
+    description: resource definitions for results_report_xlsx
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to:
+    type: object
+    description: resource definitions for snv_indels_svs_clairs_to
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to_concat:
+    type: object
+    description: resource definitions for snv_indels_svs_clairs_to_concat
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_deepsomatic:
+    type: object
+    description: resource definitions for snv_indels_svs_deepsomatic
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_savana:
+    type: object
+    description: resource definitions for snv_indels_svs_savana
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+
 required:
   - default_resources

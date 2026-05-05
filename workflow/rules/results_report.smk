@@ -5,7 +5,6 @@ __license__ = "GPL-3"
 
 import os.path
 
-from hydra_genetics.utils.software_versions import get_pipeline_version
 from snakemake.logging import logger
 
 logger.info(f"\n{workflow.snakefile} is being parsed")
@@ -47,24 +46,24 @@ rule results_report_xlsx:
     benchmark:
         repeat(
             "reports/xlsx/{experiment}_{sample}_{type}.xlsx.benchmark.tsv",
-            config.get("results_report", {}).get("benchmark_repeats", 1),
+            config.get("results_report_xlsx", {}).get("benchmark_repeats", 1),
         )
-    threads: config.get("results_report", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("results_report_xlsx", {}).get("threads", config["default_resources"]["threads"])
     resources:
-        mem_mb=config.get("results_report", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("results_report", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("results_report", {}).get("partition", config["default_resources"]["partition"]),
-        threads=config.get("results_report", {}).get("threads", config["default_resources"]["threads"]),
-        time=config.get("results_report", {}).get("time", config["default_resources"]["time"]),
+        mem_mb=config.get("results_report_xlsx", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("results_report_xlsx", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("results_report_xlsx", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("results_report_xlsx", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("results_report_xlsx", {}).get("time", config["default_resources"]["time"]),
     container:
-        config.get("results_report", {}).get("container", config["default_container"])
+        config.get("results_report_xlsx", {}).get("container", config["default_container"])
     message:
         "{rule}: summarize results into {output.xlsx}."
     script:
         "../scripts/results_report_xlsx.py"
 
 
-rule copy_bed:
+rule results_report_copy_bed:
     input:
         [bed_file for bed_file in [config[caller]["bed_file"] for caller in ["deepsomatic", "vardict"]]]
         + [os.path.join(config["bed_files"], "amplicons.bed")],
@@ -73,13 +72,13 @@ rule copy_bed:
     log:
         "logs/copy_bed.log",
     resources:
-        partition=config.get("copy_bed", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("copy_bed", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("copy_bed", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("copy_bed", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("copy_bed", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("results_report_copy_bed", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("results_report_copy_bed", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("results_report_copy_bed", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("results_report_copy_bed", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("results_report_copy_bed", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     container:
-        config.get("copy_bed", {}).get("container", config["default_container"])
+        config.get("results_report_copy_bed", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Copy the different BED files used in the analysis.
