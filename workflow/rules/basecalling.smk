@@ -28,7 +28,9 @@ if not config.get("multisample", False):
             gres=config.get("basecalling_dorado_basecaller", {}).get("gres"),
             threads=config.get("basecalling_dorado_basecaller", {}).get("threads", config["default_resources"]["threads"]),
             mem_mb=config.get("basecalling_dorado_basecaller", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("basecalling_dorado_basecaller", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            mem_per_cpu=config.get("basecalling_dorado_basecaller", {}).get(
+                "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+            ),
             slurm_extra=config.get("basecalling_dorado_basecaller", {}).get("slurm_extra"),
         threads: config.get("basecalling_dorado_basecaller", {}).get("threads", config["default_resources"]["threads"])
         container:
@@ -110,12 +112,18 @@ if config.get("multisample", False):
             trim=config.get("dorado_duplex_multisamples", {}).get("trim", ""),
             extra=config.get("dorado_duplex_multisamples", {}).get("extra", ""),
         resources:
-            partition=config.get("basecalling_dorado_duplex_multisamples", {}).get("partition", config["default_resources"]["partition"]),
+            partition=config.get("basecalling_dorado_duplex_multisamples", {}).get(
+                "partition", config["default_resources"]["partition"]
+            ),
             time=config.get("basecalling_dorado_duplex_multisamples", {}).get("time", config["default_resources"]["time"]),
             gres=config.get("basecalling_dorado_duplex_multisamples", {}).get("gres"),
-            threads=config.get("basecalling_dorado_duplex_multisamples", {}).get("threads", config["default_resources"]["threads"]),
+            threads=config.get("basecalling_dorado_duplex_multisamples", {}).get(
+                "threads", config["default_resources"]["threads"]
+            ),
             mem_mb=config.get("basecalling_dorado_duplex_multisamples", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("basecalling_dorado_duplex_multisamples", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            mem_per_cpu=config.get("basecalling_dorado_duplex_multisamples", {}).get(
+                "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+            ),
             slurm_extra=config.get("basecalling_dorado_duplex_multisamples", {}).get("slurm_extra"),
         threads: config.get("basecalling_dorado_duplex_multisamples", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
@@ -192,7 +200,9 @@ if config.get("multisample", False):
             time=config.get("basecalling_rename_demux_bam", {}).get("time", config["default_resources"]["time"]),
             threads=config.get("basecalling_rename_demux_bam", {}).get("threads", config["default_resources"]["threads"]),
             mem_mb=config.get("basecalling_rename_demux_bam", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-            mem_per_cpu=config.get("basecalling_rename_demux_bam", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+            mem_per_cpu=config.get("basecalling_rename_demux_bam", {}).get(
+                "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+            ),
         threads: config.get("basecalling_rename_demux_bam", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
             repeat(
