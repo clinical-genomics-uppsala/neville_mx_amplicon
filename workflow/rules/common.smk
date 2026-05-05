@@ -83,7 +83,6 @@ onstart:
     export_config_as_file(update_config, date_string=date_string, directory="results/versions")
 
 
-
 ### Read and validate resources file
 
 config = load_resources(config, config["resources"])
