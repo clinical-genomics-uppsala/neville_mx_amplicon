@@ -12,7 +12,7 @@ from sklearn.metrics import r2_score
 import os
 
 fig_format = "png"
-vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_260126.csv"
+vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_260415.csv"
 plot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_all.{fig_format}"
 plot2 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_Flongle.{fig_format}"
 plot3 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF-diff-ratio_MinION.{fig_format}"

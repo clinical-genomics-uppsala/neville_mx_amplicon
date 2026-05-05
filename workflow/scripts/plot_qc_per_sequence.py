@@ -48,6 +48,7 @@ print(tot_reads.to_dict())
 print(df_qscores)
 df_pct_qscores = df_qscores.join(tot_reads, on=['Flowcell', 'Sample'])
 df_pct_qscores['Pct_Counts'] = df_pct_qscores['Counts'] / df_pct_qscores['total_reads'] * 100
+df_pct_qscores.to_csv(f"{mqc_data}/multiqc_amplicons_data_{qscores}.csv", index=False)
 print(df_pct_qscores)
 
 plt.figure(figsize=(10, 6))

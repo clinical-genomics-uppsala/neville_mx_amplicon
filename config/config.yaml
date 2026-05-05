@@ -171,6 +171,8 @@ multiqc:
 
 gatk_mutect2:
   container: "docker://hydragenetics/gatk4:4.6.2.0"
+  pon: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/PoN/gnomad.r2.1.af-ge-0.001.sites.vcf.gz"
+  extra: "" # java options?
 
 picard_collect_hs_metrics:
   container: "docker://hydragenetics/picard:2.25.4"

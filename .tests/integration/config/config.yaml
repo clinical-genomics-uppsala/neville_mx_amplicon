@@ -138,6 +138,12 @@ multiqc:
         - "results/qc/picard/{experiment}_{sample}_{type}_TP53_J3_only.alignment_summary_metrics.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}.alignment_summary_metrics.txt"
 
+gatk_mutect2:
+  container: "docker://hydragenetics/gatk4:4.6.2.0"
+  pon: "/home/camille/ampliconthemato/neville_mx_amplicon/PoN/gnomad.r2.1.af-ge-0.001.sites.vcf.gz"
+  intervals: "test_data/bedfiles/amplicons.interval_list"
+  extra: "" # java options?
+
 nanocaller:
   container: "docker://genomicslab/nanocaller:latest"  # latest=3.6.2
 

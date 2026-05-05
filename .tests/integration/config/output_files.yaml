@@ -40,6 +40,10 @@
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.cnv-sv.vcf.gz"
      input: "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
 
+   - name: "mutect2_var_calls"
+     output: "Results/Data/{experiment}_{sample}_{type}.unfiltered.gatk_mutect2.vcf.gz"
+     input: "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz"
+
 #   - name: "snv_indels_var_calls_ensembled"
 #     output: "Results/Data/{experiment}_{sample}_{type}.ensembled.vcf.gz"
 #     input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vcf.gz"
@@ -55,7 +59,7 @@
    - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.snv-indels.vcf"
      input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"
-#
+
 #   - name: "sequali_reports"
 #     output: "Results/Reports/{experiment}_{sample}_{type}.ont_reads.filtered.fastq.gz.html"
 #     input: "results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz.html"
