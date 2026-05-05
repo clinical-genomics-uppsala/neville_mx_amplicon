@@ -17,7 +17,7 @@ rule alignment_ont_dorado_align:
         bam=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.bam"),
     params:
         runid=config.get("runid", ""),
-        extra=config.get("alignment_ont_dorado_align", {}).get("extra",""),
+        extra=config.get("alignment_ont_dorado_align", {}).get("extra", ""),
     resources:
         partition=config.get("alignment_ont_dorado_align", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("alignment_ont_dorado_align", {}).get("time", config["default_resources"]["time"]),
