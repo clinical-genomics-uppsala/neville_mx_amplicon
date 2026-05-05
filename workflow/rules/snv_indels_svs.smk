@@ -67,7 +67,9 @@ rule snv_indels_svs_clairs_to_concat:
         time=config.get("snv_indels_svs_clairs_to_concat", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("snv_indels_svs_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("snv_indels_svs_clairs_to_concat", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("snv_indels_svs_clairs_to_concat", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        mem_per_cpu=config.get("snv_indels_svs_clairs_to_concat", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
     threads: config.get("snv_indels_svs_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"])
     container:
         config.get("snv_indels_svs_clairs_to_concat", {}).get("container", config["default_container"])
