@@ -125,7 +125,9 @@ rule qc_ont_mosdepth_overlap_timestep:
         time=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("qc_ont_mosdepth_overlap_timestep", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        mem_per_cpu=config.get("qc_ont_mosdepth_overlap_timestep", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
     threads: config.get("qc_ont_mosdepth_overlap_timestep", {}).get("threads", config["default_resources"]["threads"])
     log:
         "results/mosdepth/timestep/{experiment}_{sample}.log",
