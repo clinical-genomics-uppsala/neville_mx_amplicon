@@ -171,8 +171,10 @@ multiqc:
 
 gatk_mutect2:
   container: "docker://hydragenetics/gatk4:4.6.2.0"
+  intervals: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.interval_list"
   pon: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/PoN/gnomad.r2.1.af-ge-0.001.sites.vcf.gz"
-  extra: "" # java options?
+  extra: "--dont-use-soft-clipped-bases true --max-reads-per-alignment-start 500" # disable downsampling in amplicon data
+  java_opts: ""
 
 picard_collect_hs_metrics:
   container: "docker://hydragenetics/picard:2.25.4"

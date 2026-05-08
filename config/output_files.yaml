@@ -53,8 +53,9 @@
      input: "cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vcf.gz"
 
    - name: "mutect2_var_calls"
-     output: "Results/Data/{experiment}_{sample}_{type}.unfiltered.gatk_mutect2.vcf.gz"
-     input: "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz"
+     output: "Results/Data/{experiment}_{sample}_{type}.softfiltered.gatk_mutect2.vcf.gz"
+     input: "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.softfiltered.vcf.gz"
+     # input: "snv_indels/gatk_mutect2/{experiment}_{sample}_{type}.unfiltered.vcf.gz"
 
 #   - name: "savana_var_calls"
 #     output: "Results/Data/{experiment}_{sample}_{type}_savana.done"

@@ -263,3 +263,38 @@ rule aligning_samtools_calmd:
     shell:
         "samtools calmd -b --threads {resources.threads} {input.bam} {input.ref} > {output.bam} 2> {log}"
         " && samtools index {output.bam} 2>> {log}"
+
+
+rule aligning_samtools_addreplacerg:
+    input:
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("ref_data"),
+    output:
+        bam=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.rg.bam"
+        ),
+        bai=temp(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.rg.bam.bai"
+        ),
+    log:
+        "alignment/dorado_align/{experiment}_{sample}_{type}_samtools_addreplacerg.output.log",
+    benchmark:
+        repeat(
+            "alignment/dorado_align/{experiment}_{sample}_{type}_samtools_addreplacerg.output.benchmark.tsv",
+            config.get("samtools", {}).get("benchmark_repeats", 1),
+        )
+    resources:
+        partition=config.get("samtools", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("samtools", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("samtools", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("samtools", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("samtools", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("samtools", {}).get("threads", config["default_resources"]["threads"])
+    container:
+        config.get("samtools", {}).get("container", config["default_container"])
+    message:
+        "{rule}: Add RG tag with sample name to the BAM file, which is required by GATK Mutect2."
+    shell:
+        "samtools addreplacerg -r '@RG\tID:{wildcards.sample}\tSM:{wildcards.sample}' -@ {resources.threads} -o {output.bam} {input.bam} 2> {log}"
+        " && samtools index {output.bam} 2>> {log}"
