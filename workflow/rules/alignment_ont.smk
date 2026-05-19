@@ -23,9 +23,7 @@ rule alignment_ont_dorado_align:
         time=config.get("alignment_ont_dorado_align", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("alignment_ont_dorado_align", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_dorado_align", {}).get(
-            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
-        ),
+        mem_per_cpu=config.get("alignment_ont_dorado_align", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     threads: config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"])
     container:
         config.get("alignment_ont_dorado_align", {}).get("container", config["default_container"])
@@ -210,7 +208,9 @@ rule alignment_ont_split_bam_target_j3:
         time=config.get("alignment_ont_split_bam_target_j3", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("alignment_ont_split_bam_target_j3", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("alignment_ont_split_bam_target_j3", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_split_bam_target_j3", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        mem_per_cpu=config.get("alignment_ont_split_bam_target_j3", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
     threads: config.get("alignment_ont_split_bam_target_j3", {}).get("threads", config["default_resources"]["threads"])
     benchmark:
         repeat(
