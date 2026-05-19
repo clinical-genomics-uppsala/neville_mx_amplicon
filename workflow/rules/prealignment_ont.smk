@@ -52,11 +52,15 @@ rule prealignment_ont_fetch_filtered_reads:
         bam=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.bam"),
         fastq=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz"),
     resources:
-        partition=config.get("prealignment_ont_fetch_filtered_reads", {}).get("partition", config["default_resources"]["partition"]),
+        partition=config.get("prealignment_ont_fetch_filtered_reads", {}).get(
+            "partition", config["default_resources"]["partition"]
+        ),
         time=config.get("prealignment_ont_fetch_filtered_reads", {}).get("time", config["default_resources"]["time"]),
         threads=config.get("prealignment_ont_fetch_filtered_reads", {}).get("threads", config["default_resources"]["threads"]),
         mem_mb=config.get("prealignment_ont_fetch_filtered_reads", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("prealignment_ont_fetch_filtered_reads", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        mem_per_cpu=config.get("prealignment_ont_fetch_filtered_reads", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
     threads: config.get("prealignment_ont_fetch_filtered_reads", {}).get("threads", config["default_resources"]["threads"])
     log:
         "prealignment/filtlong/{experiment}_{sample}_{type}.fetch_filtered_reads.log",
