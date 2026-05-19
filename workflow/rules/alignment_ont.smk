@@ -16,23 +16,25 @@ rule alignment_ont_dorado_align:
     output:
         bam=temp("alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.bam"),
     params:
-        runid=config.get("runid",""),
-        extra=config.get("alignment_ont_dorado_align",{}).get("extra",""),
+        runid=config.get("runid", ""),
+        extra=config.get("alignment_ont_dorado_align", {}).get("extra", ""),
     resources:
-        partition=config.get("alignment_ont_dorado_align",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("alignment_ont_dorado_align",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("alignment_ont_dorado_align",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("alignment_ont_dorado_align",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_dorado_align",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("alignment_ont_dorado_align",{}).get("threads",config["default_resources"]["threads"])
+        partition=config.get("alignment_ont_dorado_align", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("alignment_ont_dorado_align", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("alignment_ont_dorado_align", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("alignment_ont_dorado_align", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+    threads: config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("alignment_ont_dorado_align",{}).get("container",config["default_container"])
+        config.get("alignment_ont_dorado_align", {}).get("container", config["default_container"])
     log:
         "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.log",
     benchmark:
         repeat(
             "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.benchmark.tsv",
-            config.get("alignment_ont_dorado_align",{}).get("benchmark_repeats",1),
+            config.get("alignment_ont_dorado_align", {}).get("benchmark_repeats", 1),
         )
     message:
         "{rule}: Align reads with dorado and minimap2"
