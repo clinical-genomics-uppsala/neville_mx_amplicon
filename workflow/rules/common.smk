@@ -56,9 +56,11 @@ except WorkflowError as we:
         schema_section = ".".join(re.findall(r"\['([^']+)'\]", schema_hiearachy)[1::2])
         sys.exit(f"{error_msg} in {schema_section}")
 
-pipeline_name="neville_mx_amplicon"
+pipeline_name = "neville_mx_amplicon"
 pipeline_version = get_pipeline_version(workflow, pipeline_name=pipeline_name)
-version_files = touch_pipeline_version_file_name(pipeline_version, date_string=pipeline_name, directory="results/versions/software")
+version_files = touch_pipeline_version_file_name(
+    pipeline_version, date_string=pipeline_name, directory="results/versions/software"
+)
 if use_container(workflow):
     version_files.append(touch_software_version_file(config, date_string=pipeline_name, directory="results/versions/software"))
 add_version_files_to_multiqc(config, version_files)
