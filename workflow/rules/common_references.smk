@@ -13,6 +13,8 @@ from hydra_genetics.utils.samples import *
 from hydra_genetics.utils.units import *
 
 
+include: "results.smk"
+
 hydra_min_version("3.0.0")
 min_version("7.32.0")
 
@@ -23,6 +25,7 @@ config = replace_dict_variables(config)
 
 # Validate config
 # validate(config, schema="../schemas/config_references.schema.yaml")
+validate(config, schema="../schemas/config_references.schema.yaml")
 config = load_resources(config, config["resources"])
 config = load_resources(config, config["resources_references"])
 validate(config, schema="../schemas/resources.schema.yaml")

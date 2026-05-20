@@ -158,4 +158,7 @@ use rule * from references exclude all, create_background_file, create_artifact_
 #         callers=config.get("bcbio_variation_recall_ensemble", {}).get("callers", ["gatk_mutect2", "vardict"]),
 
 
-
+# background
+use rule create_background_file from references as references_create_background_file with:
+    input:
+        gvcfs=get_gvcfs(),
