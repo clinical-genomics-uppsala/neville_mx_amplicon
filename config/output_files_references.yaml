@@ -1,0 +1,5 @@
+directory: ./reference_files
+files:
+  - name: gVCF from clairs-to
+    input: references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.g.vcf.gz
+    output: {experiment}_{sample}_{type}_snv.g.vcf.gz
