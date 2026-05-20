@@ -27,13 +27,14 @@ config = replace_dict_variables(config)
 validate(config, schema="../schemas/config_references.schema.yaml")
 config = load_resources(config, config["resources"])
 config = load_resources(config, config["resources_references"])
+print(config)
 validate(config, schema="../schemas/resources.schema.yaml")
 
 # Sample information
-samples = pd.read_table(config["samples"], comment="#").set_index("sample", drop=False)
+samples = pd.read_table(config["samples_ref"], comment="#").set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
 
-units = pd.read_table(config["units"], dtype=str).set_index(["sample", "type"], drop=False)
+units = pd.read_table(config["units_ref"], dtype=str).set_index(["sample", "type"], drop=False)
 validate(units, schema="../schemas/units.schema.yaml")
 
 # Ouput file specification
