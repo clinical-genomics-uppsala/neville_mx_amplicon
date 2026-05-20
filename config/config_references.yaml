@@ -1,0 +1,6 @@
+samples_ref: samples.tsv # only samples to include in panels
+units_ref: units.tsv # only units to include in panels
+resources_references: "config/resources_references.yaml"
+output: "config/output_files_references.yaml"
+
+default_container: docker://hydragenetics/common:3.0.0
