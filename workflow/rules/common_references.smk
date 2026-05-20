@@ -13,7 +13,7 @@ from hydra_genetics.utils.samples import *
 from hydra_genetics.utils.units import *
 
 
-include: "results.smk"
+include: "results_report.smk"
 
 hydra_min_version("3.0.0")
 min_version("7.32.0")
