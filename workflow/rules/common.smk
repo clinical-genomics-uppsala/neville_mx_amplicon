@@ -62,6 +62,7 @@ except WorkflowError as we:
 
 pipeline_name = "neville_mx_amplicon"
 pipeline_version = get_pipeline_version(workflow, pipeline_name=pipeline_name)
+pipeline_version[pipeline_name]["version"] = pipeline_version[pipeline_name]["version"].replace('/', '-')
 version_files = touch_pipeline_version_file_name(
     pipeline_version, date_string=pipeline_name, directory="results/versions/software"
 )
