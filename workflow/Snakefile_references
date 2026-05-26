@@ -159,6 +159,52 @@ use rule * from references exclude all, create_background_file, create_artifact_
 
 
 # background
-use rule create_background_file from references as references_create_background_file with:
+use rule create_background_file from references as references_create_background_file_clairs_to with:
     input:
-        gvcfs=get_gvcfs(),
+        gvcfs=get_gvcfs_clairs_to(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_clairs_to.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_clairs_to.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_clairs_to.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule create_background_file from references as references_create_background_file_deepsomatic with:
+    input:
+        gvcfs=get_gvcfs_deepsomatic(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_deepsomatic.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_deepsomatic.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_deepsomatic.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule create_background_file from references as references_create_background_file_vardict with:
+    input:
+        gvcfs=get_gvcfs_vardict(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_vardict.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_vardict.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_vardict.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
