@@ -17,48 +17,61 @@ module pipeline:
 use rule * from pipeline exclude all
 
 
-# use rule gatk_collect_allelic_counts from cnv_sv as cnv_sv_gatk_collect_allelic_counts with:
-#     input:
-#         bam="alignment/samtools_merge_bam/{sample}_{type}.bam",
-#         bai="alignment/samtools_merge_bam/{sample}_{type}.bam.bai",
-#         interval="references/preprocess_intervals/design.preprocessed.interval_list",
-#         ref=config["reference"]["fasta"],
-#
-#
-# use rule gatk_collect_read_counts from cnv_sv as cnv_sv_gatk_collect_read_counts with:
-#     input:
-#         bam="alignment/samtools_merge_bam/{sample}_{type}.bam",
-#         bai="alignment/samtools_merge_bam/{sample}_{type}.bam.bai",
-#         interval="references/preprocess_intervals/design.preprocessed.interval_list",
-#
-#
-# use rule gatk_denoise_read_counts from cnv_sv as cnv_sv_gatk_denoise_read_counts with:
-#     input:
-#         hdf5PoN="references/create_read_count_panel_of_normals/gatk_cnv_panel_of_normal.hdf5",
-#         hdf5Tumor="cnv_sv/gatk_collect_read_counts/{sample}_{type}.counts.hdf5",
-#
-#
-# use rule cnvkit_batch from cnv_sv as cnv_sv_cnvkit_batch with:
-#     input:
-#         bam="alignment/samtools_merge_bam/{sample}_{type}.bam",
-#         bai="alignment/samtools_merge_bam/{sample}_{type}.bam.bai",
-#         reference="references/cnvkit_build_normal_reference/cnvkit.PoN.cnn",
-#
-#
-# module references:
-#     snakefile:
-#         github(
-#             repo="hydra-genetics/references",
-#             path="workflow/Snakefile",
-#             tag="f0aa9bc",
-#         )
-#     config:
-#         config
-#
-#
-# use rule * from references exclude all as references_*
-#
-#
+use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf with:
+    input:
+        reference=config.get("reference", {}).get("fasta", ""),
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        regions=config.get("vardict", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")),
+    output:
+        vcf=temp(
+            "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf"
+        ),
+    params:
+        extra=config.get("vardict", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
+        bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
+        allele_frequency_threshold=config.get("vardict", {}).get("allele_frequency_threshold", "0.01"),
+        sample_name=lambda wildcards: f"{wildcards.sample}",
+    log:
+        "references/vardict/{experiment}_{sample}_{type}.vcf.log",
+    benchmark:
+        repeat(
+            "references/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1)
+        )
+
+
+use rule bgzip from snv_indels as reference_rules_snv_indels_bgzip with:
+    input:
+        vcf="{file}.vcf",
+    output:
+        gz=temp("{file}.vcf.gz"),
+    params:
+        extra=config.get("bgzip", {}).get("extra", ""),
+    log:
+        "{file}.vcf.gz.log",
+    benchmark:
+        repeat(
+            "{file}.vcf.gz.benchmark.tsv",
+            config.get("bgzip", {}).get("benchmark_repeats", 1),
+        )
+    wildcard_constraints:
+        file="(references\/vardict\/).*",
+
+
+module references:
+    snakefile:
+        github(
+            repo="hydra-genetics/references",
+            path="workflow/Snakefile",
+            tag="v1.0.1",
+        )
+    config:
+        config
+
+
+use rule * from references exclude all as references_*
+
+
 # # GATK PoN
 # use rule collect_read_counts from references as references_collect_read_counts with:
 #     input:
@@ -70,64 +83,63 @@ use rule * from pipeline exclude all
 # use rule preprocess_intervals from references as references_preprocess_intervals with:
 #     output:
 #         temp("references/preprocess_intervals/design.preprocessed.interval_list"),
-#
-#
-# # SVDB
-# use rule svdb_build from references as references_svdb_build with:
-#     input:
-#         cnv_vcfs=get_cnv_vcfs(),
-#
-#
-# # CNVkit PoN
-# use rule cnvkit_build_normal_reference from references as references_cnvkit_build_normal_reference with:
-#     input:
-#         bams=get_bams(),
-#         target="references/cnvkit_create_targets/cnvkit_manifest.target.bed",
-#         antitarget="references/cnvkit_create_anti_targets/cnvkit_manifest.antitarget.bed",
-#         ref=config.get("reference", {}).get("fasta"),
-#         mappability=config.get("reference", {}).get("mappability"),
-#
-#
+
+
 # # Artifact
 # use rule create_artifact_file from references as references_create_artifact_file with:
 #     input:
 #         vcfs=get_vcfs(),
 #     params:
 #         callers=config.get("bcbio_variation_recall_ensemble", {}).get("callers", ["gatk_mutect2", "vardict"]),
-#
-#
-# # purecn normal db
-# use rule purecn_bam_list from references as references_purecn_bam_list with:
-#     input:
-#         bam_list=get_bams(),
-#
-#
-# use rule bcftools_merge from references as references_bcftools_merge with:
-#     input:
-#         vcfs=get_vcfs(),
-#         vcfs_tabix=[f"{vcf}.tbi" for vcf in get_vcfs()],
-#
-#
-# use rule purecn_coverage from references as references_purecn_coverage with:
-#     input:
-#         bam_list_file="references/purecn_bam_list/bam_files.list",
-#         intervals="references/purecn_interval_file/targets_intervals.txt",
-#         bam_files=get_bams(),
-#         bai_files=get_bais(),
-#     params:
-#         intervals="references/purecn_interval_file/targets_intervals.txt",
-#         extra=config.get("purecn_coverage", {}).get("extra", ""),
-#
-#
-# use rule purecn_normal_db from references as references_purecn_normal_db with:
-#     input:
-#         coverage_list_file="references/purecn_coverage_list/coverage_files.list",
-#         coverage_files=get_coverage_files(samples, units),
-#         normal_vcf="references/bcftools_merge/normal_db.vcf.gz",
-#         normal_vcf_tbi="references/bcftools_merge/normal_db.vcf.gz.tbi",
 
 
 # background
-use rule create_background_file from references as references_create_background_file with:
+use rule create_background_file from references as references_create_background_file_clairs_to with:
     input:
-        gvcfs=get_gvcfs(),
+        gvcfs=get_gvcfs_clairs_to(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_clairs_to.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_clairs_to.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_clairs_to.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule create_background_file from references as references_create_background_file_deepsomatic with:
+    input:
+        gvcfs=get_gvcfs_deepsomatic(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_deepsomatic.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_deepsomatic.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_deepsomatic.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
+
+
+use rule create_background_file from references as references_create_background_file_vardict with:
+    input:
+        gvcfs=get_gvcfs_vardict(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_vardict.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_vardict.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_vardict.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )

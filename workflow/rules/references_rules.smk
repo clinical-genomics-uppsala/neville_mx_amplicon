@@ -10,9 +10,10 @@ rule reference_rules_snv_indels_clairs_to_gvcf:
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=config.get("snv_indels_svs_clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+        vcf="references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz",
     output:
-        snv=temp("references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.g.vcf.gz"),
-        indel=temp("references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.g.vcf.gz"),
+        snv="references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.g.vcf.gz",
+        # indel="references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.g.vcf.gz",  # no indel file is written for some reason: is it just for that sample or in general when using the -H/-G option?
     params:
         platform=config.get("snv_indels_svs_clairs_to", {}).get("platform", ""),
         snv_min_af=config.get("snv_indels_svs_clairs_to", {}).get("snv_min_af", 0.05),
@@ -44,9 +45,50 @@ rule reference_rules_snv_indels_clairs_to_gvcf:
         " --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed}"
         " --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af}"
         " --disable_verdict"
+        " -G {input.vcf}"
         " --print_ref_calls"
-        " --snv_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_snv"
-        " --indel_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_indel"
+        " --snv_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_snv.g"
+        " --indel_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_indel.g"
         " 2> {log}"
 
-# rule reference_rules_create_background_file_clairs_to:
+
+rule reference_rules_snv_indels_deepsomatic_gvcf:
+    input:
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("ref_data"),
+        bed=config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+    output:
+        tmpdir=directory("references/deepsomatic/{experiment}_{sample}_{type}_tmp"),
+        vcf=temp("references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz"),
+        gvcf=temp("references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz"),
+    params:
+        sample=lambda wildcards: f"{wildcards.sample}",
+        model="ONT_TUMOR_ONLY",
+        extra=config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("extra", ""),
+        filter=config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("filter", ""),
+    log:
+        "references/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.log",
+    benchmark:
+        repeat(
+            "references/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.benchmark.tsv",
+            config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("benchmark_repeats", 1),
+        )
+    threads: config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        partition=config.get("snv_indels_svs_deepsomatic", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("snv_indels_svs_deepsomatic", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("snv_indels_svs_deepsomatic", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("snv_indels_svs_deepsomatic", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("snv_indels_svs_deepsomatic", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    container:
+        config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("container", config["default_container"])
+    message:
+        """
+        {rule}: Long-read somatic small variant calling in tumor samples only with DeepSomatic.
+        """
+    shell:
+        """
+        run_deepsomatic --model_type={params.model} --ref={input.ref} --reads_tumor={input.bam} --output_vcf={output.vcf} --output_gvcf={output.gvcf} --sample_name_tumor={params.sample} --num_shards={resources.threads} --logging_dir={log} --intermediate_results_dir {output.tmpdir} --regions={input.bed} {params.extra} {params.filter}
+        """
+
