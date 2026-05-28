@@ -291,3 +291,26 @@ rule bed_to_interval_list:
         config.get("picard_bed_to_interval_list", {}).get("container", config["default_container"])
     wrapper:
         "v5.0.1/bio/picard/bedtointervallist"
+
+
+# rule rs_qc_fastq:
+#     input:
+#         fastq="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
+#     output:
+#         html="results/rs_qc/{experiment}_{sample}_{type}_fastq_report.html",
+#     params:
+#         bin=config.get("rs_qc", {}).get("bin", "bin/rs-qc"),
+#     shell:
+#         "{params.bin} fastq -i {input.fastq} -o {output.html}"
+#
+# rule rs_qc_snap:
+#     input:
+#         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+#         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+#         ref=config.get("ref_data"),
+#     output:
+#         png="results/rs_qc/{experiment}_{sample}_{type}_snap.png",
+#     params:
+#         bin=config.get("rs_qc", {}).get("bin", "bin/rs-qc"),
+#     shell:
+#         "{params.bin} snap -b {input.bam} -r {input.ref} -o {output.png}"

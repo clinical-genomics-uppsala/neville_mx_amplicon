@@ -174,3 +174,17 @@ rule varcall_savana:
         " --chromosomes 2 5 13 15 17"
         " &> {log}"
         " && touch {output.dummy}"
+
+
+# rule varcall_rindels:
+#     input:
+#         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+#         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+#         ref=config.get("ref_data"),
+#     output:
+#         vcf="snv_indels/rindels/{experiment}_{sample}_{type}.rindels.vcf",
+#     params:
+#         bin=config.get("rindels", {}).get("bin", "bin/rindels"),
+#         extra=config.get("rindels", {}).get("extra", "--ont"),
+#     shell:
+#         "{params.bin} -b {input.bam} -r {input.ref} -o {output.vcf} {params.extra}"

@@ -1,0 +1,28 @@
+# Marvin site config for neville_mx_amplicon
+REFERENCE_DATA: "/data/ref_genomes/GRCh38"
+APPTAINER_CACHE: "/beegfs-storage/projects/wp4/nobackup/singularity_cache"
+hydra_local_path: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/hydra-genetics"
+
+resources: "config/resources/resources_marvin.yaml"
+
+# Container registry configuration for Marvin
+CONTAINER_PREFIX: "docker://hydragenetics"
+CONTAINER_SUFFIX: ":"
+CONTAINER_EXT: ""
+
+HYDRAGENETICS_PREFIX: "docker://hydragenetics"
+HKUBAL_PREFIX: "docker://hkubal"
+GOOGLE_PREFIX: "docker://google"
+ONTRESEARCH_PREFIX: "docker://ontresearch"
+NANOZOO_PREFIX: "docker://nanozoo"
+
+# Marvin Reference Paths
+proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"
+bed_files: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7"
+
+ref_fasta: "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"
+ref_fai: "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai"
+ref_sequence_dict: "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
+ref_design_bed: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+ref_design_intervals: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.interval_list"
+ref_vep_cache: "/data/ref_genomes/VEP"

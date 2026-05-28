@@ -20,7 +20,7 @@ from hydra_genetics.utils.resources import load_resources
 from hydra_genetics.utils.samples import *
 from hydra_genetics.utils.units import *
 
-from hydra_genetics.utils.misc import export_config_as_file
+from hydra_genetics.utils.misc import export_config_as_file, get_module_snakefile
 from hydra_genetics.utils.software_versions import add_version_files_to_multiqc
 from hydra_genetics.utils.software_versions import add_software_version_to_config
 from hydra_genetics.utils.software_versions import export_pipeline_version_as_file
@@ -56,31 +56,7 @@ except WorkflowError as we:
         schema_section = ".".join(re.findall(r"\['([^']+)'\]", schema_hiearachy)[1::2])
         sys.exit(f"{error_msg} in {schema_section}")
 
-date_string = datetime.now().strftime('%Y%m%d--%H-%M-%S')
-pipeline_version = get_pipeline_version(workflow, pipeline_name="pipeline_pool_amplicon")
-# version_files = touch_pipeline_version_file_name(pipeline_version, date_string=date_string, directory="results/versions/software")
-# if use_container(workflow):
-#     version_files.append(touch_software_version_file(config, date_string=date_string, directory="results/versions/software"))
-# add_version_files_to_multiqc(config, version_files)
-
-
-onstart:
-    export_pipeline_version_as_file(pipeline_version, date_string=date_string, directory="results/versions/software")
-    # Make sure that the user have the requested containers to be used
-    # if use_container(workflow):
-    #     # From the config retrieve all dockers used and parse labels for software versions. Add
-    #     # this information to config dict.
-    #     update_config, software_info = add_software_version_to_config(config, workflow, False) # fails with Pisces
-    #     # Print all softwares used as files. Additional parameters that can be set
-    #     # - directory, default value: software_versions
-    #     # - file_name_ending, default value: mqc_versions.yaml
-    #     # date_string, a string that will be added to the folder name to make it unique (preferably a timestamp)
-    #     # export_software_version_as_file(software_info, date_string=date_string, directory="results/versions/software")
-    # print config dict as a file. Additional parameters that can be set
-    # output_file, default config
-    # output_directory, default = None, i.e no folder
-    # date_string, a string that will be added to the folder name to make it unique (preferably a timestamp)
-    # export_config_as_file(update_config, date_string=date_string, directory="results/versions")
+pipeline_version = get_pipeline_version(workflow, pipeline_name="neville_mx_amplicon")
 
 
 
@@ -250,3 +226,82 @@ def generate_copy_rules(output_spec):
 
 
 generate_copy_rules(output_spec)
+
+
+rule software_versions:
+    output:
+        software_versions="results/versions/software/softwares_mqc_versions.yaml",
+        pipeline_versions="results/versions/software/pipeline_versions_mqc_versions.yaml"
+    log:
+        "results/versions/software/softwares_mqc_versions.log"
+    run:
+        import yaml
+        import logging
+        from datetime import datetime
+
+        logger = logging.getLogger(__name__)
+
+        # 1. Extract pipeline version
+        pipeline_info = get_pipeline_version(workflow, pipeline_name="neville_mx_amplicon")
+        
+        # 2. Extract software versions from containers using hydra-genetics utility
+        software_info = {}
+        if use_container(workflow):
+            try:
+                _, software_info = add_software_version_to_config(config, workflow, False)
+            except Exception as e:
+                logger.warning(f"Could not extract software versions with add_software_version_to_config: {e}")
+
+        # 3. Fallback extraction logic for all containers defined in config
+        def get_all_containers(d, containers=None):
+            if containers is None:
+                containers = {}
+            for k, v in d.items():
+                if isinstance(v, dict):
+                    get_all_containers(v, containers)
+                elif k in ["container", "default_container"]:
+                    val = str(v)
+                    if "/" in val:
+                        parts = val.split("/")[-1].split(":")
+                        name = parts[0]
+                        version = parts[1] if len(parts) > 1 else "latest"
+                    else:
+                        name = val
+                        version = "unknown"
+                    containers[name] = version
+            return containers
+
+        fallback_versions = get_all_containers(config)
+
+        # 4. Consolidate software versions into a clean flat dictionary
+        final_software_versions = {}
+        if software_info:
+            for container_key, versions in software_info.items():
+                for tool, ver in versions.items():
+                    if tool != "NOTE":
+                        final_software_versions[tool] = ver
+
+        # Fill in missing versions from container URIs
+        for tool, ver in fallback_versions.items():
+            if tool not in final_software_versions:
+                final_software_versions[tool] = ver
+
+        # 5. Write the consolidated software versions file
+        with open(output.software_versions, "w") as f:
+            yaml.dump(final_software_versions, f)
+
+        # 6. Write the pipeline version file
+        flat_pipeline_versions = {}
+        for p_name, p_data in pipeline_info.items():
+            flat_pipeline_versions[p_name] = p_data.get("version", "unknown")
+            
+        with open(output.pipeline_versions, "w") as f:
+            yaml.dump(flat_pipeline_versions, f)
+
+        # Write log
+        with open(log[0], "w") as f:
+            f.write(f"Software versions extracted successfully at {datetime.now()}\n")
+            f.write(f"Pipeline info: {pipeline_info}\n")
+            f.write(f"Software info: {software_info}\n")
+            f.write(f"Fallback versions: {fallback_versions}\n")
+            f.write(f"Final consolidated versions: {final_software_versions}\n")

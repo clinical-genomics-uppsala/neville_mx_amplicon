@@ -1,0 +1,28 @@
+# Local Mac workstation site config for neville_mx_amplicon
+REFERENCE_DATA: "references"
+APPTAINER_CACHE: "apptainer_cache"
+hydra_local_path: "develop/hydra-genetics"
+
+resources: "config/resources/resources_marvin.yaml"
+
+# Container registry configuration (uses standard Docker URIs locally)
+CONTAINER_PREFIX: "docker://hydragenetics"
+CONTAINER_SUFFIX: ":"
+CONTAINER_EXT: ""
+
+HYDRAGENETICS_PREFIX: "docker://hydragenetics"
+HKUBAL_PREFIX: "docker://hkubal"
+GOOGLE_PREFIX: "docker://google"
+ONTRESEARCH_PREFIX: "docker://ontresearch"
+NANOZOO_PREFIX: "docker://nanozoo"
+
+# Local Reference Paths
+proj_data: "test_data"
+bed_files: "test_data/bedfiles"
+
+ref_fasta: "references/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"
+ref_fai: "references/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai"
+ref_sequence_dict: "references/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
+ref_design_bed: "test_data/bedfiles/amplicons.bed"
+ref_design_intervals: "test_data/bedfiles/amplicons.interval_list"
+ref_vep_cache: "references/neville/VEP"

@@ -9,7 +9,7 @@
 filters:
   clairs-to:
     description: " ..."
-    expression: '-e 'FILTER=="LowQual" & QUAL==0''
+    expression: "-e 'FILTER==\"LowQual\" & QUAL==0'"
     soft_filter: "False"
   deepsomatic:
     description: >

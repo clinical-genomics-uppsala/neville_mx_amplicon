@@ -1,0 +1,20 @@
+# Marvin reference registry for neville_mx_amplicon
+reference:
+  fasta:
+    path: neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta
+    url: file:/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta
+  fai:
+    path: neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai
+    url: file:/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai
+  sequence_dict:
+    path: neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict
+    url: file:/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict
+  design_bed:
+    path: neville/bedfiles/amplicons.bed
+    url: file:/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed
+  design_intervals:
+    path: neville/bedfiles/amplicons.interval_list
+    url: file:/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.interval_list
+  vep_cache:
+    path: neville/VEP
+    url: file:/data/ref_genomes/VEP

@@ -1,0 +1,28 @@
+# Miarka site config for neville_mx_amplicon
+REFERENCE_DATA: "/proj/ngi2024001/nobackup/bin/wp2_neville/design_and_ref_files"
+APPTAINER_CACHE: "/proj/ngi2024001/nobackup/bin/wp2_neville/apptainer_cache"
+hydra_local_path: "/proj/ngi2024001/nobackup/bin/wp2_neville/hydra-genetics"
+
+resources: "config/resources/resources_miarka.yaml"
+
+# Container registry configuration for Miarka (runs completely offline using sif files)
+CONTAINER_PREFIX: "{{APPTAINER_CACHE}}"
+CONTAINER_SUFFIX: "_"
+CONTAINER_EXT: ".sif"
+
+HYDRAGENETICS_PREFIX: "{{APPTAINER_CACHE}}"
+HKUBAL_PREFIX: "{{APPTAINER_CACHE}}"
+GOOGLE_PREFIX: "{{APPTAINER_CACHE}}"
+ONTRESEARCH_PREFIX: "{{APPTAINER_CACHE}}"
+NANOZOO_PREFIX: "{{APPTAINER_CACHE}}"
+
+# Miarka Reference Paths
+proj_data: "{{REFERENCE_DATA}}/neville/proj_data"
+bed_files: "{{REFERENCE_DATA}}/neville/bedfiles"
+
+ref_fasta: "{{REFERENCE_DATA}}/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"
+ref_fai: "{{REFERENCE_DATA}}/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta.fai"
+ref_sequence_dict: "{{REFERENCE_DATA}}/neville/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
+ref_design_bed: "{{REFERENCE_DATA}}/neville/bedfiles/amplicons.bed"
+ref_design_intervals: "{{REFERENCE_DATA}}/neville/bedfiles/amplicons.interval_list"
+ref_vep_cache: "{{REFERENCE_DATA}}/neville/VEP"
