@@ -18,6 +18,7 @@ rule dorado_align:
     params:
         runid=config.get("runid", ""),
         extra=config.get("dorado_align", {}).get("extra", ""),
+        aligner=config.get("aligner", "dorado"),
     resources:
         partition=config.get("dorado_alignment", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("dorado_alignment", {}).get("time", config["default_resources"]["time"]),
@@ -38,11 +39,14 @@ rule dorado_align:
         "{rule}: Align reads with dorado and minimap2"
     shell:
         """
-        echo "Dorado executed from $( which dorado )"
-        
-        echo "Executing dorado aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
-        
-        dorado aligner {params.extra} {input.ref_data} {input.fastqgz} > {output.bam} 2> {log}
+        if [ "{params.aligner}" == "minimap2" ]; then
+            echo "Executing minimap2 aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
+            minimap2 -ax map-ont {params.extra} {input.ref_data} {input.fastqgz} | samtools view -bS - > {output.bam} 2> {log}
+        else
+            echo "Dorado executed from $( which dorado )"
+            echo "Executing dorado aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
+            dorado aligner {params.extra} {input.ref_data} {input.fastqgz} > {output.bam} 2> {log}
+        fi
         
         if [ {params.runid} == "ABC123" ]; then
             echo "\nIntegration test detected inside dorado_align rule, overwriting the output BAM file with a properly aligned BAM file" >> {log}

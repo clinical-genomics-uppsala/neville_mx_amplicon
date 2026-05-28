@@ -15,6 +15,7 @@ HKUBAL_PREFIX: "docker://hkubal"
 GOOGLE_PREFIX: "docker://google"
 ONTRESEARCH_PREFIX: "docker://ontresearch"
 NANOZOO_PREFIX: "docker://nanozoo"
+KINCEKARA_PREFIX: "docker://kincekara"
 
 # Local Reference Paths
 proj_data: "test_data"

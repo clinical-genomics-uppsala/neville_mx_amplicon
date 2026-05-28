@@ -26,7 +26,7 @@ rule filtering_bcftools_view:
             config.get("bcftools_view", {}).get("benchmark_repeats", 1),
         )
     wildcard_constraints:
-        caller="(clairs_to|vardict|deepsomatic)",
+        caller="(clairs_to|deepsomatic|vardict|pisces)",
     threads: config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"])
     resources:
         mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
@@ -109,3 +109,63 @@ rule rename_vaf_to_af:
         "{rule}: Use bcftools view to rename VAF to AF"
     shell:
         "bcftools annotate --force --rename-annots {input.txt} -o {output.vcf} {input.vcf} 2> {log}"
+
+
+if config.get("subset_vcf_bed"):
+    rule subset_vcf_by_bed:
+        input:
+            vcf="{prefix}.vcf",
+            bed=config.get("subset_vcf_bed"),
+        output:
+            vcf="{prefix}.subset.vcf",
+        log:
+            "{prefix}.subset.vcf.log",
+        wildcard_constraints:
+            prefix="(snv_indels|cnv_sv)\/.*",
+        container:
+            config.get("bcftools_view", {}).get("container", config["default_container"])
+        resources:
+            mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            time=config.get("bcftools_view", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
+        shell:
+            "bcftools view -T {input.bed} -Ov -o {output.vcf} {input.vcf} 2> {log}"
+
+    rule subset_vcf_gz_by_bed:
+        input:
+            vcf="{prefix}.vcf.gz",
+            tbi="{prefix}.vcf.gz.tbi",
+            bed=config.get("subset_vcf_bed"),
+        output:
+            vcf="{prefix}.subset.vcf.gz",
+        log:
+            "{prefix}.subset.vcf.log",
+        wildcard_constraints:
+            prefix="(snv_indels|cnv_sv)\/.*",
+        container:
+            config.get("bcftools_view", {}).get("container", config["default_container"])
+        resources:
+            mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            time=config.get("bcftools_view", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
+        shell:
+            "bcftools view -T {input.bed} -Oz -o {output.vcf} {input.vcf} 2> {log}"
+
+    rule subset_vcf_gz_tbi_by_bed:
+        input:
+            vcf="{prefix}.subset.vcf.gz",
+        output:
+            tbi="{prefix}.subset.vcf.gz.tbi",
+        log:
+            "{prefix}.subset.vcf.gz.tbi.log",
+        wildcard_constraints:
+            prefix="(snv_indels|cnv_sv)\/.*",
+        container:
+            config.get("bcftools_view", {}).get("container", config["default_container"])
+        resources:
+            mem_mb=config.get("bcftools_view", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+            time=config.get("bcftools_view", {}).get("time", config["default_resources"]["time"]),
+            threads=config.get("bcftools_view", {}).get("threads", config["default_resources"]["threads"]),
+        shell:
+            "tabix -p vcf {input.vcf} 2> {log}"
+

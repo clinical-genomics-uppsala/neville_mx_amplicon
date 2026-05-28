@@ -164,7 +164,7 @@ def compile_output_file_list(wildcards):
                 for unit_type in get_unit_types(units, sample)
                 for target in config.get("amplicons") + config.get("extra_regions")
                 for report in config["multiqc"]["reports"]
-                for caller in ["clairs_to", "deepsomatic", "vardict"]
+                for caller in config.get("callers", ["clairs_to", "deepsomatic", "vardict"])
             ]
         )
 
@@ -184,6 +184,14 @@ def generate_copy_rules(output_spec):
 
         rule_name = "_copy_{}".format("_".join(re.split(r"\W{1,}", f["name"].strip().lower())))
         input_file = pathlib.Path(f["input"])
+        if config.get("subset_vcf_bed"):
+            input_str = str(input_file)
+            if input_str.endswith(".vcf"):
+                input_file = pathlib.Path(input_str[:-4] + ".subset.vcf")
+            elif input_str.endswith(".vcf.gz"):
+                input_file = pathlib.Path(input_str[:-7] + ".subset.vcf.gz")
+            elif input_str.endswith(".vcf.gz.tbi"):
+                input_file = pathlib.Path(input_str[:-11] + ".subset.vcf.gz.tbi")
         output_file = output_directory / pathlib.Path(f["output"])
         if pathlib.Path(f["output"]).suffix == '':  # no file extension, hence a directory
             _ = f'@workflow.output(directory("{output_file}"))\n'

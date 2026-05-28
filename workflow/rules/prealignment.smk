@@ -8,9 +8,67 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
+def get_fastqfilter_input(wildcards):
+    if config.get("data_type", "pod5") == "fastq":
+        return config.get("input_fastq").format(
+            experiment=wildcards.experiment,
+            sample=wildcards.sample,
+            type=wildcards.type
+        )
+    return "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz".format(
+        experiment=wildcards.experiment,
+        sample=wildcards.sample,
+        type=wildcards.type
+    )
+
+def get_nanoparse_input(wildcards):
+    if config.get("nanoMonitor", {}).get("use_fastqfilter", False):
+        return "prealignment/nanomonitor/{experiment}_{sample}_{type}_reads.fastqfilter.fastq.gz".format(
+            experiment=wildcards.experiment,
+            sample=wildcards.sample,
+            type=wildcards.type
+        )
+    return get_fastqfilter_input(wildcards)
+
+def get_filtlong_input_chained(wildcards):
+    if config.get("nanoMonitor", {}).get("use_nanoparse", False):
+        return "prealignment/nanomonitor/{experiment}_{sample}_{type}_reads.nanoparse.fastq.gz".format(
+            experiment=wildcards.experiment,
+            sample=wildcards.sample,
+            type=wildcards.type
+        )
+    return get_nanoparse_input(wildcards)
+
+
+if config.get("nanoMonitor", {}).get("use_fastqfilter", False):
+    rule nanomonitor_fastqfilter:
+        input:
+            fastq=get_fastqfilter_input,
+        output:
+            fastq=temp("prealignment/nanomonitor/{experiment}_{sample}_{type}_reads.fastqfilter.fastq.gz"),
+        params:
+            bin=config.get("nanoMonitor", {}).get("fastqfilter_bin", "bin/fastqfilter"),
+            extra=config.get("nanoMonitor", {}).get("fastqfilter_extra", ""),
+        shell:
+            "{params.bin} -i {input.fastq} -o {output.fastq} {params.extra}"
+
+
+if config.get("nanoMonitor", {}).get("use_nanoparse", False):
+    rule nanomonitor_nanoparse:
+        input:
+            fastq=get_nanoparse_input,
+        output:
+            fastq=temp("prealignment/nanomonitor/{experiment}_{sample}_{type}_reads.nanoparse.fastq.gz"),
+        params:
+            bin=config.get("nanoMonitor", {}).get("nanoparse_bin", "bin/nanoparse"),
+            extra=config.get("nanoMonitor", {}).get("nanoparse_extra", ""),
+        shell:
+            "{params.bin} -i {input.fastq} -o {output.fastq} {params.extra}"
+
+
 rule filtlong:
     input:
-        "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz",
+        get_filtlong_input_chained,
     output:
         fastq=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz"),
     params:

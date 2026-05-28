@@ -188,3 +188,51 @@ rule varcall_savana:
 #         extra=config.get("rindels", {}).get("extra", "--ont"),
 #     shell:
 #         "{params.bin} -b {input.bam} -r {input.ref} -o {output.vcf} {params.extra}"
+
+
+rule varcall_pisces:
+    input:
+        bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+        bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
+        ref=config.get("reference", {}).get("fasta", ""),
+        bed=config.get("pisces", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+    output:
+        vcf=temp("snv_indels/pisces/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.pisces.vcf.gz"),
+        tbi=temp("snv_indels/pisces/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.pisces.vcf.gz.tbi"),
+    log:
+        "snv_indels/pisces/{experiment}_{sample}_{type}_pisces.log",
+    benchmark:
+        repeat(
+            "snv_indels/pisces/{experiment}_{sample}_{type}_pisces.benchmark.tsv",
+            config.get("dotnet_pisces", {}).get("benchmark_repeats", 1),
+        )
+    container:
+        config.get("dotnet_pisces", {}).get("container", config["default_container"])
+    threads: config.get("dotnet_pisces", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        mem_mb=config.get("dotnet_pisces", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("dotnet_pisces", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("dotnet_pisces", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("dotnet_pisces", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("dotnet_pisces", {}).get("time", config["default_resources"]["time"]),
+    params:
+        extra=config.get("dotnet_pisces", {}).get("extra", "--gvcf FALSE --filterduplicates TRUE"),
+    message:
+        "{rule}: Call variants using Pisces on {input.bam}"
+    shell:
+        """
+        REF_FOLDER=`dirname {input.ref}` && 
+        OUTPUT_FOLDER=snv_indels/pisces/{wildcards.experiment}_{wildcards.sample}_{wildcards.type}_tmp_out && 
+        mkdir -p $OUTPUT_FOLDER && 
+        (dotnet /app/Pisces/Pisces.dll \
+        -b {input.bam} \
+        -g $REF_FOLDER \
+        -i {input.bed} \
+        -t {threads} \
+        --outfolder $OUTPUT_FOLDER \
+        {params.extra}) &> {log} && 
+        BAM_BASE=$(basename {input.bam} .bam) && 
+        bgzip -c $OUTPUT_FOLDER/$BAM_BASE.vcf > {output.vcf} 2>> {log} && 
+        tabix -p vcf {output.vcf} 2>> {log} && 
+        rm -rf $OUTPUT_FOLDER
+        """

@@ -129,7 +129,7 @@ use rule vt_decompose from snv_indels as snv_indels_vt_decompose with:
     output:
         vcf=temp("snv_indels/{file}.decomposed.vcf.gz"),
     wildcard_constraints:
-        file="(clairs_to|vardict|deepsomatic)\/.*",
+        file="(clairs_to|vardict|deepsomatic|pisces)\/.*",
     log:
         "snv_indels/{file}.decomposed.vcf.gz.log",
     benchmark:
@@ -146,7 +146,7 @@ use rule vt_normalize from snv_indels as snv_indels_vt_normalize with:
     output:
         vcf=temp("snv_indels/{file}.decomposed.normalized.vcf.gz"),
     wildcard_constraints:
-        file="(clairs_to|vardict|deepsomatic)\/.*",
+        file="(clairs_to|vardict|deepsomatic|pisces)\/.*",
     log:
         "snv_indels/{file}.normalized.vcf.gz.log",
     benchmark:
@@ -381,7 +381,7 @@ else:
         output:
             vcf=temp("{file}.vep_annotated.vcf"),
         wildcard_constraints:
-            file="(snv_indels|cnv_sv)/(clairs_to|vardict|deepsomatic|bcbio_variation_recall_ensemble|sniffles2)\/.*",
+            file="(snv_indels|cnv_sv)/(clairs_to|vardict|deepsomatic|pisces|bcbio_variation_recall_ensemble|sniffles2)\/.*",
         params:
             extra=config.get("vep", {}).get("extra", "--pick"),
             mode=config.get("vep", {}).get("mode", "--offline --cache --refseq "),

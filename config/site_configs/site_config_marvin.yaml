@@ -15,6 +15,7 @@ HKUBAL_PREFIX: "docker://hkubal"
 GOOGLE_PREFIX: "docker://google"
 ONTRESEARCH_PREFIX: "docker://ontresearch"
 NANOZOO_PREFIX: "docker://nanozoo"
+KINCEKARA_PREFIX: "docker://kincekara"
 
 # Marvin Reference Paths
 proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"

@@ -25,6 +25,27 @@ runid: "{{runid}}"
 multisample: "{{multisample}}"
 samplesheet: "{{samplesheet}}"
 raw_data: "pod5"
+data_type: "pod5"            # "pod5" or "fastq"
+input_fastq: ""              # Required if data_type is "fastq"
+aligner: "dorado"            # "dorado" or "minimap2"
+callers:                     # Variant callers to include in output list
+  - "clairs_to"
+  - "deepsomatic"
+  - "vardict"
+  # - "pisces"
+
+subset_vcf_bed: ""           # Optional: Path to BED to subset final VCF
+
+# nanoMonitor Filtering Options
+nanoMonitor:
+  use_fastqfilter: false
+  use_nanoparse: false
+  fastqfilter_bin: "bin/fastqfilter"
+  nanoparse_bin: "bin/nanoparse"
+  fastqfilter_extra: ""
+  nanoparse_extra: ""
+
+KINCEKARA_PREFIX: "{{KINCEKARA_PREFIX}}"
 
 dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
 
@@ -81,6 +102,10 @@ deepsomatic:
   extra: '--make_examples_extra_args="vsc_min_fraction_snps=0.01,vsc_min_fraction_indels=0.01,small_model_snp_gq_threshold=20,small_model_indel_gq_threshold=20"'
   # filter: '--use_default_pon_filtering=true --qual_filter=0.1'
   bed_file: "{{bed_files}}/amplicons-exons-deepsomatic.bed"
+
+dotnet_pisces:
+  container: "{{KINCEKARA_PREFIX}}/pisces{{CONTAINER_SUFFIX}}5.2.11{{CONTAINER_EXT}}"
+  extra: "--gvcf FALSE --filterduplicates TRUE"
 
 dorado:
   container: "{{ONTRESEARCH_PREFIX}}/dorado{{CONTAINER_SUFFIX}}latest{{CONTAINER_EXT}}"
