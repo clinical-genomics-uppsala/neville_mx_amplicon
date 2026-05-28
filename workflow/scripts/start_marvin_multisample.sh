@@ -7,7 +7,7 @@
 
 set -euox pipefail
 
-module load slurm-drmaa/1.1.5
+module load slurm-drmaa/1.1.4
 module load singularity/3.7.1
 module load snakemake/7.22.0
 module load samtools/1.17
@@ -31,6 +31,8 @@ runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
 sampleSheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv
 csvDelim=','
 
+# Add blank line at the end of the samplesheet if need be
+sed -i '$a\' ${sampleSheet}
 
 # Merge BAM files and p per sample and create input files for the pipeline
 while IFS=$csvDelim read -r position_id flow_cell_id kit experiment_id sample_id alias barcode; do
