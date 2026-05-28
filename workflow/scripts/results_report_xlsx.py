@@ -586,5 +586,6 @@ worksheet_exonscov.add_table(
     }
 )
 
+workbook.set_size(1800, 1200)
 workbook.close()
 logging.info(f"All done!")
