@@ -1,85 +1,44 @@
 from xopen import xopen
 import pysam
-import pandas as pd
-
 
 class FastxDataFrame(object):
     """
-    Class to read a FASTQ file and convert it into a pandas DataFrame.
-    :param fastx_path: path to the FASTQ file
-    :return: a pandas DataFrame containing information from the reads in the following columns:
-    - sequence: the nucleotide sequence of the read
-    - comment: the comment associated with the read (if any)
-    - quality: the quality string of the read
-    - phred_scores: the quality scores of the read as a list of integers
-    - length: the length of the read (calculated property)
-    - q_score: the average quality score of the read (calculated property)
-    The class provides methods to filter reads based on their length and to write the DataFrame back to a FASTQ file.
+    A lightweight, streaming FASTQ parser and splitter.
+    Replaces the memory-heavy Pandas DataFrame implementation to prevent OOM errors
+    and process large FASTQ files efficiently in a single pass.
     """
     def __init__(self, fastx_path):
-        self.fastxf = pysam.FastxFile(fastx_path)
-        fastxdic = dict()
-        for read in self.fastxf:
-            fastxdic[read.name] = [read.sequence,
-                                   read.comment,
-                                   read.quality,
-                                   read.get_quality_array(offset=33)]
-        self.fastxdf = pd.DataFrame.from_dict(fastxdic, orient="index",
-                                              columns=["sequence",
-                                                       "comment",
-                                                       "quality",
-                                                       "phred_scores"],
-                                              dtype=object
-                                              )
+        self.fastx_path = fastx_path
 
-    def get_frame(self):
-        return self.fastxdf
-
-    @property
-    def set_read_length(self):
-        self.fastxdf = self.fastxdf.assign(length=lambda x: x.sequence.str.len())
-
-    @property
-    def set_read_phred_score(self):  # use pysam.FastqProxy instead?
+    def split_by_length(self, short_path, long_path, min_length=2000, max_length=4000):
         """
-        https://nanoporetech.com/support/software/data-analysis/where-can-i-find-out-more-about-quality-scores:
-        Per-base quality scores are stored together with the base sequence in FASTQ files output
-        by the basecalling algorithms and are then encoded in the Sanger format using ASCII characters
-        with values of 33 to 126 (up to 93 ASCII character values).
+        Streams the input FASTQ file and writes reads directly to short/long output files
+        based on length thresholds in a single efficient pass.
         """
-        self.fastxdf["q_score"] = self.fastxdf["phred_scores"].map(lambda x: round(sum(x)/len(x)))
-
-    def filter_too_short_reads(self, min_length=2000):
-        if "length" not in self.fastxdf.columns:
-            self.set_read_length
-        return self.fastxdf[(self.fastxdf["length"] < min_length)]
-
-    def filter_too_long_reads(self, max_length=4000):
-        if "length" not in self.fastxdf.columns:
-            self.set_read_length
-        return self.fastxdf[(self.fastxdf["length"] > max_length)]
-
-
-def write_frame_to_fastq(dframe, pathout):
-    with xopen(pathout, "w") as fout:
-        for row in dframe.itertuples():
-            fout.write(f"@{row.Index}\n{row.sequence}\n+\n{row.quality}\n")
+        with pysam.FastxFile(self.fastx_path) as infile, \
+             xopen(short_path, "w") as out_short, \
+             xopen(long_path, "w") as out_long:
+            for read in infile:
+                rlen = len(read.sequence)
+                # Format quality and comments if present
+                comment_part = f" {read.comment}" if read.comment else ""
+                fastq_record = f"@{read.name}{comment_part}\n{read.sequence}\n+\n{read.quality}\n"
+                
+                if rlen < min_length:
+                    out_short.write(fastq_record)
+                elif rlen > max_length:
+                    out_long.write(fastq_record)
 
 
 if __name__ == "__main__":
-    fastx_path = "/pipeline_pool_amplicon/run/"\
-                 "20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.fastq.gz"
-    fastqshort = "/home/camille/ampliconthemato/pipeline_pool_amplicon/run/"\
-                 "20240923_1256_MN45214_ASA641_69751c45/data/reads.ont_adapt_trim.filtered.out.short.fastq.gz"
-    df = FastxDataFrame(fastx_path)
-    df.set_read_length
-    df.set_read_phred_score
-    dreads = df.get_frame()
-    print(dreads["phred_scores"])
-    print(dreads["length"])
-    print(dreads["q_score"])
-    dshort = df.filter_too_short_reads()
-    dlong = df.filter_too_long_reads()
-    print(dshort.head()["length"])
-    print(dlong.head()["length"])
-    write_frame_to_fastq(dshort, fastqshort)
+    import argparse
+    parser = argparse.ArgumentParser(description="Split FASTQ file into too-short and too-long reads.")
+    parser.add_argument("input_fastq", help="Path to input FASTQ file")
+    parser.add_argument("output_short", help="Path to output too-short FASTQ file")
+    parser.add_argument("output_long", help="Path to output too-long FASTQ file")
+    parser.add_argument("--min-len", type=int, default=2000, help="Min length threshold")
+    parser.add_argument("--max-len", type=int, default=4000, help="Max length threshold")
+    args = parser.parse_args()
+
+    df = FastxDataFrame(args.input_fastq)
+    df.split_by_length(args.output_short, args.output_long, args.min_len, args.max_len)
