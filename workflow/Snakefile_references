@@ -28,15 +28,15 @@ use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf with
             "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf"
         ),
     params:
-        extra=config.get("vardict", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
-        bed_columns=config.get("vardict", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
-        allele_frequency_threshold=config.get("vardict", {}).get("allele_frequency_threshold", "0.01"),
+        extra=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
+        bed_columns=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
+        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("allele_frequency_threshold", "0.01"),
         sample_name=lambda wildcards: f"{wildcards.sample}",
     log:
         "references/vardict/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
         repeat(
-            "references/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("vardict", {}).get("benchmark_repeats", 1)
+            "references/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1)
         )
 
 
@@ -69,7 +69,7 @@ module references:
         config
 
 
-use rule * from references exclude all as references_*
+use rule * from references exclude all, create_background_file as references_*
 
 
 # # GATK PoN
@@ -94,6 +94,7 @@ use rule * from references exclude all as references_*
 
 
 # background
+'''
 use rule create_background_file from references as references_create_background_file_clairs_to with:
     input:
         gvcfs=get_gvcfs_clairs_to(),
@@ -143,3 +144,4 @@ use rule create_background_file from references as references_create_background_
             "references/create_background_file/background_panel_vardict.tsv.benchmark.tsv",
             config.get("create_background_file", {}).get("benchmark_repeats", 1),
         )
+'''
