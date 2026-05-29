@@ -140,3 +140,14 @@ def get_gvcfs_vardict():
                      for t in panel_ref.itertuples()
                      ])
     )
+
+
+def get_vcfs():
+    return list(
+        set(
+            [
+                f"snv_indels/bcbio_variation_recall_ensemble/{t.experiment}_{t.sample}_{t.type}.ensembled.vep_annotated.rename_vaf.vcf.gz"
+                for t in panel_ref.itertuples()
+            ]
+        )
+    )

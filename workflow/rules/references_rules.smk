@@ -181,3 +181,32 @@ rule create_background_file_longread_vardict:
         "{rule}: create background PoN"
     script:
         "../scripts/create_background_file_longread.py"
+
+
+rule create_artifact_file_longread:
+    input:
+        vcfs=get_vcfs(),
+    output:
+        artifact_panel=temp("references/create_artifact_file/artifact_panel.tsv"),
+    params:
+        callers=config.get("create_artifact_file", {}).get("callers", ["vardict", "deepsomatic", "clairs_to"]),
+    log:
+        "references/create_artifact_file/artifact_panel.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_artifact_file/artifact_panel.tsv.benchmark.tsv",
+            config.get("create_artifact_file", {}).get("benchmark_repeats", 1),
+        )
+    threads: config.get("create_artifact_file", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        mem_mb=config.get("create_artifact_file", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("create_artifact_file", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("create_artifact_file", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("create_artifact_file", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("create_artifact_file", {}).get("time", config["default_resources"]["time"]),
+    container:
+        config.get("create_artifact_file", {}).get("container", config["default_container"])
+    message:
+        "{rule}: create artifact PoN"
+    script:
+        "../scripts/create_artifact_file_longread.py"
