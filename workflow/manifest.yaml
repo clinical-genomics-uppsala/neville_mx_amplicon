@@ -1,0 +1,67 @@
+---
+pipeline:
+  id: wp2_neville
+  name: neville_mx_amplicon
+  assay: mx_amplicon
+  genome_build: GRCh38
+
+entrypoints:
+  analysis: workflow/Snakefile
+  references: null
+
+layout:
+  local_rules_dir: workflow/rules
+  local_scripts_dir: workflow/scripts
+  schemas_dir: workflow/schemas
+  report: null
+
+rule_groups:
+  common: workflow/rules/common.smk
+  basecalling: workflow/rules/basecalling.smk
+  prealignment: workflow/rules/prealignment.smk
+  alignment: workflow/rules/aligning.smk
+  qc: workflow/rules/qc.smk
+  varcalling: workflow/rules/varcalling.smk
+  prefiltering: workflow/rules/prefiltering.smk
+  results_report: workflow/rules/results_report.smk
+
+hydra_modules:
+  source: mixed
+  loader: hydra_genetics.utils.misc.get_module_snakefile
+  local_module_root_config_key: module_root
+  modules:
+    - annotation
+    - cnv_sv
+    - filtering
+    - qc
+    - snv_indels
+
+scripts:
+  pipeline_specific:
+    - workflow/scripts/fastq_to_rehead_bam.sh
+    - workflow/scripts/fetch_too_short_too_long_reads.py
+    - workflow/scripts/intersect_bed_intervals.py
+    - workflow/scripts/mosdepth_merge.py
+    - workflow/scripts/mosdepth_merge_timestep.py
+    - workflow/scripts/plot_qc_per_sequence.py
+    - workflow/scripts/plot_targets.py
+    - workflow/scripts/plots_targets_cum_counts_time.py
+    - workflow/scripts/plots_time_to_coverage.py
+    - workflow/scripts/process_timestep_data.py
+    - workflow/scripts/seq_yield_timestep.py
+    - workflow/scripts/yield_per_pool.py
+  shared_report_candidates:
+    - workflow/scripts/results_report_create_tables.py
+    - workflow/scripts/results_report_xlsx.py
+  support_scripts:
+    - workflow/scripts/futils.py
+    - workflow/scripts/rulegraph_multisample.sh
+    - workflow/scripts/start_marvin_multisample.sh
+    - workflow/scripts/start_marvin_multisample_from_fastq.sh
+    - workflow/scripts/start_marvin_single.sh
+
+harmonization_notes:
+  - Override-heavy ONT amplicon workflow; do not force it into the compact Pickett/Poppy shape.
+  - Keep basecalling, time-to-coverage, and amplicon QC logic local until a second pipeline uses it.
+  - common.smk currently owns output expansion, generated copy rules, and software version export.
+  - Results workbook helpers overlap with Poppy and may belong in hydra-genetics/report later.
