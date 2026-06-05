@@ -15,22 +15,7 @@
 #   - name: "resources_yaml"
 #     output: "Results/{experiment}_{sample}_{type}_resources.yaml"
 #     input: "config/resources.yaml"
-#
-#   - name: "bed_files_amplicon"
-#     output: "Results/Bed"
-#     input: "bedfiles/"
 
-##   - name: "bed_files_targets"
-##     output: "results/bed/{target}.bed"
-##     input: "os.path.join(config["bed_files"], "{target}.bed")"
-
-#    - name: "dorado_ubam"
-#     output: "Results/Data/multi_samples_reads.basecalled.bam"
-#     input: "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam"
-
-#   - name: "dorado_demux_bam"
-#     output: "Results/basecalling/dorado_demux/dummy.out"
-#     input: "basecalling/dorado_demux/dummy.out"
 
    - name: "filtered_fastq"
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.fastq.gz"
@@ -60,17 +45,6 @@
 #     output: "Results/Data/{experiment}_{sample}_{type}_savana.done"
 #     input: "cnv_sv/savana/{experiment}_{sample}_{type}_savana.done"
 
-##   - name: "snv_indels_var_calls_ensembled"
-##     output: "Results/Data/{experiment}_{sample}_{type}.ensembled.vcf.gz"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vcf.gz"
-##
-##   - name: "snv_indels_var_calls_ensembled_annotated"
-##     output: "Results/Data/{experiment}_{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.vcf.gz"
-##
-##   - name: "snv_indels_var_calls_ensembled_annotated_hard_filtered"
-##     output: "Results/Data/{experiment}_{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
-##     input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
 
    - name: "pycoqc_report"
      output: "Results/Reports/{experiment}_{sample}_{type}_sequencing_report_pycoqc.html"

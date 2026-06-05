@@ -235,6 +235,7 @@ logger.info(
 )
 
 
+'''
 use rule scanitd from cnv_sv as cnv_sv_scanitd with:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam",
@@ -254,6 +255,7 @@ use rule scanitd from cnv_sv as cnv_sv_scanitd with:
             "cnv_sv/scanitd/{experiment}_{sample}_{type}.output.benchmark.tsv",
             config.get("scanitd", {}).get("benchmark_repeats", 1),
         )
+'''
 
 
 use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
