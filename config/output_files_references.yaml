@@ -18,11 +18,15 @@ files:
     input: "references/create_artifact_file/artifact_panel.tsv"
     output: "artifact_panel.tsv"
 
+  - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
+    output: "{experiment}_{sample}_{type}.ont_reads.snv-indels.vcf.gz"
+    input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf.gz"
+
   - name: "snv gVCF from clairs-to"
     input: "references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.g.vcf.gz"
     output: "{experiment}_{sample}_{type}_snv.clairs_to.g.vcf.gz"
 
-  - name: "indel gVCF from deepsomatic"
+  - name: "snv gVCF from deepsomatic"
     input: "references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz"
     output: "{experiment}_{sample}_{type}.deepsomatic.g.vcf.gz"
 
