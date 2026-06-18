@@ -3,4 +3,11 @@ default_resources:
   time: "1:00:00"
   mem_mb: 1024
   mem_per_cpu: 1024
-  partition: core
+  partition: "low"
+
+vardict:
+  partition: "low"
+  time: "24:00:00"
+  threads: 2
+  mem_mb: 12288
+  mem_per_cpu: 6144

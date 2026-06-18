@@ -22,7 +22,7 @@ reference_rules_snv_indels_clairs_to_gvcf:
 reference_rules_snv_indels_vardict_gvcf:
   container: "docker://hydragenetics/vardict:1.8.3"
   allele_frequency_threshold: "0.002"
-  extra: "-k 0 -L 1000 -a 50:0.95"
+  extra: "-p -q 1" # -q 1: uses all bases that basecalling quality >= 1, -p: output all positions
   bed_file: "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-background.bed"
   bed_columns: "-c 1 -S 2 -E 3 -g 4"
   threads: 20
