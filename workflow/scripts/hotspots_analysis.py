@@ -4,17 +4,28 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL3"
 
 """
-This script aims at trying to estimate the sequencing noise in reads in a BAM file for a selection of known hotspot variants.
-That is, given a hotspot mutation, the script will count how many reads carry this variant 
-and how many will have another base there.
+This script estimates the sequencing noise in reads in a BAM file for a selection of known hotspot variants.
+That is, given the genomic position of a hotspot mutation, the script will count how many reads carry the reference allele
+or the alternative allele in that position,  and compute the variant allele frequency (VAF) for the alternative allele.
+
+Columns in the input CSV file with the genomic positions of hotspot mutations should include:
+- Sample: The sample identifier (e.g., Sample1, Sample2, etc.),
+- Gene: The gene where the genomic position is located (e.g., TP53, NPM1, etc.),
+- Position: The genomic position of the hotspot (e.g., chr1:12345),
+- Transcript: The transcript associated with the gene (e.g., ENST00000269305),
+- Protein_change: The protein change associated with the hotspot (e.g., p.R175H),
+- Ref_allele: The reference allele at the genomic position (e.g., G).
+
+Usage:
+```bash
+python workflow/scripts/hotspots_analysis.py @workflow/scripts/hotspots_analysis_args.txt
+```
 """
 
 import os
 import pysam
-import subprocess
 import json
-# import numpy as np
-# from scipy.stats import chi2_contingency
+import argparse
 import pandas as pd
 from collections import Counter
 from typing import Dict, Any, List
@@ -348,11 +359,32 @@ def analyze_hotspot_noise_for_coordinate(
     return coord_bases_table
 
 
-if __name__ == "__main__":
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Extract reads and compute sequencing noise statistics for hotspots.",
+        fromfile_prefix_chars='@'
+    )
+    parser.add_argument("--bam_dir", help="Directory containing BAM files.")
+    parser.add_argument("--hspt_csv", help="Path to the Hotspots CSV file.")
+    parser.add_argument("--ref_panel", help="Path to the reference panel TSV file.")
+    parser.add_argument("--bam_patterns", nargs="+", help="Templates for BAM filenames.")
+    parser.add_argument("--sample_id_col", help="Column name or index in ref_samples for sample ID check.")
+    parser.add_argument("--bam_id_cols", nargs="+", help="Column names or indices to construct BAM ID.")
+    
+    return parser.parse_args()
 
-    bam_dir = "/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon/alignment/dorado_align"
-    hspt_csv = "/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/background_artifacts/Hotspots_2026-04-21_ELC.csv"
-    ref_panel = "/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/background_artifacts/panel_ref_seq_noise.tsv"
+
+if __name__ == "__main__":
+    args = parse_args()
+
+    bam_dir = args.bam_dir
+    hspt_csv = args.hspt_csv
+    ref_panel = args.ref_panel
+
+    if not bam_dir or not hspt_csv or not ref_panel:
+        raise ValueError(
+            "bam_dir, hspt_csv, and ref_panel must be provided via command-line arguments or an @file."
+        )
 
     ref_samples = pd.read_csv(ref_panel, sep="\t").drop(columns=["type", "caller"]).drop_duplicates()
     print(f"Reference samples used: {ref_samples}\n")
@@ -374,5 +406,8 @@ if __name__ == "__main__":
             df_hspt=df_hspt,
             bam_dir=bam_dir,
             output_dir=os.path.dirname(ref_panel),
-            hspt_info=hspt_info
+            hspt_info=hspt_info,
+            bam_patterns=args.bam_patterns,
+            sample_id_col=args.sample_id_col,
+            bam_id_cols=args.bam_id_cols
         )
