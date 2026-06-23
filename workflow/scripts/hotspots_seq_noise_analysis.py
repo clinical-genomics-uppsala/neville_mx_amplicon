@@ -18,7 +18,7 @@ Columns in the input CSV file with the genomic positions of hotspot mutations sh
 
 Usage:
 ```bash
-python workflow/scripts/hotspots_analysis.py @workflow/scripts/hotspots_analysis_args.txt
+python workflow/scripts/hotspots_seq_noise_analysis.py @workflow/scripts/hotspots_seq_noise_analysis_args.txt
 ```
 """
 
