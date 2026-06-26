@@ -9,29 +9,15 @@ TAG_OR_BRANCH="offline-pack"
 # CONFIG_GITHUB_REPO="https://github.com/clinical-genomics-uppsala/neville_mx_amplicon.git"
 # CONFIG_VERSION="develop"
 PYTHON_VERSION="3.9"
-PACK_NAME="${PIPELINE_NAME}_packs"
-
-# Choose what build steps to execute
-BUILD_CONDA_ENV=true
-BUILD_APPTAINERS=false
-BUILD_SMK_WRAPPERS=true
-BUILD_HYDRA_MODULES=true
-BUILD_REFERENCES=true
-
-mkdir -p ${PACK_NAME}
-cd ${PACK_NAME}
 
 # Clone git of neville_mx_amplicon to configure conda environment
-# git clone --branch ${TAG_OR_BRANCH} ${PIPELINE_GITHUB_REPO}
-# cd ${PIPELINE_NAME}
+git clone --branch ${TAG_OR_BRANCH} ${PIPELINE_GITHUB_REPO}
+cd ${PIPELINE_NAME}
 
 # Create and activate conda environment in the current directory, then install pipeline requirements
-if ${BUILD_CONDA_ENV};
-then
-	conda create --prefix ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env python=${PYTHON_VERSION} -y
-	conda activate ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env
-	conda install -c conda-forge pip -y
-fi
+conda create --prefix ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env python=${PYTHON_VERSION} -y
+conda activate ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env
+conda install -c conda-forge pip -y
 
 if [ -d ${PIPELINE_NAME}_${TAG_OR_BRANCH} ];
 then
@@ -49,32 +35,21 @@ mkdir -p ${PIPELINE_NAME}_${TAG_OR_BRANCH}
 
 # Clone git of neville_mx_amplicon
 git clone --branch ${TAG_OR_BRANCH} ${PIPELINE_GITHUB_REPO} ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}
-
-
-if ${BUILD_CONDA_ENV};
-then
-	./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env/bin/pip3 install -r ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/requirements.txt
-	conda pack --prefix ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env -o ${PIPELINE_NAME}_${TAG_OR_BRANCH}/env.tar.gz
-fi
+./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env/bin/pip3 install -r ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/requirements.txt
+conda pack --prefix ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env -o ${PIPELINE_NAME}_${TAG_OR_BRANCH}/env.tar.gz
 
 # Clone snakemake-wrappers and hydra-genetics
 mkdir -p ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics
 
 # Clone wrappers
-if ${BUILD_SMK_WRAPPERS};
-then
-	git clone https://github.com/snakemake/snakemake-wrappers.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/snakemake-wrappers
-fi
+git clone https://github.com/snakemake/snakemake-wrappers.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/snakemake-wrappers
 
 # Clone hydra modules
-if ${BUILD_HYDRA_MODULES};
-then
-	git clone https://github.com/hydra-genetics/annotation.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/annotation
-	git clone https://github.com/hydra-genetics/cnv_sv.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/cnv_sv
-	git clone https://github.com/hydra-genetics/qc.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/qc
-	git clone https://github.com/hydra-genetics/snv_indels.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/snv_indels
-	git clone https://github.com/hydra-genetics/references.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/references
-fi
+git clone https://github.com/hydra-genetics/annotation.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/annotation
+git clone https://github.com/hydra-genetics/cnv_sv.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/cnv_sv
+git clone https://github.com/hydra-genetics/qc.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/qc
+git clone https://github.com/hydra-genetics/snv_indels.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/snv_indels
+git clone https://github.com/hydra-genetics/references.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/references
 
 ## Save DockerHub paths in YAML to later create Singularity images
 mv ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/config.yaml \
@@ -88,20 +63,14 @@ ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/containers.yaml
 tar -zcvf ${PIPELINE_NAME}_${TAG_OR_BRANCH}.tar.gz ${PIPELINE_NAME}_${TAG_OR_BRANCH}
 
 # Download containers
-if ${BUILD_APPTAINERS};
-then
-	conda activate ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env
-	hydra-genetics prepare-environment create-singularity-files -c ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/containers.yaml -o apptainer_cache
-fi
+conda activate ./${PIPELINE_NAME}_${TAG_OR_BRANCH}_env
+hydra-genetics prepare-environment create-singularity-files -c ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/containers.yaml -o apptainer_cache
 
 # Download references
-if ${BUILD_REFERENCES};
-then
-	for reference_config in "$@"
-	do
-		hydra-genetics --debug references download -o design_and_ref_files -v $reference_config
-	done
-fi
+for reference_config in "$@"
+do
+    hydra-genetics --debug references download -o design_and_ref_files -v $reference_config
+done
 
 conda deactivate
 

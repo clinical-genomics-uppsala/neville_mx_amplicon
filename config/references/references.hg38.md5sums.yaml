@@ -36,7 +36,7 @@
 #      path: neville_mx_amplicon/amplicons-background.bed
 #      type: file
 #      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-background.bed
-    reference_bedfiles:
+    bedfiles:
       checksum: 3bd1c1201bd51558201f3005db17817e
       path: neville_mx_amplicon/bedfiles
       type: folder
@@ -45,7 +45,7 @@
         IDH1_1.bed: 5b55de775b22b54b741d5e0fd32ea9c0
         TP53_3kb_A1_only.bed: 32a4c8487e2ebc8cda27fd16c69ccf92
         TP53_C10_only.bed: e58b2791605877f2c90800423856d006
-        md5sum.txt:	8a1d67c4d1f2d461e594d2c29e84536c
+        # do NOT include this file: md5sum.txt:	8a1d67c4d1f2d461e594d2c29e84536c
         TP53_F2.bed: 2aa5fab4a9bbcee057d77b7f8ff8d464
         exon_coverage.bed: f21450e1cb100bd6e8d25f6a9bacc9e3
         TP53_D2.bed: ca0d4639db73ebe186d8c0f6fabffc05
@@ -122,165 +122,36 @@
 #        type: file
 #        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/background_panel.tsv
 
-  bcftools_annotate:
-    annotation_db:
-      checksum: aa2468cb145e390a655976f73dd069ad
-      path: poppy_uppsala/small_exac_common_3.hg38.vcf.gz
-      type: file
-      url: file:/data/ref_genomes/GNOMAD/small_exac_common_3.hg38.vcf.gz
-
-  bcftools_filter_include_region:
-    cll:
-      checksum: 8d8a34eae5afd64e2deb2b2147448bd8
-      path: poppy_uppsala/CLL_genes_for_xlsx.250114.sorted.bed
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/CLL_genes_for_xlsx.250114.sorted.bed
-    myeloid:
-      checksum: 0ab36f6223c3db6adad74ef10a27cb9a
-      path: poppy_uppsala/Myeloid_genes_for_xlsx.250114.sorted.bed
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Myeloid_genes_for_xlsx.250114.sorted.bed
-    hotspot:
-      checksum: ecc9516c697e12e990c760e74c5a4261
-      path: poppy_uppsala/hotspot_genes_for_xlsx.250602.sorted.bed
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/hotspot_genes_for_xlsx.250602.sorted.bed
-
-  cnvkit_batch:
-    novaseq:
-      checksum: 458257f896444afaebbf133f30c8f670
-      path: poppy_uppsala/NovaSeq/cnvkit.PoN.cnn
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/cnvkit.PoN.cnn
-    nextseq:
-      checksum: 053d2bf91ac36ff51dafbf904a064c7a
-      path: poppy_uppsala/NextSeq/cnvkit.PoN.cnn
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/cnvkit.PoN.cnn
-
-  gatk_collect_allelic_counts:
-    checksum: f33a0d189f421449fd72fa8a4cc975cd
-    path: poppy_uppsala/Twist_myeloid_cnv100.241211.interval_list
-    type: file
-    url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Twist_myeloid_cnv100.241211.interval_list
-
-  gatk_denoise_read_counts:
-    novaseq:
-      checksum: c940b19ea02211f17f8da3b98e3a8e26
-      path: poppy_uppsala/NovaSeq/gatk.PoN.hdf5
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/gatk.PoN.hdf5
-    nextseq:
-      checksum: 4ddcb61e7003b38bb17f7b47ead5b8f3
-      path: poppy_uppsala/NextSeq/gatk.PoN.hdf5
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/gatk.PoN.hdf5
-
-  merge_cnv_json:
-    annotations:
-      checksum: 0f804991c4f1dbe962b1993383b48c69
-      path: poppy_uppsala/Twist_myeloid_cnv_annotation.240227.bed
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Twist_myeloid_cnv_annotation.240227.bed
-
-  pindel_call:
-    include_bed:
-      checksum: e700af9e5e5a803e85a454b19bd11b36
-      path: poppy_uppsala/Twist_myeloid_pindel_240628.bed
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Twist_myeloid_pindel_240628.bed
-
-  purecn_coverage:
-    intervals:
-      novaseq:
-        checksum: e266a7b071a1d65e20fccf22a57361b2
-        path: poppy_uppsala/NovaSeq/purecn_targets_intervals.txt
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/purecn_targets_intervals.txt
-      nextseq:
-        checksum: e266a7b071a1d65e20fccf22a57361b2
-        path: poppy_uppsala/NextSeq/purecn_targets_intervals.txt
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/purecn_targets_intervals.txt
-
-  results_report_xlsx:
-    wanted_transcripts:
-      checksum: 8a9817ecdc943324ba2dd52c48c939a2
-      path: poppy_uppsala/tm_mane_transcript.240404.txt
-      type: file
-      url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/tm_mane_transcript.240404.txt
-
-  svdb_query:
-    cnv:
-      novaseq:
-        checksum: bb67b442381eaed1dc86ff8a8e3ec807
-        path: poppy_uppsala/NovaSeq/svdb_cnv.vcf
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/svdb_cnv.vcf
-      nextseq:
-        checksum: bb67b442381eaed1dc86ff8a8e3ec807
-        path: poppy_uppsala/NovaSeq/svdb_cnv.vcf
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/svdb_cnv.vcf
-
-  pure_cn:
-    nextseq:
-      normaldb:
-        checksum: 3e337b3469d752f2e9a8dda15c0f1f1c
-        path: poppy_uppsala/NextSeq/purecn_normal_db.rds
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/purecn_normal_db.rds
-      intervals:
-        checksum: e266a7b071a1d65e20fccf22a57361b2
-        path: poppy_uppsala/NextSeq/purecn_targets_intervals.txt
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/purecn_targets_intervals.txt
-      mapping_bias_file:
-        checksum: cef75f3bf8f181033830013b52b799ab
-        path: poppy_uppsala/NextSeq/purecn_mapping_bias.rds
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NextSeq/reference_files/purecn_mapping_bias.rds
-    novaseq:
-      normaldb:
-        checksum: 3e5c30972da14f919334113025078fa0
-        path: poppy_uppsala/NovaSeq/purecn_normal_db.rds
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/purecn_normal_db.rds
-      intervals:
-        checksum: e266a7b071a1d65e20fccf22a57361b2
-        path: poppy_uppsala/NovaSeq/purecn_targets_intervals.txt
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/purecn_targets_intervals.txt
-      mapping_bias_file:
-        checksum: c2eff67f4aa8f83a76329ca95fe037a3
-        path: poppy_uppsala/NovaSeq/purecn_mapping_bias.rds
-        type: file
-        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/purecn_mapping_bias.rds
+#  gatk_collect_allelic_counts:
+#    checksum: f33a0d189f421449fd72fa8a4cc975cd
+#    path: poppy_uppsala/Twist_myeloid_cnv100.241211.interval_list
+#    type: file
+#    url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Twist_myeloid_cnv100.241211.interval_list
 
   bwa_mem:
     amb:
       checksum: f84b47b7ec12946b92d9762cec04b835
-      path: poppy_uppsala/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.amb
+      path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.amb
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.amb
     ann:
       checksum: d8a1ff524ec2150c0b9b7e544dc086a6
-      path: poppy_uppsala/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.ann
+      path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.ann
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.ann
     bwt:
       checksum: 3fce90c2d2c1ea3eafcdcd5f17ec8724
-      path: poppy_uppsala/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.bwt
+      path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.bwt
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.bwt
     pac:
       checksum: 586a1236048aa02f47296f799eacc175
-      path: poppy_uppsala/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.pac
+      path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.pac
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.pac
     sa:
       checksum: 678c3326343f00c18ff05aa5e67c090a
-      path: poppy_uppsala/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.sa
+      path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.sa
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.fasta.sa
 
