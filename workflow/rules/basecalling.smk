@@ -132,7 +132,7 @@ if config.get("multisample", False):
                 config.get("basecalling_dorado_duplex_multisamples", {}).get("benchmark_repeats", 1),
             )
         container:
-            config.get("dorado_duplex_multisamples", {}).get("container", config["default_container"])
+            config.get("basecalling_dorado_duplex_multisamples", {}).get("container", config["default_container"])
         log:
             "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam.log",
         message:

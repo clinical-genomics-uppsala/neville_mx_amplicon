@@ -69,6 +69,7 @@ if ${BUILD_HYDRA_MODULES};
 then
 	git clone https://github.com/hydra-genetics/annotation.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/annotation
 	git clone https://github.com/hydra-genetics/cnv_sv.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/cnv_sv
+	git clone https://github.com/hydra-genetics/filtering.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/filtering
 	git clone https://github.com/hydra-genetics/qc.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/qc
 	git clone https://github.com/hydra-genetics/snv_indels.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/snv_indels
 	git clone https://github.com/hydra-genetics/references.git ${PIPELINE_NAME}_${TAG_OR_BRANCH}/hydra-genetics/references
@@ -114,3 +115,6 @@ if [ -d ${PIPELINE_NAME}_${TAG_OR_BRANCH} ];
 then
     rm -fr ${PIPELINE_NAME}_${TAG_OR_BRANCH}
 fi
+
+# Compress data
+tar -czvf design_and_ref_files.tar.gz design_and_ref_files
