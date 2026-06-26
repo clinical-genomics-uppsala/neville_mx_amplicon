@@ -64,31 +64,28 @@ basecalling_compress_fastq:
   mem_per_cpu: 6144
 
 basecalling_dorado_basecaller:
-  partition: "GPU_hi"
+  partition: "gpu"
   time: "72:00:00"
-  gres: "--gres=gres:gpu:4"
-  threads: 40
-  mem_mb: 655360
-  mem_per_cpu: 16384
-  slurm_extra: "-w computeGPU"
+  gres: "--gres=gres:a100:4"
+  threads: 96
+  mem_mb: 512064
+  mem_per_cpu: 5334
 
 basecalling_dorado_duplex:
-  partition: "GPU_hi"
+  partition: "gpu"
   time: "72:00:00"
-  gres: "--gres=gres:gpu:4"
-  threads: 40
-  mem_mb: 655360
-  mem_per_cpu: 16384
-  slurm_extra: "-w computeGPU"
+  gres: "--gres=gres:a100:4"
+  threads: 96
+  mem_mb: 512064
+  mem_per_cpu: 5334
 
 basecalling_dorado_duplex_multisamples:
-  partition: "GPU_hi"
+  partition: "gpu"
   time: "72:00:00"
-  gres: "--gres=gres:gpu:4"
-  threads: 40
-  mem_mb: 655360
-  mem_per_cpu: 16384
-  slurm_extra: "-w computeGPU"
+  gres: "--gres=gres:a100:4"
+  threads: 96
+  mem_mb: 512064
+  mem_per_cpu: 5334
 
 basecalling_dorado_demux:
   partition: "core"

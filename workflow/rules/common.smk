@@ -29,6 +29,10 @@ from hydra_genetics.utils.software_versions import get_pipeline_version
 from hydra_genetics.utils.software_versions import touch_pipeline_version_file_name
 from hydra_genetics.utils.software_versions import touch_software_version_file
 from hydra_genetics.utils.software_versions import use_container
+from hydra_genetics.utils.misc import get_module_snakefile # Needed for local git
+from hydra_genetics.utils.misc import replace_dict_variables # Used by hydra genetics to obtain the file paths to the files in the config
+
+config = replace_dict_variables(config) # Add this after the imports
 
 min_version("7.8.0")
 

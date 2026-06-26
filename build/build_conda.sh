@@ -21,10 +21,6 @@ BUILD_REFERENCES=true
 mkdir -p ${PACK_NAME}
 cd ${PACK_NAME}
 
-# Clone git of neville_mx_amplicon to configure conda environment
-# git clone --branch ${TAG_OR_BRANCH} ${PIPELINE_GITHUB_REPO}
-# cd ${PIPELINE_NAME}
-
 # Create and activate conda environment in the current directory, then install pipeline requirements
 if ${BUILD_CONDA_ENV};
 then
@@ -49,6 +45,8 @@ mkdir -p ${PIPELINE_NAME}_${TAG_OR_BRANCH}
 
 # Clone git of neville_mx_amplicon
 git clone --branch ${TAG_OR_BRANCH} ${PIPELINE_GITHUB_REPO} ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}
+# tmp directory required to run some tools in the pipeline
+mkdir -p ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/tmp
 
 
 if ${BUILD_CONDA_ENV};
@@ -83,6 +81,8 @@ ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/containers.yaml
 ## Download the config files from the config repo
 # git clone --branch ${CONFIG_VERSION} ${CONFIG_GITHUB_REPO} neville_mx_amplicon_config
 # TODO
+sed -i -E "s/TAG_OR_BRANCH/${TAG_OR_BRANCH}/g" ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/profiles/miarka/config.yaml
+sed -i -E "s/TAG_OR_BRANCH/${TAG_OR_BRANCH}/g" ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/profiles/slurm/config.yaml
 
 # Pack all cloned repositories
 tar -zcvf ${PIPELINE_NAME}_${TAG_OR_BRANCH}.tar.gz ${PIPELINE_NAME}_${TAG_OR_BRANCH}

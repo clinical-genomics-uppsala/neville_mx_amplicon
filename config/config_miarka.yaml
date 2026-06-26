@@ -14,6 +14,15 @@ units: "config/units.tsv"
 samples_run: "samples.tsv"
 units_run: "units.tsv"
 
+# Modules
+
+modules:
+  annotation: "v1.0.0"
+  cnv_sv: "v0.9.0"
+  filtering: "v1.1.0"
+  snv_indels: "v1.1.0"
+  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
+
 # Custom keys and values below
 
 ref_data: "{{REFERENCE_DATA}}/neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.fasta"  # use common reference genome for all analyses?
@@ -343,8 +352,3 @@ vt_decompose:
 
 vt_normalize:
   container: "{{APPTAINER_CACHE}}/hydragenetics__vt_2015.11.10.sif"
-
-# Modules
-
-modules:
-  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
