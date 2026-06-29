@@ -37,7 +37,7 @@
 #      type: file
 #      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-background.bed
     bedfiles:
-      checksum: 3bd1c1201bd51558201f3005db17817e
+      checksum: 00df1c7ecc8ad00d69adbf70cec8be4e
       path: neville_mx_amplicon/bedfiles
       type: folder
       url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/references_bed.tar.gz
