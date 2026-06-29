@@ -40,12 +40,11 @@
       checksum: 3bd1c1201bd51558201f3005db17817e
       path: neville_mx_amplicon/bedfiles
       type: folder
-      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/references_bed.tar.xz
+      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/references_bed.tar.gz
       content_checksum:
         IDH1_1.bed: 5b55de775b22b54b741d5e0fd32ea9c0
         TP53_3kb_A1_only.bed: 32a4c8487e2ebc8cda27fd16c69ccf92
         TP53_C10_only.bed: e58b2791605877f2c90800423856d006
-        # do NOT include this file: md5sum.txt:	8a1d67c4d1f2d461e594d2c29e84536c
         TP53_F2.bed: 2aa5fab4a9bbcee057d77b7f8ff8d464
         exon_coverage.bed: f21450e1cb100bd6e8d25f6a9bacc9e3
         TP53_D2.bed: ca0d4639db73ebe186d8c0f6fabffc05

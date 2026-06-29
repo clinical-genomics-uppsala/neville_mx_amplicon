@@ -14,8 +14,8 @@ PACK_NAME="${PIPELINE_NAME}_packs"
 # Choose what build steps to execute
 BUILD_CONDA_ENV=true
 BUILD_APPTAINERS=false
-BUILD_SMK_WRAPPERS=true
-BUILD_HYDRA_MODULES=true
+BUILD_SMK_WRAPPERS=fasle
+BUILD_HYDRA_MODULES=false
 BUILD_REFERENCES=true
 
 mkdir -p ${PACK_NAME}
