@@ -9,11 +9,13 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from sklearn.metrics import r2_score
+from scipy.stats import pearsonr
 import os
 
 fig_format = "svg"
-cohort = "CGU_2025_22"
-vaf_csv = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_260415_{cohort}.csv"
+date = "260622"
+cohort = "CGU_2024_05"
+vaf_csv = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_{date}_{cohort}.csv"
 diff_ratio_csv = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_diff_ratio_{cohort}.csv"
 plot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_{cohort}_all.{fig_format}"
 plot2 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_{cohort}_Flongle.{fig_format}"
@@ -47,7 +49,9 @@ df1["log_diff_ratio"] = df1["diff_ratio"].apply(lambda x: np.log(1-x) if x <= 0 
 
 df1.dropna(subset=["VAF_SR_TM", "VAF_LR_ONT"], inplace=True)
 data_points_counts = df1["flowcell"].value_counts().to_dict()
-r2_vaf = r2_score(df1["VAF_SR_TM"], df1["VAF_LR_ONT"])
+# r2_vaf = r2_score(df1["VAF_SR_TM"], df1["VAF_LR_ONT"])
+r2_vaf = pearsonr(df1["VAF_SR_TM"], df1["VAF_LR_ONT"]).statistic ** 2
+p_val = pearsonr(df1["VAF_SR_TM"], df1["VAF_LR_ONT"]).pvalue
 
 # Scatterplot VAF NGS vs VAF ONT colored by diff_ratio
 
@@ -62,7 +66,6 @@ print("Font used in plots: ", font.split('/')[-1].replace('.ttf', ''))
 zoomin = False
 
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
-
 g1 = sns.scatterplot(data=df1, x="VAF_SR_TM", y="VAF_LR_ONT", hue="diff_ratio",
                      ax=ax1,
                      style="flowcell", markers=marker_map,
@@ -78,7 +81,7 @@ ax1.set_ylabel("VAF% ONT", fontsize=18)
 ax1.tick_params(axis='both', which='major', labelsize=18)
 ax1.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data", fontsize=20)
 
-plt.annotate(text=f'R²={r2_vaf:.3f}',
+plt.annotate(text=f'R²={r2_vaf:.3f}\np={p_val:.3e}',
              xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
              color='k', fontsize=16)
 try:
@@ -118,7 +121,9 @@ fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
 try:
     df_flongle = df1[df1["flowcell"] == "Flongle"]
     data_points_counts = df_flongle["flowcell"].value_counts().to_dict()
-    r2_vaf_flongle = r2_score(df_flongle["VAF_SR_TM"], df_flongle["VAF_LR_ONT"])
+    # r2_vaf_flongle = r2_score(df_flongle["VAF_SR_TM"], df_flongle["VAF_LR_ONT"])
+    r2_vaf_flongle = pearsonr(df_flongle["VAF_SR_TM"], df_flongle["VAF_LR_ONT"]).statistic ** 2
+    p_val_flongle = pearsonr(df_flongle["VAF_SR_TM"], df_flongle["VAF_LR_ONT"]).pvalue
     g2 = sns.scatterplot(data=df_flongle, x="VAF_SR_TM", y="VAF_LR_ONT", hue="diff_ratio",
                          ax=ax2,
                          style="flowcell", markers=marker_map,
@@ -133,7 +138,7 @@ try:
     ax2.set_ylabel("VAF% ONT", fontsize=18)
     ax2.tick_params(axis='both', which='major', labelsize=18)
     ax2.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data", fontsize=20)
-    plt.annotate(text=f'R²={r2_vaf_flongle:.3f}',
+    plt.annotate(text=f'R²={r2_vaf_flongle:.3f}\np={p_val_flongle:.3e}',
                  xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
                  color='k', fontsize=16)
     legend_elements = [Line2D([0], [0], marker=marker_map['Flongle'], color='w',
@@ -157,7 +162,9 @@ plt.savefig(plot2, bbox_inches='tight', dpi=600)
 fig3, ax3 = plt.subplots(1, 1, figsize=(10, 9))
 df_minion = df1[df1["flowcell"] == "MinION"]
 data_points_counts = df_minion["flowcell"].value_counts().to_dict()
-r2_vaf_minion = r2_score(df_minion["VAF_SR_TM"], df_minion["VAF_LR_ONT"])
+# r2_vaf_minion = r2_score(df_minion["VAF_SR_TM"], df_minion["VAF_LR_ONT"])
+r2_vaf_minion = pearsonr(df_minion["VAF_SR_TM"], df_minion["VAF_LR_ONT"]).statistic ** 2
+p_val_minion = pearsonr(df_minion["VAF_SR_TM"], df_minion["VAF_LR_ONT"]).pvalue
 g3 = sns.scatterplot(data=df_minion, x="VAF_SR_TM", y="VAF_LR_ONT", hue="diff_ratio",
                      ax=ax3,
                      style="flowcell", markers=marker_map,
@@ -172,7 +179,7 @@ ax3.set_xlabel("VAF% NGS", fontsize=18)
 ax3.set_ylabel("VAF% ONT", fontsize=18)
 ax3.tick_params(axis='both', which='major', labelsize=18)
 ax3.set_title("Concordance of the VAF for variants called in NGS vs. in ONT data", fontsize=20)
-plt.annotate(text=f'R²={r2_vaf_minion:.3f}',
+plt.annotate(text=f'R²={r2_vaf_minion:.3f}\np={p_val_minion:.3e}',
              xy=(100, 100), xytext=(-8, +0.90), xycoords='axes fraction',
              color='k', fontsize=16)
 legend_elements = [  # Line2D([0], [0], marker=marker_map['Flongle'], color='w',
