@@ -142,6 +142,13 @@ def get_gvcfs_vardict():
     )
 
 
+def get_gvcfs_vardict_unfiltered():
+    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.unfiltered.vardict.g.vcf.gz"
+                     for t in panel_ref.itertuples()
+                     ])
+    )
+
+
 def get_vcfs():
     return list(
         set(
