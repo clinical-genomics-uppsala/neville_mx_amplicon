@@ -11,7 +11,7 @@ import numpy as np
 from sklearn.metrics import r2_score
 import os
 
-fig_format = "png"
+fig_format = "svg"
 vaf_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_260126.csv"
 exp_samples_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/list_exp_id_sample_id.csv"
 cumcounts = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/cum_read_counts"
