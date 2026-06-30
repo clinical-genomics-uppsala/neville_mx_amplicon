@@ -12,14 +12,14 @@ from sklearn.metrics import r2_score
 import os
 import re
 
-img_extension = "png"
+img_extension = "svg"
 timestep = 60  # in minutes
 summary_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/list_exp_id_sample_id.csv"
 cumcounts = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/cum_read_counts"
 tabcounts1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/tab_read_counts_{timestep}minutes.csv"
 boxplot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_{timestep}minutes.{img_extension}"
 swarmplot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/swarmplot_read_counts_{timestep}minutes.{img_extension}"
-boxplot4 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_60+120minutes.{img_extension}"
+boxplot4 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_30+60minutes.{img_extension}"
 
 relabels = {
     'TP53_3kb_A1_only': 'TP53_A',
@@ -56,17 +56,22 @@ for csv in os.listdir(cumcounts):
         except AttributeError:
             print(f"Could not parse sample and flowcell from {csv}, skipping.")
             continue
-        if flowcell == "MinION":
+        if flowcell == "MinION" and experiment in summary_df["experiment_id"].values:
             dfrun = pd.read_csv(cumcounts + "/" + csv, sep=",")
+            if dfrun["timestep"].min() == 60 and experiment not in ["Wash5", "M22_run2"]:  # Wash5 and M22_run2 have 60-minute timesteps
+                dfrun["timestep"] = dfrun["timestep"] // 6
             df1hour = dfrun[dfrun["timestep"] == timestep].reset_index(drop=True).set_index("target")
-            counts_j3 = {"target": "TP53_J3", "mean": df1hour.loc["TP53_D2+J3", "mean"] - df1hour.loc["TP53_D2_only", "mean"]}
-            df1hour.drop(index=["TP53_D2+J3"], inplace=True)
-            df1hour.reset_index(inplace=True, drop=False)
-            df1hour.loc[len(df1hour)] = counts_j3
-            df1hour["sample"] = sample
-            df1hour["experiment"] = experiment
-            # fetch group_size from summary csv
-            cumcounts_Xminutes.append(df1hour[["target", "mean", "sample", "experiment"]])
+            print(dfrun)
+            print(df1hour)
+            if not df1hour.empty:
+                counts_j3 = {"target": "TP53_J3", "mean": df1hour.loc["TP53_D2+J3", "mean"] - df1hour.loc["TP53_D2_only", "mean"]}
+                df1hour.drop(index=["TP53_D2+J3"], inplace=True)
+                df1hour.reset_index(inplace=True, drop=False)
+                df1hour.loc[len(df1hour)] = counts_j3
+                df1hour["sample"] = sample
+                df1hour["experiment"] = experiment
+                # fetch group_size from summary csv
+                cumcounts_Xminutes.append(df1hour[["target", "mean", "sample", "experiment"]])
 
 print(f"Read cumulative counts after 1 hour sequencing on MinION flowcells for {len(cumcounts_Xminutes)} samples.")
 print(cumcounts_Xminutes)
@@ -85,7 +90,13 @@ colors = resampled_palette(np.linspace(0, 0.7, df1h["group_size"].nunique()))
 fig1h, ax1h = plt.subplots(1, 1, figsize=(12, 8))
 leglabels = []
 leghandles = []
-for i, group in enumerate(sorted(df1h["group_size"].unique())):
+for t in df1h["group_size"]:
+    try:
+        t = int(t)
+    except ValueError:
+        print(f"Could not convert {t} to int, skipping.")
+        continue
+for i, group in enumerate(sorted(df1h["group_size"].astype(int).unique())):
     sns.stripplot(x="target",
                   y="mean",
                   size=8,
@@ -143,6 +154,7 @@ for i, group in enumerate(sorted(df1h["group_size"].unique())):
     boxax1h[i].set_ylim(bottom=0, top=df1h[df1h["group_size"] == group]["mean"].max() + 100)
     boxax1h[i].set_xlabel("Amplicon", fontsize=16)
     boxax1h[i].set_ylabel("Read counts", fontsize=16)
+    boxax1h[i].axhline(y=1000, linestyle='--', color='r', label='1000')
     # boxax1h[i].legend(handles=[f"{group} sample(s)"], labels=[Line2D([], [], color="white",
     #                                                                  marker='o', markerfacecolor=colors[i], markersize=10,)],
     #                   title="Group size",
