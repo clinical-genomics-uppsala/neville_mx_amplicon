@@ -16,8 +16,7 @@ rule all:
     input:
         compile_output_file_list,
 
-        
-# workflow.rules.__dict__
+
 logger.info(
     f"\nRules currently in scope: {sorted(getattr(r, 'name', str(r)) for r in workflow.rules)}"
 )
@@ -74,6 +73,36 @@ use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf with
         )
 
 
+use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf_unfiltered with:
+    input:
+        reference=config.get("reference", {}).get("fasta", ""),
+        bam="references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam",
+        bai="references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai",
+        regions=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")),
+    output:
+        vcf=temp(
+            "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf"
+        ),
+    params:
+        extra=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
+        bed_columns=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
+        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("allele_frequency_threshold", "0.01"),
+        sample_name=lambda wildcards: f"{wildcards.sample}",
+    threads:  config.get("vardict", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        mem_mb=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("time", config["default_resources"]["time"]),
+    log:
+        "references/vardict/{experiment}_{sample}_{type}_unfiltered.vcf.log",
+    benchmark:
+        repeat(
+            "references/vardict/{experiment}_{sample}_{type}_unfiltered.benchmark.tsv", config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1)
+        )
+
+
 use rule bgzip from snv_indels as reference_rules_snv_indels_bgzip with:
     input:
         vcf="{file}.vcf",
@@ -104,27 +133,3 @@ module references:
 
 
 use rule * from references exclude all, create_background_file, create_artifact_file as references_*
-
-
-# # GATK PoN
-# use rule collect_read_counts from references as references_collect_read_counts with:
-#     input:
-#         bam=lambda wc: f"alignment/samtools_merge_bam/{wc.sample}_{wc.type}.bam",
-#         bai=lambda wc: f"alignment/samtools_merge_bam/{wc.sample}_{wc.type}.bam.bai",
-#         interval="references/preprocess_intervals/design.preprocessed.interval_list",
-#
-#
-# use rule preprocess_intervals from references as references_preprocess_intervals with:
-#     output:
-#         temp("references/preprocess_intervals/design.preprocessed.interval_list"),
-
-
-# # Artifact
-# use rule create_artifact_file from references as references_create_artifact_file with:
-#     input:
-#         vcfs=get_vcfs(),
-#     params:
-#         callers=config.get("bcbio_variation_recall_ensemble", {}).get("callers", ["gatk_mutect2", "vardict"]),
-
-
-
