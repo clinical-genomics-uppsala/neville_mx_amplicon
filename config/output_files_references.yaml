@@ -34,6 +34,10 @@ files:
     input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf.gz"
     output: "{experiment}_{sample}_{type}.vardict.g.vcf.gz"
 
+  - name: "gVCF from vardict with unfiltered reads"
+    input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
+    output: "{experiment}_{sample}_{type}.unfiltered.vardict.g.vcf.gz"
+
   - name: "soft_clipped_bam"
     output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
     input: "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
