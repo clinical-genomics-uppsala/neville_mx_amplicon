@@ -617,3 +617,223 @@ but we keep it here for future use when the tool will be updated to handle ampli
 
 #RESOURCESSCHEMA__snv_indels_svs_savana#
 
+
+## [references_rules_snv_indels_clairs_to_gvcf](https://github.com/HKU-BAL/ClairS-TO/tree/main)
+Somatic variant calling with ClairS-TO on reference sample.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_snv_indels_clairs_to_gvcf#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_snv_indels_clairs_to_gvcf#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__reference_rules_snv_indels_clairs_to_gvcf#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_clairs_to#
+
+
+## [references_rules_snv_indels_deepsomatic_gvcf](https://github.com/google/deepsomatic)
+Somatic variant calling with DeepSomatic on reference sample.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_snv_indels_deepsomatic_gvcf#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_snv_indels_deepsomatic_gvcf#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__reference_rules_snv_indels_deepsomatic_gvcf#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__snv_indels_svs_deepsomatic#
+
+
+## [create_background_file_longread_clairs_to](https://github.com/hydra-genetics/references)
+Create background file for ClairS-TO calls.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_clairs_to#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_clairs_to#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__create_background_file#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__create_background_file#
+
+
+## [create_background_file_longread_deepsomatic](https://github.com/hydra-genetics/references)
+Create background file for DeepSomatic calls.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_deepsomatic#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_deepsomatic#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__create_background_file#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__create_background_file#
+
+
+## [create_background_file_longread_vardict](https://github.com/hydra-genetics/references)
+Create background file for VarDict calls.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_vardict#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_vardict#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__create_background_file#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__create_background_file#
+
+
+## [create_artifact_file_longread](https://github.com/hydra-genetics/references)
+Create somatic artifact file.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_artifact_file_longread#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_artifact_file_longread#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__create_artifact_file#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__create_artifact_file#
+
+
+## [references_rules_align_unfiltered_bam](https://software-docs.nanoporetech.com/dorado/latest/basecaller/alignment/)
+Align unfiltered reads for reference purposes.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_align_unfiltered_bam#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_align_unfiltered_bam#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_dorado_align#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_dorado_align#
+
+
+## [references_rules_bam_sort](https://www.htslib.org/doc/samtools-sort.html)
+Sort aligned unfiltered reference BAM file.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_bam_sort#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_bam_sort#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_bam_sort#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_bam_sort#
+
+
+## [references_rules_bam_index](https://www.htslib.org/doc/samtools-index.html)
+Index aligned unfiltered reference BAM file.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_bam_index#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_bam_index#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_bam_index#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_bam_index#
+
+
+## [create_background_file_longread_vardict_unfiltered](https://github.com/hydra-genetics/references)
+Create background file for unfiltered VarDict calls.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_vardict_unfiltered#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_vardict_unfiltered#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__create_background_file#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__create_background_file#
+

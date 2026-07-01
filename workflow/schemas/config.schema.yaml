@@ -212,6 +212,39 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_artifact_file:
+    type: object
+    description: parameters for create_artifact_file
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      callers:
+        type: array
+        items:
+          type: string
+        description: list of variant callers to use
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_background_file:
+    type: object
+    description: parameters for create_background_file
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      min_dp:
+        type: integer
+        description: minimum depth
+      max_af:
+        type: number
+        description: maximum allele frequency
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   prealignment_ont_filtlong:
     type: object
     description: parameters for prealignment_ont_filtlong
@@ -421,6 +454,52 @@ properties:
       extra:
         type: string
         description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  reference_rules_snv_indels_clairs_to_gvcf:
+    type: object
+    description: parameters for reference_rules_snv_indels_clairs_to_gvcf
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      bed_file:
+        type: string
+        description: bed file with coordinates of amplicons
+      platform:
+        type: string
+        description: sequencing platform
+      snv_min_af:
+        type: number
+        description: minimum allele frequency for SNVs
+      indel_min_af:
+        type: number
+        description: minimum allele frequency for indels
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  reference_rules_snv_indels_deepsomatic_gvcf:
+    type: object
+    description: parameters for reference_rules_snv_indels_deepsomatic_gvcf
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      bed_file:
+        type: string
+        description: bed file with coordinates of amplicons
+      extra:
+        type: string
+        description: extra parameters to be forwarded to deepsomatic
+      filter:
+        type: string
+        description: filter settings for deepsomatic
+      threads:
+        type: integer
+        description: number of threads to be available
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   results_report_copy_bed:
     type: object
