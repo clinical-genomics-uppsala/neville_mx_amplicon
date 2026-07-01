@@ -313,6 +313,111 @@ properties:
             type: string
             description: output bam file renamed with experiment ID and sample ID
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_artifact_file_longread:
+    type: object
+    description: input and output parameters for create_artifact_file_longread
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          vcfs:
+            type: array
+            items:
+              type: string
+            description: list of input somatic variant call files
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          artifact_panel:
+            type: string
+            description: output artifact panel tsv file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_background_file_longread_clairs_to:
+    type: object
+    description: input and output parameters for create_background_file_longread_clairs_to
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          gvcfs:
+            type: array
+            items:
+              type: string
+            description: list of input gvcfs
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          background_file:
+            type: string
+            description: output background panel tsv file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_background_file_longread_deepsomatic:
+    type: object
+    description: input and output parameters for create_background_file_longread_deepsomatic
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          gvcfs:
+            type: array
+            items:
+              type: string
+            description: list of input gvcfs
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          background_file:
+            type: string
+            description: output background panel tsv file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_background_file_longread_vardict:
+    type: object
+    description: input and output parameters for create_background_file_longread_vardict
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          gvcfs:
+            type: array
+            items:
+              type: string
+            description: list of input gvcfs
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          background_file:
+            type: string
+            description: output background panel tsv file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  create_background_file_longread_vardict_unfiltered:
+    type: object
+    description: input and output parameters for create_background_file_longread_vardict_unfiltered
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          gvcfs:
+            type: array
+            items:
+              type: string
+            description: list of input gvcfs
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          background_file:
+            type: string
+            description: output background panel tsv file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   prealignment_ont_filtlong:
     type: object
     description: input and output parameters for prealignment_ont_filtlong
@@ -663,6 +768,115 @@ properties:
           csv:
             type: string
             description: output csv file per pool with the summary table with the coverage for each target
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  references_rules_align_unfiltered_bam:
+    type: object
+    description: input and output parameters for references_rules_align_unfiltered_bam
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          fastqgz:
+            type: string
+            description: input unfiltered fastq.gz file
+          ref_data:
+            type: string
+            description: reference genome fasta file
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          bam:
+            type: string
+            description: output aligned bam file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  references_rules_bam_index:
+    type: object
+    description: input and output parameters for references_rules_bam_index
+    properties:
+      input:
+        type: string
+        description: input sorted bam file to be indexed
+      output:
+        type: string
+        description: output bam index file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  references_rules_bam_sort:
+    type: object
+    description: input and output parameters for references_rules_bam_sort
+    properties:
+      input:
+        type: string
+        description: input aligned bam file to be sorted
+      output:
+        type: string
+        description: output sorted aligned bam file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  references_rules_snv_indels_clairs_to_gvcf:
+    type: object
+    description: input and output parameters for references_rules_snv_indels_clairs_to_gvcf
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file for tumor sample
+          bai:
+            type: string
+            description: input bam index file for tumor sample
+          ref:
+            type: string
+            description: reference genome fasta file
+          bed:
+            type: string
+            description: bed file with coordinates of amplicons
+          vcf:
+            type: string
+            description: input g.vcf.gz file from deepsomatic
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          snv:
+            type: string
+            description: output somatic snv g.vcf.gz file
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  references_rules_snv_indels_deepsomatic_gvcf:
+    type: object
+    description: input and output parameters for references_rules_snv_indels_deepsomatic_gvcf
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          bam:
+            type: string
+            description: input bam file for tumor sample
+          bai:
+            type: string
+            description: input bam index file for tumor sample
+          ref:
+            type: string
+            description: reference genome fasta file
+          bed:
+            type: string
+            description: bed file with coordinates of amplicons
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          tmpdir:
+            type: string
+            description: intermediate results directory
+          vcf:
+            type: string
+            description: output somatic vcf.gz file
+          gvcf:
+            type: string
+            description: output somatic g.vcf.gz file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   results_report_copy_bed:
     type: object
