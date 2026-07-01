@@ -222,30 +222,41 @@ def generate_copy_rules(output_spec):
 
         rule_code = "\n".join(
             [
-                f'@workflow.rule(name="{rule_name}")',
-                f'@workflow.input("{input_file}")',
-                f'@workflow.output(directory("{output_file}"))'
+                '@workflow.rule(name="{}")'.format(rule_name),
+                '@workflow.input("{}")'.format(input_file),
+                '@workflow.output(directory("{}"))'.format(output_file)
                 if pathlib.Path(f["output"]).suffix == ''
-                else f'@workflow.output("{output_file}")',
-                f'@workflow.log("logs/{rule_name}_{output_file.name}.log")',
-                f'@workflow.container("{copy_container}")',
-                f'@workflow.resources(time="{time}", threads={threads}, mem_mb="{mem_mb}", '
-                f'mem_per_cpu={mem_per_cpu}, partition="{partition}")',
-                f'@workflow.shellcmd("{copy_container}")',  # replace with '@workflow.shellcmd("cp -r {input} {output}")\n\n' ?
+                else '@workflow.output("{}")'.format(output_file),
+                '@workflow.log("logs/{}_{}.log")'.format(rule_name, output_file.name),
+                '@workflow.container("{}")'.format(copy_container),
+                '@workflow.resources(time="{}", threads={}, mem_mb="{}", mem_per_cpu={}, partition="{}")'.format(
+                    time, threads, mem_mb, mem_per_cpu, partition
+                ),
+                '@workflow.shellcmd("{}")'.format(copy_container),
                 "@workflow.run\n",
-                f"def __rule_{rule_name}(input, output, params, wildcards, threads, resources, "
+                "def __rule_{}(input, output, params, wildcards, threads, resources, "
                 "log, version, rule, conda_env, container_img, singularity_args, use_singularity, "
                 "env_modules, bench_record, jobid, is_shell, bench_iteration, cleanup_scripts, "
                 "shadow_dir, edit_notebook, conda_base_path, basedir, runtime_sourcecache_path, "
-                "__is_snakemake_rule_func=True):",
-                '\tshell("(cp -r --preserve=timestamps {input[0]} {output[0]}) &> {log}", bench_record=bench_record, '
+                "__is_snakemake_rule_func=True):".format(rule_name),
+                '    shell("(cp -r --preserve=timestamps {input[0]} {output[0]}) &> {log}", bench_record=bench_record, '
                 "bench_iteration=bench_iteration)\n\n",
             ]
         )
 
         rulestrings.append(rule_code)
 
-    exec(compile("\n".join(rulestrings), "copy_result_files", "exec"), workflow.globals)
+    joined_code = "\n".join(rulestrings)
+    try:
+        compiled_code = compile(joined_code, "copy_result_files", "exec")
+        exec(compiled_code, workflow.globals)
+    except Exception as e:
+        print(f"Failed to compile copy_result_files: {type(e).__name__}: {e}", file=sys.stderr)
+        with open("scratch/failed_compile_code.py", "w") as outf:
+            outf.write(joined_code)
+        for idx, line in enumerate(joined_code.splitlines(), 1):
+            print(f"{idx}: {repr(line)}", file=sys.stderr)
+        raise
 
 
 generate_copy_rules(output_spec)

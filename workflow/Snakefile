@@ -11,7 +11,6 @@ logger.info(
     f"\nCache location for the modules imported from GitHub: {workflow.sourcecache.cache}/https/"
     f"raw.githubusercontent.com/hydra-genetics"
 )
-workflow.rules.
 
 # Include pipeline specific rules
 include: "rules/common.smk"
