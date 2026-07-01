@@ -1,0 +1,6 @@
+--bam_dir
+/path/to/alignment/dorado_align
+--hspt_csv
+/path/to/background_artifacts/Hotspots_2026-04-21_ELC.csv
+--ref_panel
+/path/to/background_artifacts/panel_ref_seq_noise.tsv
