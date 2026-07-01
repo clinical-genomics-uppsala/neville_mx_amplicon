@@ -16,31 +16,11 @@
       path: neville_mx_amplicon/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.dict
       type: file
       url: file:/beegfs-storage/data/ref_genomes/GRCh38/GRCmasked/GCA_000001405.15_GRCh38_no_alt_analysis_set_GRCmasked.dict
-#    design_bed:
-#      checksum: bce22538e98cd1caa1c6554f51047aa4
-#      path: neville_mx_amplicon/amplicons.bed
-#      type: file
-#      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed
-#    design_intervals:
-#      checksum: 23d00241b2a6c30ae20d98f6c0cd526e
-#      path: neville_mx_amplicon/amplicons.interval_list
-#      type: file
-#      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.interval_list
-#    exon_bed:
-#      checksum: f21450e1cb100bd6e8d25f6a9bacc9e3
-#      path: neville_mx_amplicon/exon_coverage.bed
-#      type: file
-#      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/exon_coverage.bed
-#    background_bed:
-#      checksum: dfe83812ad2a9c25dfa7999b9590d7ef
-#      path: neville_mx_amplicon/amplicons-background.bed
-#      type: file
-#      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons-background.bed
     bedfiles:
-      checksum: 00df1c7ecc8ad00d69adbf70cec8be4e
-      path: neville_mx_amplicon/bedfiles
+      compressed_checksum: 248512aca6cb9fb808d36551feedb87f
+      path: neville_mx_amplicon
       type: folder
-      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/references_bed.tar.gz
+      url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/bedfiles.tar.gz
       content_checksum:
         IDH1_1.bed: 5b55de775b22b54b741d5e0fd32ea9c0
         TP53_3kb_A1_only.bed: 32a4c8487e2ebc8cda27fd16c69ccf92
@@ -80,52 +60,6 @@
         amplicons.interval_list: 23d00241b2a6c30ae20d98f6c0cd526e
         TP53_D2_only.bed: 72505e97f37a58f0a194e332977cec07
         TP53_H4.bed: ac9d3c905a1d90f137efb2d53c254e9f
-#      target_full:
-#        flt3-itd:
-#          checksum: 4b1ec3d5cdbd9a1997c84407d75f85b9
-#          path: neville_mx_amplicon/FLT3_ITD_3kb_1.bed
-#          type: file
-#          url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/FLT3_ITD_3kb_1.bed
-#        flt3-tkd:
-#          checksum: 0c4a5466e0d193625ea1a0d7f95a8772
-#          path: neville_mx_amplicon/FLT3_TKD_3kb_1.bed
-#          type: file
-#          url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/FLT3_TKD_3kb_1.bed
-#        idh1:
-#          checksum: 5b55de775b22b54b741d5e0fd32ea9c0
-#          path: neville_mx_amplicon/IDH1_1.bed
-#          type: file
-#          url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/IDH1_1.bed
-#        idh2:
-#          checksum: 7ef6cc01bdb080d57393feffaa054a03
-#          path: neville_mx_amplicon/IDH2_1.bed
-#          type: file
-#          url: file:/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/IDH2_1.bed
-#        npm1:
-#          checksum: 0e3f5c7d8a9b6e2f4c1b8d9e5f7a6c3d
-#      target_no_overlap:
-#        idh1:
-
-# TODO: Add artifact and background panels to the reference files.
-#    artifacts:
-#      minion:
-#        checksum: 30597e9b82caa51e89f49530a234280a
-#        path: poppy_uppsala/NovaSeq/artifact_panel.tsv
-#        type: file
-#        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/artifact_panel.tsv
-
-#    background:
-#      minion:
-#        checksum: 3198a1e0d85694cd8602cdb20a6147c0
-#        path: poppy_uppsala/NovaSeq/background_panel.tsv
-#        type: file
-#        url: file:/projects/wp2/nobackup/Twist_Myeloid/ReferenceFiles/Poppy_references_files/250129_NovaSeq/reference_files/background_panel.tsv
-
-#  gatk_collect_allelic_counts:
-#    checksum: f33a0d189f421449fd72fa8a4cc975cd
-#    path: poppy_uppsala/Twist_myeloid_cnv100.241211.interval_list
-#    type: file
-#    url: file:/projects/wp2/nobackup/Twist_Myeloid/Bed_files/HG38/Twist_myeloid_cnv100.241211.interval_list
 
   bwa_mem:
     amb:

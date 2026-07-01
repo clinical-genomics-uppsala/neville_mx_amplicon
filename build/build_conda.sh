@@ -14,9 +14,9 @@ PACK_NAME="${PIPELINE_NAME}_packs"
 # Choose what build steps to execute
 BUILD_CONDA_ENV=false
 BUILD_APPTAINERS=false
-BUILD_SMK_WRAPPERS=false
-BUILD_HYDRA_MODULES=false
-BUILD_REFERENCES=true
+BUILD_SMK_WRAPPERS=true
+BUILD_HYDRA_MODULES=true
+BUILD_REFERENCES=false
 
 mkdir -p ${PACK_NAME}
 cd ${PACK_NAME}
@@ -117,4 +117,7 @@ then
 fi
 
 # Compress data
-tar -czvf design_and_ref_files.tar.gz design_and_ref_files
+if ${BUILD_REFERENCES};
+then
+	tar -czvf design_and_ref_files.tar.gz design_and_ref_files
+fi

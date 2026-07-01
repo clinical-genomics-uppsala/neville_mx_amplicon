@@ -10,4 +10,4 @@ default-resources: [gres="", ]
 drmaa-log-dir: "slurm"
 singularity-args: "--cleanenv --containall -B /proj -B $HOME -B $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache --nv"
 singularity-prefix: "/proj/ngi2024001/nobackup/bin/wp2_mxa/TAG_OR_BRANCH/apptainer_cache/"
-wrapper-prefix: "git+file://proj/ngi2024001/bin/wp2_mxa/TAG_OR_BRANCH/snakemake-wrappers/"
+wrapper-prefix: "git+file://proj/ngi2024001/nobackup/bin/wp2_mxa/TAG_OR_BRANCH/snakemake-wrappers/"

@@ -16,7 +16,8 @@ neville_mx_amplicon/
 │   │   └── neville_mx_amplicon
 │   ├── neville_mx_amplicon_offline-pack/
 │   │   ├── hydra-genetics
-│   │   └── neville_mx_amplicon
+│	│	├── neville_mx_amplicon
+│   │   └── snakemake-wrappers
 │   ├── neville_mx_amplicon_offline-pack_env/
 │   │   ├── bin
 │   │   ├── compiler_compat
