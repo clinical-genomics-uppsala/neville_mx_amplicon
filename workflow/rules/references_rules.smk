@@ -4,7 +4,7 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
 
-rule references_rules_snv_indels_clairs_to_gvcf:
+rule reference_rules_snv_indels_clairs_to_gvcf:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
@@ -52,7 +52,7 @@ rule references_rules_snv_indels_clairs_to_gvcf:
         " 2> {log}"
 
 
-rule references_rules_snv_indels_deepsomatic_gvcf:
+rule reference_rules_snv_indels_deepsomatic_gvcf:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
@@ -183,6 +183,36 @@ rule create_background_file_longread_vardict:
         "../scripts/create_background_file_longread.py"
 
 
+rule create_background_file_longread_vardict_unfiltered:
+    input:
+        gvcfs=get_gvcfs_vardict_unfiltered(),
+    output:
+        background_file=temp("references/create_background_file/background_panel_vardict_unfiltered.tsv"),
+    params:
+        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
+        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
+    log:
+        "references/create_background_file/background_panel_vardict_unfiltered.tsv.log",
+    benchmark:
+        repeat(
+            "references/create_background_file/background_panel_vardict_unfiltered.tsv.benchmark.tsv",
+            config.get("create_background_file", {}).get("benchmark_repeats", 1),
+        )
+    threads: config.get("create_background_file", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        mem_mb=config.get("create_background_file", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("create_background_file", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("create_background_file", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("create_background_file", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("create_background_file", {}).get("time", config["default_resources"]["time"]),
+    container:
+        config.get("create_background_file", {}).get("container", config["default_container"])
+    message:
+        "{rule}: create background PoN"
+    script:
+        "../scripts/create_background_file_longread.py"
+
+
 rule create_artifact_file_longread:
     input:
         vcfs=get_vcfs(),
@@ -210,129 +240,3 @@ rule create_artifact_file_longread:
         "{rule}: create artifact PoN"
     script:
         "../scripts/create_artifact_file_longread.py"
-
-
-rule references_rules_align_unfiltered_bam:
-    input:
-        fastqgz="basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz",
-        ref_data=config.get("ref_data"),
-    output:
-        bam=temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.bam"),
-    params:
-        runid=config.get("runid",""),
-        extra=config.get("alignment_ont_dorado_align",{}).get("extra",""),
-    resources:
-        partition=config.get("alignment_ont_dorado_align",{}).get("partition",config["default_resources"]["partition"]),
-        time=config.get("alignment_ont_dorado_align",{}).get("time",config["default_resources"]["time"]),
-        threads=config.get("alignment_ont_dorado_align",{}).get("threads",config["default_resources"]["threads"]),
-        mem_mb=config.get("alignment_ont_dorado_align",{}).get("mem_mb",config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_dorado_align",{}).get("mem_per_cpu",config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("alignment_ont_dorado_align",{}).get("threads",config["default_resources"]["threads"])
-    container:
-        config.get("alignment_ont_dorado_align",{}).get("container",config["default_container"])
-    log:
-        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.log",
-    benchmark:
-        repeat(
-        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.benchmark.tsv",
-        config.get("alignment_ont_dorado_align",{}).get("benchmark_repeats",1),
-        )
-    message:
-        "{rule}: Align reads with dorado and minimap2"
-    shell:
-        """
-        echo "Dorado executed from $( which dorado )"
-
-        echo "Executing dorado aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
-
-        dorado aligner {params.extra} {input.ref_data} {input.fastqgz} > {output.bam} 2> {log}
-
-        if [ {params.runid} == "ABC123" ]; then
-            echo "\nIntegration test detected inside dorado_align rule, overwriting the output BAM file with a properly aligned BAM file" >> {log}
-            samtools view -b test_data/preprocessed/Mtest_D25-test007_T_reads.ont_adapt_trim.filtered.aligned.bam > {output.bam} 2>> {log}
-        fi
-        """
-
-
-rule references_rules_bam_sort:
-    input:
-        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.bam",
-    output:
-        temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam"),
-    resources:
-        partition=config.get("alignment_ont_bam_sort", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("alignment_ont_bam_sort", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("alignment_ont_bam_sort", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("alignment_ont_bam_sort", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_bam_sort", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("alignment_ont_bam_sort", {}).get("threads", config["default_resources"]["threads"])
-    container:
-        config.get("alignment_ont_bam_sort", {}).get("container", config["default_container"])
-    log:
-        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.log",
-    benchmark:
-        repeat(
-            "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.benchmark.tsv",
-            config.get("alignment_ont_bam_sort", {}).get("benchmark_repeats", 1),
-        )
-    message:
-        "{rule}: Sort aligned reads with samtools"
-    wrapper:
-        "0.2.0/bio/samtools/sort"
-
-
-rule references_rules_bam_index:
-    input:
-        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam",
-    output:
-        temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai"),
-    resources:
-        partition=config.get("alignment_ont_bam_index", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("alignment_ont_bam_index", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("alignment_ont_bam_index", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("alignment_ont_bam_index", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("alignment_ont_bam_index", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("alignment_ont_bam_index", {}).get("threads", config["default_resources"]["threads"])
-    container:
-        config.get("alignment_ont_bam_index", {}).get("container", config["default_container"])
-    log:
-        "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.bam.bai.log",
-    benchmark:
-        repeat(
-            "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.bam.bai.benchmark.tsv",
-            config.get("alignment_ont_bam_index", {}).get("benchmark_repeats", 1),
-        )
-    message:
-        "{rule}: Index the aligned and sorted reads with samtools"
-    wrapper:
-        "0.2.0/bio/samtools/index"
-
-
-rule create_background_file_longread_vardict_unfiltered:
-    input:
-        gvcfs=get_gvcfs_vardict_unfiltered(),
-    output:
-        background_file=temp("references/create_background_file/background_panel_vardict_unfiltered.tsv"),
-    params:
-        min_dp=config.get("create_background_file", {}).get("min_dp", 300),
-        max_af=config.get("create_background_file", {}).get("max_af", 0.03),
-    log:
-        "references/create_background_file/background_panel_vardict.tsv.log",
-    benchmark:
-        repeat(
-            "references/create_background_file/background_panel_vardict.tsv.benchmark.tsv",
-            config.get("create_background_file", {}).get("benchmark_repeats", 1),
-        )
-    threads: config.get("create_background_file", {}).get("threads", config["default_resources"]["threads"])
-    resources:
-        mem_mb=config.get("create_background_file", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("create_background_file", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("create_background_file", {}).get("partition", config["default_resources"]["partition"]),
-        threads=config.get("create_background_file", {}).get("threads", config["default_resources"]["threads"]),
-        time=config.get("create_background_file", {}).get("time", config["default_resources"]["time"]),
-    container:
-        config.get("create_background_file", {}).get("container", config["default_container"])
-    message:
-        "{rule}: create background PoN"
-    script:
-        "../scripts/create_background_file_longread.py"

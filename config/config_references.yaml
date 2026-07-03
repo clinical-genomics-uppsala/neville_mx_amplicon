@@ -29,4 +29,4 @@ reference_rules_snv_indels_vardict_gvcf:
 
 create_background_file:
   min_dp: 300
-  min_af: 0.03
+  min_af: 0.48
