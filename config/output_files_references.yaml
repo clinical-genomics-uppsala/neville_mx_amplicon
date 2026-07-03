@@ -14,6 +14,10 @@ files:
     input: "references/create_background_file/background_panel_vardict.tsv"
     output: "background_panel_vardict.tsv"
 
+  - name: "background file vardict unfiltered"
+    input: "references/create_background_file/background_panel_vardict_unfiltered.tsv"
+    output: "background_panel_vardict_unfiltered.tsv"
+
   - name: "artifact file"
     input: "references/create_artifact_file/artifact_panel.tsv"
     output: "artifact_panel.tsv"
@@ -33,10 +37,6 @@ files:
   - name: "gVCF from vardict"
     input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf.gz"
     output: "{experiment}_{sample}_{type}.vardict.g.vcf.gz"
-
-  - name: "gVCF from vardict with unfiltered reads"
-    input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
-    output: "{experiment}_{sample}_{type}.unfiltered.vardict.g.vcf.gz"
 
   - name: "soft_clipped_bam"
     output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
