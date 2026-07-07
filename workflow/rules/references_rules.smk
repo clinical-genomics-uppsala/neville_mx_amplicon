@@ -240,3 +240,94 @@ rule create_artifact_file_longread:
         "{rule}: create artifact PoN"
     script:
         "../scripts/create_artifact_file_longread.py"
+
+
+rule reference_rules_align_unfiltered:
+    input:
+        fastqgz="basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz",
+        ref_data=config.get("ref_data"),
+    output:
+        bam=temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.bam"),
+    params:
+        runid=config.get("runid", ""),
+        extra=config.get("alignment_ont_dorado_align", {}).get("extra", ""),
+    resources:
+        partition=config.get("alignment_ont_dorado_align", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("alignment_ont_dorado_align", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("alignment_ont_dorado_align", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("alignment_ont_dorado_align", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("alignment_ont_dorado_align", {}).get("threads", config["default_resources"]["threads"])
+    container:
+        config.get("alignment_ont_dorado_align", {}).get("container", config["default_container"])
+    log:
+        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.log",
+    benchmark:
+        repeat(
+            "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.benchmark.tsv",
+            config.get("alignment_ont_dorado_align", {}).get("benchmark_repeats", 1),
+        )
+    message:
+        "{rule}: Align reads with dorado and minimap2"
+    shell:
+        """
+        echo "Dorado executed from $( which dorado )"
+
+        echo "Executing dorado aligning of {input.fastqgz} with reference genome '{input.ref_data}'"
+
+        dorado aligner {params.extra} {input.ref_data} {input.fastqgz} > {output.bam} 2> {log}
+        """
+
+
+rule reference_rules_bam_sort_unfiltered:
+    input:
+        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.bam",
+    output:
+        temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam"),
+    resources:
+        partition=config.get("alignment_ont_bam_sort", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("alignment_ont_bam_sort", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("alignment_ont_bam_sort", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("alignment_ont_bam_sort", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("alignment_ont_bam_sort", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("alignment_ont_bam_sort", {}).get("threads", config["default_resources"]["threads"])
+    container:
+        config.get("alignment_ont_bam_sort", {}).get("container", config["default_container"])
+    log:
+        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.log",
+    benchmark:
+        repeat(
+            "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.benchmark.tsv",
+            config.get("alignment_ont_bam_sort", {}).get("benchmark_repeats", 1),
+        )
+    message:
+        "{rule}: Sort aligned reads with samtools"
+    wrapper:
+        "0.2.0/bio/samtools/sort"
+
+
+rule reference_rules_bam_index_unfiltered:
+    input:
+        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam",
+    output:
+        temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai"),
+    resources:
+        partition=config.get("alignment_ont_bam_index", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("alignment_ont_bam_index", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("alignment_ont_bam_index", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("alignment_ont_bam_index", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("alignment_ont_bam_index", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("alignment_ont_bam_index", {}).get("threads", config["default_resources"]["threads"])
+    container:
+        config.get("alignment_ont_bam_index", {}).get("container", config["default_container"])
+    log:
+        "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai.log",
+    benchmark:
+        repeat(
+            "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai.benchmark.tsv",
+            config.get("alignment_ont_bam_index", {}).get("benchmark_repeats", 1),
+        )
+    message:
+        "{rule}: Index the aligned and sorted reads with samtools"
+    wrapper:
+        "0.2.0/bio/samtools/index"

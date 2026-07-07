@@ -10,16 +10,13 @@ logger.info(
 
 include: "rules/common_references.smk"
 include: "rules/references_rules.smk"
+include: "rules/basecalling.smk"
+include: "rules/alignment_ont.smk"
 
 
 rule all:
     input:
         compile_output_file_list,
-
-
-logger.info(
-    f"\nRules currently in scope: {sorted(getattr(r, 'name', str(r)) for r in workflow.rules)}"
-)
 
 
 module pipeline:
@@ -30,6 +27,11 @@ module pipeline:
 
 
 use rule * from pipeline exclude all
+
+
+logger.info(
+    f"\nRules currently in scope: {sorted(getattr(r, 'name', str(r)) for r in workflow.rules)}"
+)
 
 
 module snv_indels:
@@ -133,3 +135,27 @@ module references:
 
 
 use rule * from references exclude all, create_background_file, create_artifact_file as references_*
+
+
+# # GATK PoN
+# use rule collect_read_counts from references as references_collect_read_counts with:
+#     input:
+#         bam=lambda wc: f"alignment/samtools_merge_bam/{wc.sample}_{wc.type}.bam",
+#         bai=lambda wc: f"alignment/samtools_merge_bam/{wc.sample}_{wc.type}.bam.bai",
+#         interval="references/preprocess_intervals/design.preprocessed.interval_list",
+#
+#
+# use rule preprocess_intervals from references as references_preprocess_intervals with:
+#     output:
+#         temp("references/preprocess_intervals/design.preprocessed.interval_list"),
+
+
+# # Artifact
+# use rule create_artifact_file from references as references_create_artifact_file with:
+#     input:
+#         vcfs=get_vcfs(),
+#     params:
+#         callers=config.get("bcbio_variation_recall_ensemble", {}).get("callers", ["gatk_mutect2", "vardict"]),
+
+
+
