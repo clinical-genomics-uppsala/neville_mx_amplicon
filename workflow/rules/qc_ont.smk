@@ -37,7 +37,8 @@ rule qc_ont_pycoqc:
         """
     shell:
         """
-        summary=$( ls {input.seq_run_dir}/sequencing_summary*.txt ) 
+        # summary=$( ls {input.seq_run_dir}/sequencing_summary*.txt )  # fails in some shells
+        summary=$(find {input.seq_run_dir} -maxdepth 1 -name "sequencing_summary*.txt" | head -n 1)
         cp $summary {output.txt}
         pycoQC -f {output.txt} --html_outfile {output.html} --json_outfile {output.json} 2> {log}
         """

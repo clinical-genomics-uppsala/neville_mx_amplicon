@@ -3,8 +3,8 @@
 default_resources:
   threads: 1
   time: "12:00:00"
-  mem_mb: 1024
-  mem_per_cpu: 3072
+  mem_mb: 6144
+  mem_per_cpu: 6144
   partition: "core"
 
 alignment_ont_bam_index:
@@ -42,12 +42,12 @@ alignment_ont_split_bam_by_target:
   mem_mb: 6144
   mem_per_cpu: 6144
 
-  alignment_ont_split_bam_target_j3:
-    partition: "core"
-    time: "00:15:00"
-    threads: 1
-    mem_mb: 6144
-    mem_per_cpu: 6144
+alignment_ont_split_bam_target_j3:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
 
 basecalling_bam_to_fastq:
   partition: "core"
@@ -66,26 +66,25 @@ basecalling_compress_fastq:
 basecalling_dorado_basecaller:
   partition: "gpu"
   time: "72:00:00"
-  gres: "--gres=gres:a100:4"
-  threads: 96
-  mem_mb: 512064
-  mem_per_cpu: 5334
+  gres: "--gres=gpu:l40s:3"
+  threads: 32
+  mem_mb: 192000
+  mem_per_cpu: 6000
 
 basecalling_dorado_duplex:
   partition: "gpu"
   time: "72:00:00"
-  gres: "--gres=gres:a100:4"
-  threads: 96
-  mem_mb: 512064
-  mem_per_cpu: 5334
+  gres: "--gres=gpu:l40s:3"
+  threads: 32
+  mem_mb: 192000
+  mem_per_cpu: 6000
 
 basecalling_dorado_duplex_multisamples:
   partition: "gpu"
-  time: "72:00:00"
-  gres: "--gres=gres:a100:4"
-  threads: 96
-  mem_mb: 512064
-  mem_per_cpu: 5334
+  gres: "--gres=gpu:a100:2"
+  threads: 48
+  mem_mb: 240000
+  mem_per_cpu: 5000
 
 basecalling_dorado_demux:
   partition: "core"
@@ -106,6 +105,13 @@ prealignment_ont_fetch_filtered_reads:
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
+  mem_per_cpu: 6144
+
+mosdepth:
+  partition: "core"
+  time: "02:00:00"
+  threads: 8
+  mem_mb: 122880
   mem_per_cpu: 6144
 
 qc_ont_mosdepth_overlap:
@@ -136,6 +142,20 @@ qc_ont_sequali:
   mem_mb: 61440
   mem_per_cpu: 6144
 
+picard_collect_alignment_summary_metrics:
+  partition: "core"
+  time: "01:00:00"
+  threads: 8
+  mem_mb: 49152
+  mem_per_cpu: 6144
+
+picard_collect_hs_metrics:
+  partition: "core"
+  time: "01:00:00"
+  threads: 8
+  mem_mb: 49152
+  mem_per_cpu: 6144
+
 snv_indels_svs_clairs_to:
   partition: "core"
   time: "00:45:00"
@@ -151,123 +171,6 @@ snv_indels_svs_deepsomatic:
   mem_per_cpu: 6144
 
 snv_indels_svs_savana:
-  partition: "core"
-  time: "00:45:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-####################################################
-####################################################
-
-clairs_to:
-  partition: "core"
-  time: "00:45:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-deepsomatic:
-  partition: "core"
-  time: "00:45:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-demux_dorado:
-  partition: "core"
-  time: "12:45:00"
-  threads: 20
-  mem_mb: 122880
-  mem_per_cpu: 6144
-
-dorado_basecaller:
-  partition: "GPU_hi"
-  time: "72:00:00"
-  gres: "--gres=gres:gpu:4"
-  threads: 40
-  mem_mb: 655360
-  mem_per_cpu: 16384
-  slurm_extra: "-w computeGPU"
-
-dorado_alignment:
-  partition: "core"
-  time: "12:45:00"
-  threads: 20
-  mem_mb: 122880
-  mem_per_cpu: 6144
-
-filtlong:
-  partition: "core"
-  time: "00:25:00"
-  threads: 8
-  mem_mb: 122880
-  mem_per_cpu: 6144
-
-vardict:
-  partition: "core"
-  time: "12:00:00"
-  threads: 2
-  mem_mb: 122880
-  mem_per_cpu: 6144
-
-mosdepth:
-  partition: "core"
-  time: "02:00:00"
-  threads: 1
-  mem_mb: 6144
-  mem_per_cpu: 6144
-
-mosdepth_bed:
-  partition: "core"
-  time: "00:05:00"
-  threads: 1
-  mem_mb: 6144
-  mem_per_cpu: 6144
-
-nanocaller:
-  partition: "core"
-  time: "12:00:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-pycoqc:
-  partition: "core"
-  time: "01:00:00"
-  threads: 1
-  mem_mb: 6144
-  mem_per_cpu: 6144
-
-sequali:
-  partition: "core"
-  time: "01:00:00"
-  threads: 10
-  mem_mb: 61440
-  mem_per_cpu: 6144
-
-samtools:
-  partition: "core"
-  time: "00:15:00"
-  threads: 1
-  mem_mb: 6144
-  mem_per_cpu: 6144
-
-savana:
-  partition: "core"
-  time: "00:45:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-scanitd:
-  partition: "core"
-  time: "12:00:00"
-  threads: 40
-  mem_mb: 245760
-  mem_per_cpu: 6144
-
-sniffles2_call:
   partition: "core"
   time: "00:45:00"
   threads: 40

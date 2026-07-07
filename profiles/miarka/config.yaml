@@ -5,9 +5,22 @@ rerun-incomplete: True
 max-jobs-per-second: 100
 max-status-checks-per-second: 100
 use-singularity: True
-drmaa: "-p {resources.partition} -t {resources.time} -n {resources.threads} --mem={resources.mem_mb} --mem-per-cpu={resources.mem_per_cpu} {resources.gres} -J {rule} -A wp4 -e slurm/{rule}_%j.err -o slurm/{rule}_%j.out --nodes=1-1"
-default-resources: [gres="", ]
-drmaa-log-dir: "slurm"
-singularity-args: "--cleanenv --containall -B /proj -B $HOME -B $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache --nv"
-singularity-prefix: "/proj/ngi2024001/nobackup/bin/wp2_mxa/TAG_OR_BRANCH/apptainer_cache/"
-wrapper-prefix: "git+file://proj/ngi2024001/nobackup/bin/wp2_mxa/TAG_OR_BRANCH/snakemake-wrappers/"
+
+slurm: True
+default-resources:
+  - slurm_partition="core"
+  - slurm_account="ngi2024001"
+  - runtime="12h"
+  - nodes=1
+
+set-resources:
+  - basecalling_dorado_basecaller:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_basecaller:slurm_partition="gpu"
+  - basecalling_dorado_duplex:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_duplex:slurm_partition="gpu"
+  - basecalling_dorado_duplex_multisamples:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_duplex_multisamples:slurm_partition="gpu"
+
+singularity-args: "--cleanenv -B /proj -B $HOME -B /scratch -B $(pwd) -B $(pwd)/tmp:/scratch/$SLURM_JOB_ID -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache --nv --env SLURM_JOB_ID=$SLURM_JOB_ID"
+singularity-prefix: "/proj/ngi2024001/nobackup/bin/wp2_mxa/offline-pack/apptainer_cache/"
+wrapper-prefix: "git+file://proj/ngi2024001/nobackup/bin/wp2_mxa/offline-pack/snakemake-wrappers/"
