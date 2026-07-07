@@ -143,7 +143,7 @@ def get_gvcfs_vardict():
 
 
 def get_gvcfs_vardict_unfiltered():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.unfiltered.vardict.g.vcf.gz"
+    return list(set([f"references/vardict/{t.experiment}_{t.sample}_{t.type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
                      for t in panel_ref.itertuples()
                      ])
     )
