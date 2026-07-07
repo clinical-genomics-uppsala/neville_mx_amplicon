@@ -214,21 +214,21 @@ rule qc_ont_sequali:
         html2=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.html"),
         json2=temp("results/sequali/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz.json"),
     resources:
-        partition=config.get("sequali", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("sequali", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("sequali", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("sequali", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("sequali", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("sequali", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("qc_ont_sequali", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("qc_ont_sequali", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("qc_ont_sequali", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("qc_ont_sequali", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("qc_ont_sequali", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("qc_ont_sequali", {}).get("threads", config["default_resources"]["threads"])
     log:
         "results/sequali/{experiment}_{sample}_{type}_sequali.log",
     benchmark:
         repeat(
             "results/sequali/{experiment}_{sample}_{type}_sequali.benchmark.tsv",
-            config.get("sequali", {}).get("benchmark_repeats", 1),
+            config.get("qc_ont_sequali", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("sequali", {}).get("container", config["default_container"])
+        config.get("qc_ont_sequali", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Parse the (out)filtered reads and create quality report with sequali.
