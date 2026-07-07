@@ -38,6 +38,10 @@ files:
     input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf.gz"
     output: "{experiment}_{sample}_{type}.vardict.g.vcf.gz"
 
+  - name: "unfiltered gVCF from vardict"
+    input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.soft-clipped.vardict.g.vcf.gz"
+    output: "{experiment}_{sample}_{type}.unfiltered_vardict.g.vcf.gz"
+
   - name: "soft_clipped_bam"
     output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
     input: "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
@@ -45,3 +49,7 @@ files:
   - name: "soft_clipped_bam_bai"
     output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.aligned.sorted.soft-clipped.bam.bai"
     input: "alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai"
+
+  - name: "unfiltered fastq"
+    output: "{experiment}_{sample}_{type}_reads.unfiltered.fastq.gz"
+    input: "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz"
