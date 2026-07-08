@@ -109,6 +109,7 @@ if config.get("multisample", False):
             bam=temp(f"basecalling/dorado_duplex_multisamples/{config['batchid']}/multi_samples_reads.basecalled.bam"),
         params:
             model=config.get("basecalling_dorado_duplex_multisamples", {}).get("model", ""),
+            model_extra=config.get("dorado_model_extra", ""),
             dir_models=config.get("DORADO_MODELS", ""),
             trim=config.get("basecalling_dorado_duplex_multisamples", {}).get("trim", ""),
             extra=config.get("basecalling_dorado_duplex_multisamples", {}).get("extra", ""),
@@ -142,12 +143,14 @@ if config.get("multisample", False):
             """
             echo "Dorado executed from $( which dorado )" > {log}
             echo "Fetching model {params.model} if not already present." >> {log}
-            dorado download --model {params.model} || cp -a {params.dir_models}/{params.model} ./  >> {log}
+            # dorado download --model {params.model} || cp -a {params.dir_models}/{params.model} ./  >> {log}
+            [ -d {params.dir_models}/{params.model} ] && cp -a {params.dir_models}/{params.model} ./ && cp -a {params.dir_models}/{params.model_extra} ./ || dorado download --model {params.model} >> {log}"
             echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.trim} {params.extra}'" >> {log}
             echo "and model {params.model}" >> {log}
             echo "POD5 files found:"
+            ls -la {input.pod5}/
             ls -la {input.pod5}/ >> {log}
-            dorado basecaller {params.model} {params.trim} {params.extra} {input.pod5}/ > {output.bam} 2>> {log}
+            dorado duplex {params.model} {params.trim} {params.extra} {input.pod5}/ > {output.bam} 2>> {log}
             rm -rf {params.model}
             """
 
