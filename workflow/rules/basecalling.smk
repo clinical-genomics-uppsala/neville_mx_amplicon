@@ -144,7 +144,7 @@ if config.get("multisample", False):
             echo "Dorado executed from $( which dorado )" > {log}
             echo "Fetching model {params.model} if not already present." >> {log}
             # dorado download --model {params.model} || cp -a {params.dir_models}/{params.model} ./  >> {log}
-            [ -d {params.dir_models}/{params.model} ] && cp -a {params.dir_models}/{params.model} ./ && cp -a {params.dir_models}/{params.model_extra} ./ || dorado download --model {params.model} >> {log}"
+            [ -d {params.dir_models}/{params.model} ] && cp -a {params.dir_models}/{params.model} ./ && cp -a {params.dir_models}/{params.model_extra} ./ || dorado download --model {params.model} >> {log}
             echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.trim} {params.extra}'" >> {log}
             echo "and model {params.model}" >> {log}
             echo "POD5 files found:"
