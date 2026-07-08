@@ -98,7 +98,7 @@ basecalling_compress_fastq:
 
 basecalling_dorado_basecaller:  # simplex basecalling by default
   container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
-  model: {{dorado_model}}
+  model: "{{dorado_model}}"
   trim: "--trim adapters"
   extra: "--device cuda:all"
 
@@ -108,13 +108,13 @@ basecalling_dorado_demux:
 
 basecalling_dorado_duplex:  # duplex basecalling
   container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
-  model: {{dorado_model}}
+  model: "{{dorado_model}}"
   trim: "--no-trim-primers --sequencing-kit SQK-LSK114"
   extra: "--device cuda:all"
 
 basecalling_dorado_duplex_multisamples:
   container: "{{APPTAINER_CACHE}}/dorado_1.1.1+e72f1492.sif"  # ontresearch__dorado_latest.sif"
-  model: {{dorado_model}}
+  model: "{{dorado_model}}"
   trim: ""  # no trim because samples are demultiplexed in a later step
   extra: "--device cuda:0,1"
 
