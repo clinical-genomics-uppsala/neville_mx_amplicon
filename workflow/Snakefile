@@ -12,6 +12,7 @@ logger.info(
     f"raw.githubusercontent.com/hydra-genetics"
 )
 
+
 # Include pipeline specific rules
 include: "rules/common.smk"
 include: "rules/basecalling.smk"

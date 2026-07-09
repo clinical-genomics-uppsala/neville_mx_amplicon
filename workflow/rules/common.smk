@@ -30,7 +30,7 @@ from hydra_genetics.utils.software_versions import touch_pipeline_version_file_n
 from hydra_genetics.utils.software_versions import touch_software_version_file
 from hydra_genetics.utils.software_versions import use_container
 from hydra_genetics.utils.misc import get_module_snakefile # Needed for local git
-from hydra_genetics.utils.misc import replace_dict_variables # Used by hydra genetics to obtain the file paths to the files in the config
+from hydra_genetics.utils.misc import replace_dict_variables
 
 config = replace_dict_variables(config) # Add this after the imports
 
