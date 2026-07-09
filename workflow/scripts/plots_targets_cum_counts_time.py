@@ -71,7 +71,11 @@ for csv in os.listdir(cumcounts):
 print(f"Read cumulative counts after 1 hour sequencing on MinION flowcells for {len(cumcounts_Xminutes)} samples.")
 print(cumcounts_Xminutes)
 df1h = pd.concat(cumcounts_Xminutes, ignore_index=True)
-df1h["group_size"] = df1h["experiment"].replace(dict([(t.experiment_id, t.group_size) for t in summary_df[["experiment_id", "group_size"]].itertuples()]))
+exp_to_group = dict(
+    (t.experiment_id, t.group_size)
+    for t in summary_df[["experiment_id", "group_size"]].itertuples()
+)
+df1h["group_size"] = df1h["experiment"].replace(exp_to_group)
 df1h["target"] = df1h["target"].replace(relabels)
 print(df1h)
 df1h.to_csv(tabcounts1, index=False)
@@ -135,21 +139,25 @@ for i, group in enumerate(sorted(df1h["group_size"].unique())):
     leglabels.append(f"{group} sample(s)")
     leghandles.append(Line2D([], [], color="white",
                              marker='o', markerfacecolor=colors[i], markersize=10,))
-    boxax1h[i].set_xticklabels(df1h[df1h["group_size"] == group]["target"].unique(),  # boxax1h[i].get_xticklabels(),
-                         rotation=30,
-                         ha='right',
-                         )
+    boxax1h[i].set_xticklabels(
+        df1h[df1h["group_size"] == group]["target"].unique(),  # boxax1h[i].get_xticklabels(),
+        rotation=30,
+        ha='right',
+    )
     print(df1h[df1h["group_size"] == group])
     boxax1h[i].set_ylim(bottom=0, top=df1h[df1h["group_size"] == group]["mean"].max() + 100)
     boxax1h[i].set_xlabel("Amplicon", fontsize=16)
     boxax1h[i].set_ylabel("Read counts", fontsize=16)
+    boxax1h[i].axhline(y=1000, linestyle='--', color='r', label='1000')
     # boxax1h[i].legend(handles=[f"{group} sample(s)"], labels=[Line2D([], [], color="white",
     #                                                                  marker='o', markerfacecolor=colors[i], markersize=10,)],
     #                   title="Group size",
     #                   title_fontsize=14, fontsize=12, loc='upper right')
     for target in set(df1h["target"]):
-        boxax1h[i].axvline(x=list(set(df1h["target"])).index(target) - 0.0,
-                    linestyle='--', color='lightgrey', alpha=0.5)
+        boxax1h[i].axvline(
+            x=list(set(df1h["target"])).index(target) - 0.0,
+            linestyle='--', color='lightgrey', alpha=0.5
+        )
     boxax1h[i].set_title(f"(group size={group}, n={len(df1h[df1h['group_size'] == group]['sample']) // len(relabels)} samples)",
                          fontsize=18)
 plt.suptitle(f"Estimated read counts after {timestep} minutes sequencing on MinION flowcell", fontsize=20, y=0.92)
