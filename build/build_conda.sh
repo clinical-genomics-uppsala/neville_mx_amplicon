@@ -82,7 +82,7 @@ ${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/containers.yaml
 ## Download the config files from the config repo
 # git clone --branch ${CONFIG_VERSION} ${CONFIG_GITHUB_REPO} neville_mx_amplicon_config
 # TODO
-sed -i -E "s/TAG_OR_BRANCH/${TAG_OR_BRANCH}/g" ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/config_miarka.yaml
+sed -i -E "s/\{\{TAG_OR_BRANCH\}\}/${TAG_OR_BRANCH}/g" ./${PIPELINE_NAME}_${TAG_OR_BRANCH}/${PIPELINE_NAME}/config/config_miarka.yaml
 
 # Pack all cloned repositories
 tar -zcvf ${PIPELINE_NAME}_${TAG_OR_BRANCH}.tar.gz ${PIPELINE_NAME}_${TAG_OR_BRANCH}
