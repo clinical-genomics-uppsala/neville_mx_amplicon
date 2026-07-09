@@ -2,4 +2,4 @@ runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/C
 
 # Start pipeline
 mkdir -p images
-snakemake --profile profiles/slurm/ -s workflow/Snakefile --configfile config/config.yaml --config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True samplesheet="${sampleSheet}" --forceall --rulegraph > images/neville_mx_amplicon.dot && dot -Tpdf images/neville_mx_amplicon.dot > images/neville_mx_amplicon.pdf && dot -Tpng images/neville_mx_amplicon.dot > images/neville_mx_amplicon.png
+snakemake --profile profiles/marvin_drmaa/ -s workflow/Snakefile --configfile config/config.yaml --config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True samplesheet="${sampleSheet}" --forceall --rulegraph > images/neville_mx_amplicon.dot && dot -Tpdf images/neville_mx_amplicon.dot > images/neville_mx_amplicon.pdf && dot -Tpng images/neville_mx_amplicon.dot > images/neville_mx_amplicon.png
