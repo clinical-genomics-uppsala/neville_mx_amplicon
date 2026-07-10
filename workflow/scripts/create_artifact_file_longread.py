@@ -50,7 +50,6 @@ for file_name in vcf_files:
 
             key = (chrom, pos, variant_type)
 
-
             callers_str = get_info_field(info, "CALLERS")
             print(f"\nVariant processed: {(chrom, pos, variant_type)} -- Callers {callers_str}")
             if not callers_str:
@@ -108,4 +107,3 @@ with open(artifact_panel_path, "w") as artifact_panel:
             print(f"\nNull counts for {row}")
             print(f"Data: {call_stats_dict[key]}\n")
         artifact_panel.write("\t".join(row) + "\n")
-

@@ -45,7 +45,9 @@ def load_hotspots_metadata(hspt_csv_path: str) -> Dict[str, Any]:
     Returns
     -------
     Dict[str, Any]
-        A dictionary where keys are genomic positions (e.g. "chr13:32310000") and values are dictionaries containing the metadata for that hotspot, including:
+        A dictionary where keys are genomic positions (e.g. "chr13:32310000")
+        and values are dictionaries containing the metadata for that hotspot,
+        including:
         - "gene": gene name
         - "transcripts": comma-separated list of transcripts affected by the hotspot mutation
         - "protein_changes": comma-separated list of protein changes associated with the hotspot mutation
@@ -59,12 +61,12 @@ def load_hotspots_metadata(hspt_csv_path: str) -> Dict[str, Any]:
 
     agg = (
         df.groupby(["Position", "Gene"])
-          .agg({
-              "Transcript": lambda s: sorted({str(x) for x in s.dropna()}),
-              "Protein_change": lambda s: sorted({str(x) for x in s.dropna()}),
-              "Ref_allele": lambda s: sorted({str(x) for x in s.dropna()})
-          })
-          .reset_index()
+        .agg({
+            "Transcript": lambda s: sorted({str(x) for x in s.dropna()}),
+            "Protein_change": lambda s: sorted({str(x) for x in s.dropna()}),
+            "Ref_allele": lambda s: sorted({str(x) for x in s.dropna()})
+        })
+        .reset_index()
     )
 
     result: Dict[str, Any] = {}
@@ -195,7 +197,7 @@ def analyze_hotspot_noise_for_coordinate(
 ):
     """
     Extract reads and compute sequencing noise statistics for a single coordinate.
-    
+
     Parameters
     ----------
     coord : str
@@ -235,10 +237,10 @@ def analyze_hotspot_noise_for_coordinate(
     chrom, pos = coord.split(":")[0], int(coord.split(":")[1])
     ref_allele = df_hspt[df_hspt['Position'] == coord]["Ref_allele"].drop_duplicates().values[0]
     print(f"Processing hotspot {coord}: {samples_out} will be excluded from the analysis.\n")
-    
+
     coord_bases_table = {}
     last_bases_summary = None
-    
+
     for ref_sample in ref_samples.itertuples():
         # Get the BAM ID
         if bam_id_cols is None:
@@ -251,7 +253,7 @@ def analyze_hotspot_noise_for_coordinate(
                 else:
                     vals.append(str(getattr(ref_sample, col)))
             bam_id = '_'.join(vals)
-            
+
         # Get the Sample ID
         if sample_id_col is not None:
             if isinstance(sample_id_col, int):
@@ -260,7 +262,7 @@ def analyze_hotspot_noise_for_coordinate(
                 sample_id = getattr(ref_sample, sample_id_col)
         else:
             sample_id = ref_sample[2] if len(ref_sample) > 2 else ref_sample[1]
-            
+
         for bam in os.listdir(bam_dir):
             matched = False
             if callable(bam_patterns):
@@ -275,28 +277,28 @@ def analyze_hotspot_noise_for_coordinate(
                         if bam == pattern:
                             matched = True
                             break
-                            
+
             if not matched:
                 continue
-                
+
             print(ref_sample[1], sample_id)
             if sample_id in samples_out:
                 print(f"Skipping sample {bam_id} for hotspot {coord} since the sample has a hotspot mutation.\n")
                 continue
-                
+
             sample_bam = os.path.join(bam_dir, bam)
             try:
                 pysam.index(sample_bam)
             except Exception as e:
                 print(f"Could not index {sample_bam}: {e}")
                 continue
-                
+
             bam_pos = os.path.join(output_dir, bam.replace(".bam", f".hotspot_{coord}.bam"))
             if not os.path.exists(bam_pos):
                 print(f"Extracting reads covering {coord} from {sample_bam}.\nWriting them to {bam_pos}.\n")
                 write_reads_covering_positions(sample_bam, bam_pos, chrom, pos)
                 pysam.index(bam_pos)
-                
+
             print(f"Extracting bases in reads in position {coord} from {bam_pos}.\n")
             hotspot_bases = get_read_bases_at_position(bam_pos, chrom, pos)
             bases_in_reads = pd.DataFrame(
@@ -304,20 +306,31 @@ def analyze_hotspot_noise_for_coordinate(
                 columns=["read_id", "base", "qscore"]
             )
             bases_in_reads.to_csv(os.path.join(output_dir, f"{bam_id}_{coord}_bases.csv"), index=False)
-            
+
             bases_in_reads["base"] = bases_in_reads["base"].apply(lambda base: encode_ref_alt_bases(base, ref_allele))
             bases_summary = (
                 bases_in_reads.groupby('base')['qscore']
                 .agg(['count', 'mean'])
                 .rename(columns={'count': 'read_count', 'mean': 'mean_qscore'})
             )
-            
+
             if bases_summary is not None and not bases_summary.empty:
-                bases_summary['read_count_ref_allele'] = bases_summary['read_count'].loc['ref_allele'] if 'ref_allele' in bases_summary.index else 0
-                bases_summary['mean_qscore_ref_allele'] = bases_summary['mean_qscore'].loc['ref_allele'] if 'ref_allele' in bases_summary.index else 0
-                bases_summary['read_count_nonref_allele'] = bases_summary['read_count'].loc['nonref_allele'] if 'nonref_allele' in bases_summary.index else 0
-                bases_summary['mean_qscore_nonref_allele'] = bases_summary['mean_qscore'].loc['nonref_allele'] if 'nonref_allele' in bases_summary.index else 0
-                
+                ref_in_idx = 'ref_allele' in bases_summary.index
+                nonref_in_idx = 'nonref_allele' in bases_summary.index
+
+                bases_summary['read_count_ref_allele'] = (
+                    bases_summary['read_count'].loc['ref_allele'] if ref_in_idx else 0
+                )
+                bases_summary['mean_qscore_ref_allele'] = (
+                    bases_summary['mean_qscore'].loc['ref_allele'] if ref_in_idx else 0
+                )
+                bases_summary['read_count_nonref_allele'] = (
+                    bases_summary['read_count'].loc['nonref_allele'] if nonref_in_idx else 0
+                )
+                bases_summary['mean_qscore_nonref_allele'] = (
+                    bases_summary['mean_qscore'].loc['nonref_allele'] if nonref_in_idx else 0
+                )
+
                 # drop the row index 'ref_allele' if present
                 if 'ref_allele' in bases_summary.index:
                     bases_summary.drop(index=['ref_allele'], inplace=True)
@@ -325,13 +338,13 @@ def analyze_hotspot_noise_for_coordinate(
                 bases_summary.reset_index(inplace=True, drop=True)
                 bases_summary['depth'] = bases_summary['read_count_ref_allele'] + bases_summary['read_count_nonref_allele']
                 bases_summary['vaf'] = bases_summary['read_count_nonref_allele'] / bases_summary['depth']
-                
+
                 coord_bases_table[bam_id] = bases_summary
                 last_bases_summary = bases_summary
                 print(f"Summary stats of bases at {coord} for sample {bam_id}:\n{bases_summary}\r\n")
-                
+
     print(f"Finished processing hotspot {coord}.\n")
-    
+
     if coord_bases_table and last_bases_summary is not None:
         print([row.values.flatten() for row in coord_bases_table.values()])
         bases_table_df_coord = pd.DataFrame(
@@ -341,7 +354,7 @@ def analyze_hotspot_noise_for_coordinate(
         )
         bases_table_df_coord.to_csv(os.path.join(output_dir, f"hotspots_bases_summary_{coord}.csv"), index=True)
         print(f"Summary of bases at hotspot {coord} for all samples:\n{bases_table_df_coord}\r\n")
-        
+
         # Compute and update noise statistics
         hspt_info[coord].update({
             "median_noise": bases_table_df_coord['vaf'].median(),
@@ -350,12 +363,12 @@ def analyze_hotspot_noise_for_coordinate(
             "nb_samples": bases_table_df_coord.dropna(axis=0, how='any').shape[0]
         })
         print(f"Updated hotspot info for {coord} with noise statistics:\n{json.dumps(hspt_info[coord], indent=4)}\n")
-        
+
         df_hspt_stats = pd.DataFrame.from_dict(hspt_info, orient="index")
         df_hspt_stats.index.rename("genomic_position_hg38", inplace=True)
         df_hspt_stats.to_csv(os.path.join(output_dir, f"hotspots_info_with_noise_stats.csv"), index=True)
         print(f"Finished processing hotspot {coord}.\n")
-        
+
     return coord_bases_table
 
 
@@ -370,7 +383,7 @@ def parse_args():
     parser.add_argument("--bam_patterns", nargs="+", help="Templates for BAM filenames.")
     parser.add_argument("--sample_id_col", help="Column name or index in ref_samples for sample ID check.")
     parser.add_argument("--bam_id_cols", nargs="+", help="Column names or indices to construct BAM ID.")
-    
+
     return parser.parse_args()
 
 

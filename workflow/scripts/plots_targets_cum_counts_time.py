@@ -58,7 +58,8 @@ for csv in os.listdir(cumcounts):
             continue
         if flowcell == "MinION" and experiment in summary_df["experiment_id"].values:
             dfrun = pd.read_csv(cumcounts + "/" + csv, sep=",")
-            if dfrun["timestep"].min() == 60 and experiment not in ["Wash5", "M22_run2"]:  # Wash5 and M22_run2 have 60-minute timesteps
+            # Wash5 and M22_run2 have 60-minute timesteps
+            if dfrun["timestep"].min() == 60 and experiment not in ["Wash5", "M22_run2"]:
                 dfrun["timestep"] = dfrun["timestep"] // 6
             df1hour = dfrun[dfrun["timestep"] == timestep].reset_index(drop=True).set_index("target")
             print(dfrun)
