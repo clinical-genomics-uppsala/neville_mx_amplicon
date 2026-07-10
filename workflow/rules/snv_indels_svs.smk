@@ -35,10 +35,10 @@ rule snv_indels_svs_clairs_to:
     benchmark:
         repeat(
             "snv_indels/clairs_to/{experiment}_{sample}_{type}_clairs_to.benchmark.tsv",
-            config.get("clairs_to", {}).get("benchmark_repeats", 1),
+            config.get("snv_indels_svs_clairs_to", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("clairs_to", {}).get("container", config["default_container"])
+        config.get("snv_indels_svs_clairs_to", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in only tumor samples with ClairS-TO.

@@ -11,7 +11,7 @@ logger.info(
     f"\nCache location for the modules imported from GitHub: {workflow.sourcecache.cache}/https/"
     f"raw.githubusercontent.com/hydra-genetics"
 )
-workflow.rules.
+
 
 # Include pipeline specific rules
 include: "rules/common.smk"
@@ -45,12 +45,22 @@ rule all:
 
 
 # Include modules
+# module snv_indels:
+#     snakefile:
+#         github(
+#             "hydra-genetics/snv_indels",
+#             path="workflow/Snakefile",
+#             tag="v1.1.0",
+#         )
+#     config:
+#         config
 module snv_indels:
     snakefile:
-        github(
+        get_module_snakefile(
+            config,
             "hydra-genetics/snv_indels",
             path="workflow/Snakefile",
-            tag="v1.1.0",
+            tag=config["modules"]["snv_indels"],
         )
     config:
         config
@@ -209,10 +219,11 @@ use rule tabix from snv_indels as snv_indels_tabix with:
 
 module cnv_sv:
     snakefile:
-        github(
+        get_module_snakefile(
+            config,
             "hydra-genetics/cnv_sv",
             path="workflow/Snakefile",
-            tag="v0.9.0",
+            tag=config["modules"]["cnv_sv"],
         )
     config:
         config
@@ -309,10 +320,11 @@ use rule tabix from cnv_sv as cnv_sv_tabix with:
 
 module annotation:
     snakefile:
-        github(
+        get_module_snakefile(
+            config,
             "hydra-genetics/annotation",
             path="workflow/Snakefile",
-            tag="v1.0.0",
+            tag=config["modules"]["annotation"],
         )
     config:
         config
@@ -377,10 +389,11 @@ else:
 
 module filtering:
     snakefile:
-        github(
+        get_module_snakefile(
+            config,
             "hydra-genetics/filtering",
             path="workflow/Snakefile",
-            tag="v1.1.0",
+            tag=config["modules"]["filtering"],
         )
     config:
         config
@@ -412,7 +425,8 @@ use rule filter_vcf from filtering as filtering_filter_vcf with:
 
 module qc:
     snakefile:
-        github(
+        get_module_snakefile(
+            config,
             "hydra-genetics/qc",
             path="workflow/Snakefile",
             tag=config["modules"]["qc"],

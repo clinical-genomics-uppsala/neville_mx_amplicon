@@ -95,7 +95,7 @@ done < <(tail -n +2 ${sampleSheet})
 STARTTIME=$(date +%s)
 
 # Start pipeline
-snakemake --profile profiles/slurm/ -s workflow/Snakefile \
+snakemake --profile profiles/marvin_drmaa/ -s workflow/Snakefile \
 --configfile config/config.yaml \
 --config runfolder=${runFolder} batchid=${batchId} runid=${runId} multisample=True \
  samplesheet="${sampleSheet}" \

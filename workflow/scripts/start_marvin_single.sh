@@ -38,7 +38,7 @@ hydra-genetics create-input-files -d ${runFolder}/${sampleId}/${runId}/bam_pass_
 # Measure running time
 STARTTIME=$(date +%s)
 
-snakemake --profile profiles/slurm/ -s workflow/Snakefile \
+snakemake --profile profiles/marvin_drmaa/ -s workflow/Snakefile \
 --configfile config/config.yaml \
 --config runfolder=${runFolder} batchid=${sampleId} runid=${runId} multisample=False \
 --notemp

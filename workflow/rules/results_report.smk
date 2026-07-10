@@ -17,7 +17,7 @@ rule results_report_xlsx:
         vcf_cnv_svs="cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
         vcf_cnv_svs_tbi="cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz.tbi",
         bedfile=os.path.join(config["bed_files"], "amplicons.bed"),
-        deepsomatic_bed=config["deepsomatic"]["bed_file"],
+        deepsomatic_bed=config["snv_indels_svs_deepsomatic"]["bed_file"],
         vardict_bed=config["vardict"]["bed_file"],
         mosdepth_summary="results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt",
         mosdepth_exons="results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz",
@@ -65,7 +65,7 @@ rule results_report_xlsx:
 
 rule results_report_copy_bed:
     input:
-        [bed_file for bed_file in [config[caller]["bed_file"] for caller in ["deepsomatic", "vardict"]]]
+        [bed_file for bed_file in [config[caller]["bed_file"] for caller in ["snv_indels_svs_deepsomatic", "vardict"]]]
         + [os.path.join(config["bed_files"], "amplicons.bed")],
     output:
         outdir=directory("bedfiles"),

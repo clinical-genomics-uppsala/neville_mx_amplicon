@@ -108,9 +108,11 @@ if config.get("multisample", False):
         output:
             bam=temp(f"basecalling/dorado_duplex_multisamples/{config['batchid']}/multi_samples_reads.basecalled.bam"),
         params:
-            model=config.get("dorado_duplex_multisamples", {}).get("model", ""),
-            trim=config.get("dorado_duplex_multisamples", {}).get("trim", ""),
-            extra=config.get("dorado_duplex_multisamples", {}).get("extra", ""),
+            model=config.get("basecalling_dorado_duplex_multisamples", {}).get("model", ""),
+            model_extra=config.get("dorado_model_extra", ""),
+            dir_models=config.get("DORADO_MODELS", ""),
+            trim=config.get("basecalling_dorado_duplex_multisamples", {}).get("trim", ""),
+            extra=config.get("basecalling_dorado_duplex_multisamples", {}).get("extra", ""),
         resources:
             partition=config.get("basecalling_dorado_duplex_multisamples", {}).get(
                 "partition", config["default_resources"]["partition"]
@@ -124,7 +126,7 @@ if config.get("multisample", False):
             mem_per_cpu=config.get("basecalling_dorado_duplex_multisamples", {}).get(
                 "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
             ),
-            slurm_extra=config.get("basecalling_dorado_duplex_multisamples", {}).get("slurm_extra"),
+            slurm_extra=config.get("basecalling_dorado_duplex_multisamples", {}).get("slurm_extra", ""),
         threads: config.get("basecalling_dorado_duplex_multisamples", {}).get("threads", config["default_resources"]["threads"])
         benchmark:
             repeat(
@@ -132,7 +134,7 @@ if config.get("multisample", False):
                 config.get("basecalling_dorado_duplex_multisamples", {}).get("benchmark_repeats", 1),
             )
         container:
-            config.get("dorado_duplex_multisamples", {}).get("container", config["default_container"])
+            config.get("basecalling_dorado_duplex_multisamples", {}).get("container", config["default_container"])
         log:
             "basecalling/dorado_duplex_multisamples/multi_samples_reads.basecalled.bam.log",
         message:
@@ -140,11 +142,13 @@ if config.get("multisample", False):
         shell:
             """
             echo "Dorado executed from $( which dorado )" > {log}
-            echo "Downloading model {params.model} if not already present." >> {log}
-            dorado download --model {params.model} >> {log}
+            echo "Fetching model {params.model} if not already present." >> {log}
+            # dorado download --model {params.model} || cp -a {params.dir_models}/{params.model} ./  >> {log}
+            [ -d {params.dir_models}/{params.model} ] && cp -a {params.dir_models}/{params.model} ./ && cp -a {params.dir_models}/{params.model_extra} ./ || dorado download --model {params.model} >> {log}
             echo "Executing dorado duplex basecalling in {input.pod5} with options '{params.trim} {params.extra}'" >> {log}
             echo "and model {params.model}" >> {log}
             echo "POD5 files found:"
+            ls -la {input.pod5}/
             ls -la {input.pod5}/ >> {log}
             dorado duplex {params.model} {params.trim} {params.extra} {input.pod5}/ > {output.bam} 2>> {log}
             rm -rf {params.model}
@@ -181,8 +185,7 @@ if config.get("multisample", False):
             """
             echo "Dorado executed from $( which dorado )" > {log}
             echo "Executing dorado demultiplexing in {input.bam} with sample sheet '{params.samplesheet}'" >> {log}
-            dorado demux --sample-sheet {params.samplesheet} --output-dir {output.bamdir} {params.extra} {input.bam} &  
-            &>> {log}
+            dorado demux --verbose --sample-sheet {params.samplesheet} --output-dir {output.bamdir} {params.extra} {input.bam} >> {log} 2>&1 &
             process_id=$!
             echo "Waiting for demux to complete... Process PID: $process_id"
             wait $process_id
@@ -219,15 +222,14 @@ if config.get("multisample", False):
             """
             outdir=$(dirname {output.bam_renamed})
             experiment={wildcards.experiment}
-            bams=$(ls {input.bamdir}/*.bam)
+            ls -la {input.bamdir}
+            # bams=$(ls {input.bamdir}/*.bam) # does not work on all systems
+            bams=$(find {input.bamdir} -type f -name "*{wildcards.sample}*.bam")
             echo $bams > {log}
             for bam in $bams; do
                 filename=$(basename -- "$bam")
-                sample=$(echo $filename | cut -d'_' -f2 | cut -d'.' -f1)
-                if [[ $sample == {wildcards.sample} ]]; then
-                    echo "Renaming BAM file for $sample and writing to $outdir" &>> {log} 
-                    cp $bam $outdir/{wildcards.experiment}_${{sample}}_{wildcards.type}_reads.basecalled.bam &>> {log}
-                fi
+                echo "Renaming BAM file for the sample {wildcards.sample} and writing to $outdir" &>> {log} 
+                cp $bam $outdir/{wildcards.experiment}_{wildcards.sample}_{wildcards.type}_reads.basecalled.bam &>> {log}
             done
             """
 
