@@ -4,8 +4,8 @@ __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL3"
 
 """
-Note: this scripts requires the 'references' pipeline to be run first 
-to generate the necessary TSV files for background and artifacts data. 
+Note: this scripts requires the 'references' pipeline to be run first
+to generate the necessary TSV files for background and artifacts data.
 
 This script reads a list of positions from CSV file e.g. hotspot positions and for each position, it
 aggregates the VAF data from the background and artifacts TSV files for specified variant callers.
@@ -35,6 +35,7 @@ python workflow/scripts/references_report_noise_artifacts.py @workflow/scripts/r
 import pandas as pd
 import argparse
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Process references report noise and artifacts VAF data.",
@@ -52,8 +53,9 @@ def parse_args():
     parser.add_argument("--background_json", nargs="+", help="Paths to the output background JSON files.")
     parser.add_argument("--artifacts_tsv", help="Path to the artifacts TSV file.")
     parser.add_argument("--artifacts_json", help="Path to the output artifact JSON file.")
-    
+
     return parser.parse_args()
+
 
 args = parse_args()
 
