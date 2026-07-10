@@ -1,0 +1,26 @@
+jobs: 100
+keep-going: True
+restart-times: 3
+rerun-incomplete: True
+max-jobs-per-second: 100
+max-status-checks-per-second: 100
+use-singularity: True
+
+slurm: True
+default-resources:
+  - slurm_partition="core"
+  - slurm_account="ngi2024001"
+  - runtime="12h"
+  - nodes=1
+
+set-resources:
+  - basecalling_dorado_basecaller:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_basecaller:slurm_partition="gpu"
+  - basecalling_dorado_duplex:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_duplex:slurm_partition="gpu"
+  - basecalling_dorado_duplex_multisamples:slurm_extra="--gres=gpu:a100:2"
+  - basecalling_dorado_duplex_multisamples:slurm_partition="gpu"
+
+singularity-args: "--cleanenv -B /proj -B $HOME -B /scratch -B $(pwd) -B $(pwd)/tmp:/scratch/$SLURM_JOB_ID -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache --nv --env SLURM_JOB_ID=$SLURM_JOB_ID"
+singularity-prefix: "/proj/ngi2024001/nobackup/bin/wp2_mxa/offline-pack/apptainer_cache/"
+wrapper-prefix: "git+file://proj/ngi2024001/nobackup/bin/wp2_mxa/offline-pack/snakemake-wrappers/"

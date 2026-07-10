@@ -9,36 +9,36 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
-rule varcall_clairs_to:
+rule snv_indels_svs_clairs_to:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+        bed=config.get("snv_indels_svs_clairs_to", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         snv=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.vcf.gz"),
         indel=temp("snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.vcf.gz"),
     params:
-        platform=config.get("clairs_to", {}).get("platform", ""),
-        snv_min_af=config.get("clairs_to", {}).get("snv_min_af", 0.05),
-        indel_min_af=config.get("clairs_to", {}).get("indel_min_af", 0.1),
+        platform=config.get("snv_indels_svs_clairs_to", {}).get("platform", ""),
+        snv_min_af=config.get("snv_indels_svs_clairs_to", {}).get("snv_min_af", 0.05),
+        indel_min_af=config.get("snv_indels_svs_clairs_to", {}).get("indel_min_af", 0.1),
         outdir=directory(lambda wildcards, output: os.path.dirname(output.snv)),
     resources:
-        partition=config.get("clairs_to", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("clairs_to", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("clairs_to", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("clairs_to", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("clairs_to", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("clairs_to", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("snv_indels_svs_clairs_to", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("snv_indels_svs_clairs_to", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("snv_indels_svs_clairs_to", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("snv_indels_svs_clairs_to", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("snv_indels_svs_clairs_to", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("snv_indels_svs_clairs_to", {}).get("threads", config["default_resources"]["threads"])
     log:
         "snv_indels/clairs_to/{experiment}_{sample}_{type}_clairs_to.log",
     benchmark:
         repeat(
             "snv_indels/clairs_to/{experiment}_{sample}_{type}_clairs_to.benchmark.tsv",
-            config.get("clairs_to", {}).get("benchmark_repeats", 1),
+            config.get("snv_indels_svs_clairs_to", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("clairs_to", {}).get("container", config["default_container"])
+        config.get("snv_indels_svs_clairs_to", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in only tumor samples with ClairS-TO.
@@ -54,7 +54,7 @@ rule varcall_clairs_to:
         " 2> {log}"
 
 
-rule varcall_clairs_to_concat:
+rule snv_indels_svs_clairs_to_concat:
     input:
         snv="snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.vcf.gz",
         indel="snv_indels/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_indel.vcf.gz",
@@ -63,20 +63,22 @@ rule varcall_clairs_to_concat:
             "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz"
         ),
     resources:
-        partition=config.get("varcall_clairs_to_concat", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("varcall_clairs_to_concat", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("varcall_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("varcall_clairs_to_concat", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("varcall_clairs_to_concat", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("varcall_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("snv_indels_svs_clairs_to_concat", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("snv_indels_svs_clairs_to_concat", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("snv_indels_svs_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("snv_indels_svs_clairs_to_concat", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("snv_indels_svs_clairs_to_concat", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+    threads: config.get("snv_indels_svs_clairs_to_concat", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("varcall_clairs_to_concat", {}).get("container", config["default_container"])
+        config.get("snv_indels_svs_clairs_to_concat", {}).get("container", config["default_container"])
     log:
         "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.vcf.gz.log",
     benchmark:
         repeat(
             "snv_indels/clairs_to/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.clairs_to.benchmark.tsv",
-            config.get("varcall_clairs_to_concat", {}).get("benchmark_repeats", 1),
+            config.get("snv_indels_svs_clairs_to_concat", {}).get("benchmark_repeats", 1),
         )
     message:
         """
@@ -91,36 +93,36 @@ rule varcall_clairs_to_concat:
         """
 
 
-rule varcall_deepsomatic:
+rule snv_indels_svs_deepsomatic:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+        bed=config.get("snv_indels_svs_deepsomatic", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
     output:
         tmpdir=directory("snv_indels/deepsomatic/{experiment}_{sample}_{type}_tmp"),
         vcf="snv_indels/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz",
     params:
         sample=lambda wildcards: f"{wildcards.sample}",
         model="ONT_TUMOR_ONLY",
-        extra=config.get("deepsomatic", {}).get("extra", ""),
-        filter=config.get("deepsomatic", {}).get("filter", ""),
+        extra=config.get("snv_indels_svs_deepsomatic", {}).get("extra", ""),
+        filter=config.get("snv_indels_svs_deepsomatic", {}).get("filter", ""),
     log:
         "snv_indels/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.log",
     benchmark:
         repeat(
             "snv_indels/deepsomatic/{experiment}_{sample}_{type}_deepsomatic.benchmark.tsv",
-            config.get("deepsomatic", {}).get("benchmark_repeats", 1),
+            config.get("snv_indels_svs_deepsomatic", {}).get("benchmark_repeats", 1),
         )
-    threads: config.get("deepsomatic", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("snv_indels_svs_deepsomatic", {}).get("threads", config["default_resources"]["threads"])
     resources:
-        partition=config.get("deepsomatic", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("deepsomatic", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("deepsomatic", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("deepsomatic", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("deepsomatic", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("snv_indels_svs_deepsomatic", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("snv_indels_svs_deepsomatic", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("snv_indels_svs_deepsomatic", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("snv_indels_svs_deepsomatic", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("snv_indels_svs_deepsomatic", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
     container:
-        config.get("deepsomatic", {}).get("container", config["default_container"])
+        config.get("snv_indels_svs_deepsomatic", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Long-read somatic small variant calling in tumor samples only with DeepSomatic.
@@ -131,14 +133,14 @@ rule varcall_deepsomatic:
         """
 
 
-rule varcall_savana:
+rule snv_indels_svs_savana:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
         bed=os.path.join(config.get("bed_files"), "amplicons.bed"),
     output:
-        dummy="cnv_sv/savana/{experiment}_{sample}_{type}_savana.done",
+        done="cnv_sv/savana/{experiment}_{sample}_{type}_savana.done",
         outdir=temp(directory("cnv_sv/savana/{experiment}_{sample}_{type}_savana_output")),
     params:
         sample=config.get("sample_id", "sample_T"),
@@ -153,12 +155,12 @@ rule varcall_savana:
             config.get("savana", {}).get("benchmark_repeats", 1),
         )
     resources:
-        partition=config.get("savana", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("savana", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("savana", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("savana", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("savana", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("savana", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("snv_indels_svs_savana", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("snv_indels_svs_savana", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("snv_indels_svs_savana", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("snv_indels_svs_savana", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("snv_indels_svs_savana", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("snv_indels_svs_savana", {}).get("threads", config["default_resources"]["threads"])
     container:
         config.get("savana", {}).get("container", config["default_container"])
     message:
@@ -173,4 +175,4 @@ rule varcall_savana:
         "--g1000_vcf {params.g1000_vcf}"
         " --chromosomes 2 5 13 15 17"
         " &> {log}"
-        " && touch {output.dummy}"
+        " && touch {output.done}"

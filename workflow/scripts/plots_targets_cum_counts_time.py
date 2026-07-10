@@ -10,14 +10,16 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import r2_score
 import os
+import re
 
-swarmplot_minion = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/swarmplot_read_counts_1hour_minion.png"
+img_extension = "png"
+timestep = 60  # in minutes
+summary_csv = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/list_exp_id_sample_id.csv"
 cumcounts = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/cum_read_counts"
-plot2 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/read_counts_4hours.png"
-plot3 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/read_counts_24hours.png"
-boxplot4 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_4+24hours.png"
-swarmplot4 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/swarmplot_read_counts_4+24hours.png"
-violinplot4 = "/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/violinplot_read_counts_4+24hours.png"
+tabcounts1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/tab_read_counts_{timestep}minutes.csv"
+boxplot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_{timestep}minutes.{img_extension}"
+swarmplot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/swarmplot_read_counts_{timestep}minutes.{img_extension}"
+boxplot4 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/boxplot_read_counts_60+120minutes.{img_extension}"
 
 relabels = {
     'TP53_3kb_A1_only': 'TP53_A',
@@ -37,33 +39,53 @@ relabels = {
     'TP53_D2_only': 'TP53_D',
 }
 
+summary_df = pd.read_csv(summary_csv, sep=",")
+print(summary_df)
+
 # Read cumulative counts after 1 hour
 
-cumcounts_1hour = []
+cumcounts_Xminutes = []
 for csv in os.listdir(cumcounts):
-    if csv[-4:] == ".csv" and csv.split("_")[1] == "MinION":
-        dfrun = pd.read_csv(cumcounts + "/" + csv, sep=",")
-        df1hour = dfrun[dfrun["timestep"] == 60].reset_index(drop=True).set_index("target")
-        counts_j3 = {"target": "TP53_J3", "mean": df1hour.loc["TP53_D2+J3", "mean"] - df1hour.loc["TP53_D2_only", "mean"]}
-        df1hour.drop(index=["TP53_D2+J3"], inplace=True)
-        df1hour.reset_index(inplace=True, drop=False)
-        df1hour.loc[len(df1hour)] = counts_j3
-        df1hour["sample"] = csv.split("_")[0]
-        cumcounts_1hour.append(df1hour[["target", "mean", "sample"]])
+    if csv[-4:] == ".csv":
+        print(csv)
+        try:
+            sample = re.compile(r'D\d{2}\-\d{5}(\-\d)*').search(csv).group()
+            experiment = csv.split(f"_{sample}")[0]
+            flowcell = csv.split(sample)[1].split("_")[1]
+            print(sample, experiment, flowcell)
+        except AttributeError:
+            print(f"Could not parse sample and flowcell from {csv}, skipping.")
+            continue
+        if flowcell == "MinION":
+            dfrun = pd.read_csv(cumcounts + "/" + csv, sep=",")
+            df1hour = dfrun[dfrun["timestep"] == timestep].reset_index(drop=True).set_index("target")
+            counts_j3 = {"target": "TP53_J3", "mean": df1hour.loc["TP53_D2+J3", "mean"] - df1hour.loc["TP53_D2_only", "mean"]}
+            df1hour.drop(index=["TP53_D2+J3"], inplace=True)
+            df1hour.reset_index(inplace=True, drop=False)
+            df1hour.loc[len(df1hour)] = counts_j3
+            df1hour["sample"] = sample
+            df1hour["experiment"] = experiment
+            # fetch group_size from summary csv
+            cumcounts_Xminutes.append(df1hour[["target", "mean", "sample", "experiment"]])
 
-df1h = pd.concat(cumcounts_1hour, ignore_index=True)
-df1h = df1h.merge(df1[df1["flowcell"] == "MinION"][["sample", "group_size"]].drop_duplicates(),
-                  how='right',
-                  on="sample")
+print(f"Read cumulative counts after 1 hour sequencing on MinION flowcells for {len(cumcounts_Xminutes)} samples.")
+print(cumcounts_Xminutes)
+df1h = pd.concat(cumcounts_Xminutes, ignore_index=True)
+exp_to_group = dict(
+    (t.experiment_id, t.group_size)
+    for t in summary_df[["experiment_id", "group_size"]].itertuples()
+)
+df1h["group_size"] = df1h["experiment"].replace(exp_to_group)
+df1h["target"] = df1h["target"].replace(relabels)
 print(df1h)
-print("\nTargets: ", set(df1h["target"]))
-print(df1h.groupby(["target"]).describe())
+df1h.to_csv(tabcounts1, index=False)
+# print("\nTargets: ", set(df1h["target"]))
 
 sns.set_style("whitegrid")
 resampled_palette = mpl.colormaps['plasma'].resampled(8)
 colors = resampled_palette(np.linspace(0, 0.7, df1h["group_size"].nunique()))
 # exclude interval [0.6, 1) to avoid picking yellow shades
-print(colors)
+
 fig1h, ax1h = plt.subplots(1, 1, figsize=(12, 8))
 leglabels = []
 leghandles = []
@@ -84,22 +106,128 @@ ax1h.set_xticklabels(ax1h.get_xticklabels(),
                      rotation=30,
                      ha='right',
                      )
-labs1h = ax1h.get_xticklabels()
-newlabs1h = [relabels[lab.get_text()] for lab in labs1h]
-ax1h.set_xticklabels(newlabs1h)
+# labs1h = ax1h.get_xticklabels()
+# newlabs1h = [relabels[lab.get_text()] for lab in labs1h]
+# ax1h.set_xticklabels(newlabs1h)
 ax1h.set_ylim(bottom=0, top=df1h["mean"].max() + 100)
 plt.legend(handles=leghandles, labels=leglabels, title="Group size",
            title_fontsize=14, fontsize=12, loc='upper right')
 for target in set(df1h["target"]):
     plt.axvline(x=list(set(df1h["target"])).index(target) - 0.0,
                 linestyle='--', color='lightgrey', alpha=0.5)
-plt.title(f"Estimated read counts after 1 hour sequencing on MinION flowcells (n={len(df1h['sample'].unique())})",
+plt.title(f"Estimated read counts after {timestep} minutes sequencing on MinION flowcells (n={len(df1h['sample'])})",
           fontsize=18)
 ax1h.set_xlabel("Amplicon", fontsize=16)
 ax1h.set_ylabel("Read counts", fontsize=16)
-plt.savefig(swarmplot_minion, bbox_inches='tight')
+plt.savefig(swarmplot1, bbox_inches='tight')
 plt.show()
 sns.set_style("white")
+
+
+_n_rows = len(df1h["group_size"].unique())
+boxfig1h, boxax1h = plt.subplots(_n_rows, 1, figsize=(12, 8 * _n_rows))  # , sharex=True)
+leglabels = []
+leghandles = []
+for i, group in enumerate(sorted(df1h["group_size"].unique())):
+    sns.boxplot(x="target",
+                y="mean",
+                data=df1h[df1h["group_size"] == group],
+                # color=colors[i],
+                ax=boxax1h[i],
+                legend=False
+                )
+    leglabels.append(f"{group} sample(s)")
+    leghandles.append(Line2D([], [], color="white",
+                             marker='o', markerfacecolor=colors[i], markersize=10,))
+    boxax1h[i].set_xticklabels(
+        df1h[df1h["group_size"] == group]["target"].unique(),  # boxax1h[i].get_xticklabels(),
+        rotation=30,
+        ha='right',
+    )
+    print(df1h[df1h["group_size"] == group])
+    boxax1h[i].set_ylim(bottom=0, top=df1h[df1h["group_size"] == group]["mean"].max() + 100)
+    boxax1h[i].set_xlabel("Amplicon", fontsize=16)
+    boxax1h[i].set_ylabel("Read counts", fontsize=16)
+    boxax1h[i].axhline(y=1000, linestyle='--', color='r', label='1000')
+    # boxax1h[i].legend(handles=[f"{group} sample(s)"], labels=[Line2D([], [], color="white",
+    #                                                                  marker='o', markerfacecolor=colors[i], markersize=10,)],
+    #                   title="Group size",
+    #                   title_fontsize=14, fontsize=12, loc='upper right')
+    for target in set(df1h["target"]):
+        boxax1h[i].axvline(
+            x=list(set(df1h["target"])).index(target) - 0.0,
+            linestyle='--', color='lightgrey', alpha=0.5
+        )
+    boxax1h[i].set_title(f"(group size={group}, n={len(df1h[df1h['group_size'] == group]['sample']) // len(relabels)} samples)",
+                         fontsize=18)
+plt.suptitle(f"Estimated read counts after {timestep} minutes sequencing on MinION flowcell", fontsize=20, y=0.92)
+# plt.tight_layout()
+plt.savefig(boxplot1, bbox_inches='tight')
+plt.show()
+sns.set_style("white")
+
+tsteps = [60, 120]
+try:
+    df2 = pd.read_csv(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/tab_read_counts_60minutes.csv", sep=",")
+    df3 = pd.read_csv(f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/tab_read_counts_120minutes.csv", sep=",")
+    df2["timestep"] = 60
+    df3["timestep"] = 120
+    df4 = pd.concat([df2, df3], ignore_index=True)
+    df4["target"] = df4["target"].replace(relabels)
+    print(df4)
+    min_reads = df4["mean"].min()
+    print(df4[df4["mean"] <= min_reads + 200])
+    print(df4.groupby(["target", "timestep"]).describe())
+    (df4.groupby(["target", "timestep"])
+     .describe()
+     .to_csv("/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/4+24hours_describe.csv", index=False))
+
+    sns.set_theme(style="ticks")
+    custom_palette = {60: "darkkhaki", 120: "royalblue"}
+    fig4, ax4 = plt.subplots(_n_rows, 1, figsize=(12, 8 * _n_rows))  # , sharex=True)
+
+    for i, group in enumerate(sorted(df1h["group_size"].unique())):
+        sns.boxplot(x="target",
+                    y="mean",
+                    hue="timestep",
+                    data=df4[df4["group_size"] == group],
+                    palette=custom_palette,
+                    width=0.8,
+                    linewidth=2.0,
+                    showmeans=True,
+                    showfliers=False,
+                    # fliersize=1,
+                    ax=ax4[i],
+                    )
+        hds, labs = ax4[i].get_legend_handles_labels()
+        hours = []
+        for hd, lab in zip(hds, labs):
+            lab = f"{int(lab) // 60} hours"
+            hours.append(lab)
+        ax4[i].legend(handles=hds, labels=hours,
+                      title_fontsize=18, fontsize=18)
+        ax4[i].set_xticklabels(ax4[i].get_xticklabels(),
+                               rotation=30,
+                               ha='right',
+                               )
+        ax4[i].tick_params(axis='both', which='major', labelsize=14)
+        ax4[i].set_xlabel("Amplicon", fontsize=18)
+        ax4[i].set_ylabel("Read counts", fontsize=18)
+        # ax4[i].set_ylim(bottom=0, top=df1h[df1h["group_size"] == group]["mean"].max() + 100)
+        ax4[i].axhline(y=1000, linestyle='--', color='r', label='1000')
+        ax4[i].set_title(f"(group size={group}, n={len(df1h[df1h['group_size'] == group]['sample']) // len(relabels)} samples)",
+                         fontsize=18)
+        for target in set(df1h["target"]):
+            ax4[i].axvline(x=list(set(df1h["target"])).index(target) - 0.0,
+                           linestyle='--', color='lightgrey', alpha=0.5)
+        # red dashed line at y=1000 reads
+        # plt.annotate(text='1000 reads', xy=(0, 1000), xytext=(-0.11, 0.02), xycoords='figure fraction', color='r')
+    plt.suptitle(f"Estimated read counts after 60 and 120 minutes sequencing on MinION flowcell", fontsize=20, y=0.92)
+    plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.5)
+    plt.savefig(boxplot4, bbox_inches='tight')
+
+except FileNotFoundError:
+    pass
 
 if False:
     # Read cumulative counts after 4 hours

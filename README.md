@@ -16,17 +16,9 @@
 
 ## :speech_balloon: Introduction
 
-<<<<<<< HEAD
-This module implements a workflow with Snakemake for the analysis of Nanopore sequence data from pooled amplicons
-at Clinical Genomics Uppsala (CGU) in view of supporting the diagnostics of Acute Myeloid Leukemia (AML).
-The module consists of ... build upon [hydra-genetics]().
-Multiplexed amplicon sequencing: severral targets are amplified in **multiplexed PCR** settings. 
-The **sample** to be analyzed is **not multiplexed** with other ones.
-=======
 This pipeline implements a workflow with Snakemake for the analysis of Oxford Nanopore Technologies (ONT) sequence data 
 from pooled amplicons at Clinical Genomics Uppsala (CGU) in view of supporting 
 the rapid diagnostics of Acute Myeloid Leukemia (AML).
->>>>>>> 9b9ec211fc4d56a1fac1a7ec8b0badee8521ff8b
 
 The pipeline is partly build upon the tools and modules available in [hydra-genetics](https://github.com/hydra-genetics).
 The steps that are specific to the analysis of pooled amplicons are implemented in this repository,
@@ -73,6 +65,10 @@ See the [documentation for Filtlong](https://github.com/rrwick/Filtlong/tree/mai
   - the software [DeepSomatic](https://github.com/google/deepsomatic) via Docker container provided by the development team and the [documented examples](https://github.com/google/deepsomatic/blob/r1.8/docs/deepsomatic-case-study-ont-tumor-only.md),
   - the software [VarDict](https://academic.oup.com/nar/article/44/11/e108/2468301),
   - the software [Sniffles2](https://www.nature.com/articles/s41587-023-02024-y),
+
+**NB**: Savana (SV calling in long-read data) ot working yet for amplicon data, 
+but we keep it here for future use when the tool will be updated to handle amplicon data
+(see https://github.com/cortes-ciriano-lab/savana/issues/97).
 
 6. Decomposition of the variants with the software [_VT_](https://github.com/atks/vt) 
 and annotation of the variants with [_VEP_](https://www.ensembl.org/info/docs/tools/vep/index.html),
@@ -425,7 +421,7 @@ The small integration test can be run as follows on a Linux-based OS
 ```bash
 $ cd .tests/integration/
 $ source ../../.venv/bin/activate
-$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
+$ snakemake -s ../../workflow/Snakefile -j 1 --show-failed-logs --configfiles ../../config/config.yaml config/config.yaml  --use-singularity --singularity-prefix .snakemake/singularity/ --singularity-args  " --cleanenv --containall --bind $PWD/tmp:/tmp -B $PWD:$PWD  -B $HOME -B /usr/lib/locale/:/usr/lib/locale/ --disable-cache "
 ```
 
 The `--singularity-args` may be replaced by the ones that are suitable for your local OS if needed.
@@ -630,7 +626,7 @@ Default container: `docker://hydragenetics/common:3.0.0`
 | Samtools    | 1.21       | `docker://hydragenetics/samtools:1.21`                      | -                                                                                                                                                                 |
 | Filtlong    | 0.2.1      | `docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4` | The `--min_length` and `--max_length` command line options must be available.                                                                                     |
 | Mosdepth    | 0.3.6      | `docker://hydragenetics/mosdepth:0.3.6`                     | Used to approximate the read counts per target.                                                                                                                   |
-| ClairS-TO   | 0.3.1      | `docker://hkubal/clairs-to:latest`                          | -                                                                                                                                                                 |
+| ClairS-TO   | 0.4.0      | `docker://hkubal/clairs-to:latest`                          | -                                                                                                                                                                 |
 | DeepSomatic | 1.9.0      | `docker://google/deepsomatic:1.9.0`                         | The snakemake command that executes variant calling in the suitable Singularity container must have the binding argument `/usr/lib/locale/:/usr/lib/locale/`.     |
 | VarDict     | 1.8.3      | `docker://hydragenetics/vardict:1.8.3`                      | Originally designed for short-read data but has an "amplicon" mode that seems compatible with ONT data. Many false positive for short indels with low VAF though. |
 | Sniffles2   | 2.6.1      | `docker://hydragenetics/sniffles2:2.6.1`                    | -                                                                                                                                                                 |

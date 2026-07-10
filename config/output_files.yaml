@@ -1,24 +1,24 @@
 ---
  files:
-   - name: "samples_tsv"
-     output: "Results/{experiment}_{sample}_{type}_samples.tsv"
-     input: "samples.tsv"
-
-   - name: "units_tsv"
-     output: "Results/{experiment}_{sample}_{type}_units.tsv"
-     input: "units.tsv"
-
-   - name: "config_yaml"
-     output: "Results/{experiment}_{sample}_{type}_config.yaml"
-     input: "config/config.yaml"
-
-   - name: "resources_yaml"
-     output: "Results/{experiment}_{sample}_{type}_resources.yaml"
-     input: "config/resources.yaml"
-
-   - name: "bed_files_amplicon"
-     output: "Results/Bed"
-     input: "bedfiles/"
+#   - name: "samples_tsv"
+#     output: "Results/{experiment}_{sample}_{type}_samples.tsv"
+#     input: "samples.tsv"
+#
+#   - name: "units_tsv"
+#     output: "Results/{experiment}_{sample}_{type}_units.tsv"
+#     input: "units.tsv"
+#
+#   - name: "config_yaml"
+#     output: "Results/{experiment}_{sample}_{type}_config.yaml"
+#     input: "config/config.yaml"
+#
+#   - name: "resources_yaml"
+#     output: "Results/{experiment}_{sample}_{type}_resources.yaml"
+#     input: "config/resources.yaml"
+#
+#   - name: "bed_files_amplicon"
+#     output: "Results/Bed"
+#     input: "bedfiles/"
 
 ##   - name: "bed_files_targets"
 ##     output: "results/bed/{target}.bed"
@@ -72,6 +72,10 @@
 ##     output: "Results/Data/{experiment}_{sample}_{type}.ensembled.vep_annotated.filter.somatic_hard.vcf"
 ##     input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_hard.vcf"
 
+   - name: "pycoqc_report"
+     output: "Results/Reports/{experiment}_{sample}_{type}_sequencing_report_pycoqc.html"
+     input: "results/pycoqc/{experiment}_{sample}_{type}_report_sequencing_summary.html"
+
    - name: "snv_indels_var_calls_ensembled_annotated_soft_filtered"
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.snv-indels.vcf"
      input: "snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf"
@@ -84,21 +88,21 @@
      output: "Results/Reports/{experiment}_{sample}_{type}_multiqc_{report}.html"
      input: "results/qc/multiqc/{experiment}_{sample}_{type}_multiqc_{report}.html"
 
-   - name: "mosdepth_coverage_per_amplicon"
-     output: "Results/Reports/{experiment}_{sample}_{type}_coverage_per_amplicon.csv"
-     input: "results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv"
-
-   - name: "yield_pool_1"
-     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_1.csv"
-     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_1.csv"
-
-   - name: "yield_pool_2"
-     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_2.csv"
-     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_2.csv"
-
-   - name: "yield_pool_3"
-     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_3.csv"
-     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_3.csv"
+#   - name: "mosdepth_coverage_per_amplicon"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_coverage_per_amplicon.csv"
+#     input: "results/mosdepth/{experiment}_{sample}_{type}_coverage_per_amplicon.csv"
+#
+#   - name: "yield_pool_1"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_1.csv"
+#     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_1.csv"
+#
+#   - name: "yield_pool_2"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_2.csv"
+#     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_2.csv"
+#
+#   - name: "yield_pool_3"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_yield_pool_3.csv"
+#     input: "results/mosdepth/{experiment}_{sample}_{type}_yield_pool_3.csv"
 
    # - name: "mosdepth_timestep_coverage_per_amplicon_csv"
    #   output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"
@@ -108,13 +112,13 @@
    #   output: "Results/Reports/timestep_coverage_per_amplicon/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
    #   input: "results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"
 
-   - name: "mosdepth_summary_amplicons"
-     output: "Results/Reports/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"
-     input: "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"
-
-   - name: "mosdepth_bed_exon_summary"
-     output: "Results/Reports/{experiment}_{sample}_{type}_exons.mosdepth.summary.txt"
-     input: "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.summary.txt"
+#   - name: "mosdepth_summary_amplicons"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"
+#     input: "results/mosdepth/{experiment}_{sample}_{type}_amplicons.mosdepth.summary.txt"
+#
+#   - name: "mosdepth_bed_exon_summary"
+#     output: "Results/Reports/{experiment}_{sample}_{type}_exons.mosdepth.summary.txt"
+#     input: "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.summary.txt"
 
    - name: "excel_report"
      output: "Results/Reports/{experiment}_{sample}_{type}.xlsx"

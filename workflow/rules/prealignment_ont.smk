@@ -1,5 +1,5 @@
 __author__ = "Camille Clouard"
-__copyright__ = "Copyright 2024, Camille Clouard"
+__copyright__ = "Copyright 2026, Camille Clouard"
 __email__ = "camille.clouard@scilifelab.uu.se"
 __license__ = "GPL-3"
 
@@ -8,29 +8,29 @@ from snakemake.logging import logger
 logger.info(f"\n{workflow.snakefile} is being parsed")
 
 
-rule filtlong:
+rule prealignment_ont_filtlong:
     input:
         "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz",
     output:
         fastq=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz"),
     params:
-        min_length=config.get("filtlong", {}).get("min_length", 150),
-        max_length=config.get("filtlong", {}).get("max_length", 8000),
+        min_length=config.get("prealignment_ont_filtlong", {}).get("min_length", 50),
+        max_length=config.get("prealignment_ont_filtlong", {}).get("max_length", 30000),
     log:
         "prealignment/filtlong/{experiment}_{sample}_{type}.filtlong.log",
     resources:
-        partition=config.get("filtlong", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("filtlong", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("filtlong", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("filtlong", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("filtlong", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("filtlong", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("prealignment_ont_filtlong", {}).get("partition", config["default_resources"]["partition"]),
+        time=config.get("prealignment_ont_filtlong", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("prealignment_ont_filtlong", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("prealignment_ont_filtlong", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("prealignment_ont_filtlong", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+    threads: config.get("prealignment_ont_filtlong", {}).get("threads", config["default_resources"]["threads"])
     container:
-        config.get("filtlong", {}).get("container", config["default_container"])
+        config.get("prealignment_ont_filtlong", {}).get("container", config["default_container"])
     benchmark:
         repeat(
             "prealignment/filtlong/{experiment}_{sample}_{type}.filtlong.benchmark.tsv",
-            config.get("filtlong", {}).get("benchmark_repeats", 1),
+            config.get("prealignment_ont_filtlong", {}).get("benchmark_repeats", 1),
         )
     message:
         """
@@ -43,7 +43,7 @@ rule filtlong:
         """
 
 
-rule fetch_filtered_reads:
+rule prealignment_ont_fetch_filtered_reads:
     input:
         fastq1="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.fastq.gz",
         fastq2="basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz",
@@ -52,21 +52,25 @@ rule fetch_filtered_reads:
         bam=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.bam"),
         fastq=temp("prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz"),
     resources:
-        partition=config.get("filtlong", {}).get("partition", config["default_resources"]["partition"]),
-        time=config.get("filtlong", {}).get("time", config["default_resources"]["time"]),
-        threads=config.get("filtlong", {}).get("threads", config["default_resources"]["threads"]),
-        mem_mb=config.get("filtlong", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("filtlong", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-    threads: config.get("filtlong", {}).get("threads", config["default_resources"]["threads"])
+        partition=config.get("prealignment_ont_fetch_filtered_reads", {}).get(
+            "partition", config["default_resources"]["partition"]
+        ),
+        time=config.get("prealignment_ont_fetch_filtered_reads", {}).get("time", config["default_resources"]["time"]),
+        threads=config.get("prealignment_ont_fetch_filtered_reads", {}).get("threads", config["default_resources"]["threads"]),
+        mem_mb=config.get("prealignment_ont_fetch_filtered_reads", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("prealignment_ont_fetch_filtered_reads", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+    threads: config.get("prealignment_ont_fetch_filtered_reads", {}).get("threads", config["default_resources"]["threads"])
     log:
         "prealignment/filtlong/{experiment}_{sample}_{type}.fetch_filtered_reads.log",
     benchmark:
         repeat(
             "prealignment/filtlong/{experiment}_{sample}_{type}.fetch_filtered_reads.benchmark.tsv",
-            config.get("filtlong", {}).get("benchmark_repeats", 1),
+            config.get("prealignment_ont_fetch_filtered_reads", {}).get("benchmark_repeats", 1),
         )
     container:
-        config.get("samtools", {}).get("container", config["default_container"])
+        config.get("prealignment_ont_fetch_filtered_reads", {}).get("container", config["default_container"])
     message:
         """
         {rule}: Fetch the reads that are filtered out with Filtlong.
@@ -79,7 +83,7 @@ rule fetch_filtered_reads:
         """
 
 
-rule fetch_too_short_too_long_reads:
+rule prealignment_ont_fetch_too_short_too_long_reads:
     input:
         fastq="prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.out.fastq.gz",
     output:
@@ -97,7 +101,7 @@ rule fetch_too_short_too_long_reads:
     benchmark:
         repeat(
             "prealignment/filtlong/{experiment}_{sample}_{type}.fetch_too_short_too_long_reads.benchmark.tsv",
-            config.get("filtlong", {}).get("benchmark_repeats", 1),
+            config.get("prealignment_ont_fetch_too_short_too_long_reads", {}).get("benchmark_repeats", 1),
         )
     container:
         config["default_container"]

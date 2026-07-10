@@ -15,6 +15,496 @@ properties:
   default_container:
     type: string
     description: name or path to a default docker/singularity container
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_index:
+    type: object
+    description: parameters for alignment_ont_bam_index
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_softclip:
+    type: object
+    description: parameters for alignment_ont_bam_softclip
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_bam_sort:
+    type: object
+    description: parameters for alignment_ont_bam_sort
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_dorado_align:
+    type: object
+    description: parameters for alignment_ont_dorado_align
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_by_target:
+    type: object
+    description: parameters for alignment_ont_dorado_align
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  alignment_ont_split_bam_target_j3:
+    type: object
+    description: parameters for alignment_ont_split_bam_target_j3
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_bam_to_fastq:
+    type: object
+    description: parameters for basecalling_bam_to_fastq
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_compress_fastq:
+    type: object
+    description: parameters for basecalling_compress_fastq
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_basecaller:
+    type: object
+    description: parameters for basecalling_dorado_basecaller
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_demux:
+    type: object
+    description: parameters for basecalling_dorado_demux
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex:
+    type: object
+    description: parameters for basecalling_dorado_duplex
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_duplex_multisamples:
+    type: object
+    description: parameters for basecalling_dorado_duplex_multisamples
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_dorado_trim:
+    type: object
+    description: parameters for basecalling_dorado_trim
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  basecalling_rename_demux_bam:
+    type: object
+    description: parameters for basecalling_rename_demux_bam
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_filtlong:
+    type: object
+    description: parameters for prealignment_ont_filtlong
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_filtered_reads:
+    type: object
+    description: parameters for prealignment_ont_fetch_filtered_reads
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prealignment_ont_fetch_too_short_too_long_reads:
+    type: object
+    description: parameters for prealignment_ont_fetch_too_short_too_long_reads
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_include_region:
+    type: object
+    description: parameters for prefiltering_bcftools_include_region
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_bcftools_view:
+    type: object
+    description: parameters for prefiltering_bcftools_view
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_rename_vaf_to_af:
+    type: object
+    description: parameters for prefiltering_rename_vaf_to_af
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_picard_bed_to_interval_list:
+    type: object
+    description: parameters for qc_ont_picard_bed_to_interval_list
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge:
+    type: object
+    description: parameters for qc_ont_mosdepth_merge
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_merge_timestep:
+    type: object
+    description: parameters for qc_ont_mosdepth_merge_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap:
+    type: object
+    description: parameters for qc_ont_mosdepth_overlap
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_mosdepth_overlap_timestep:
+    type: object
+    description: parameters for qc_ont_mosdepth_overlap_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_plot_yield_timestep:
+    type: object
+    description: parameters for qc_ont_plot_yield_timestep
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_pycoqc:
+    type: object
+    description: parameters for qc_ont_pycoqc
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_sequali:
+    type: object
+    description: parameters for qc_ont_sequali
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_yield_per_pool:
+    type: object
+    description: parameters for qc_ont_yield_per_pool
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_copy_bed:
+    type: object
+    description: parameters for results_report_copy_bed
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  results_report_xlsx:
+    type: object
+    description: parameters for results_report_xlsx
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to:
+    type: object
+    description: parameters for snv_indels_svs_clairs_to
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_clairs_to_concat:
+    type: object
+    description: parameters for snv_indels_svs_clairs_to_concat
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_deepsomatic:
+    type: object
+    description: parameters for snv_indels_svs_deepsomatic
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  snv_indels_svs_savana:
+    type: object
+    description: parameters for snv_indels_svs_savana
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+      extra:
+        type: string
+        description: parameters that should be forwarded
 
 required:
   - samples
