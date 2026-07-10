@@ -34,10 +34,12 @@ for file_name in gvcf_files:
             try:
                 ad_idx = formats.index("AD")
                 ad_info = data[ad_idx].split(",")
-                # handle specific format in ClairS-TO for RefCalls, for example GT:GQ:DP:AF:AD:AU:CU:GU:TU   0/0:8:7181:0.9109:6541:2:6541:1:0 --> count for alt alleles are :-separated
+                # handle specific format in ClairS-TO for RefCalls, for example:
+                # GT:GQ:DP:AF:AD:AU:CU:GU:TU   0/0:8:7181:0.9109:6541:2:6541:1:0
+                # --> count for alt alleles are :-separated
                 if len(ad_info) == 1:
-                	ad_info = data[ad_idx:]  # AD:AU:CU:GU:TU    6541:2:6541:1:0
-                	print(ad_info)
+                    ad_info = data[ad_idx:]  # AD:AU:CU:GU:TU    6541:2:6541:1:0
+                    print(ad_info)
 
                 ref_ad = int(ad_info[0])  # 6541
                 alt_ad = sum(int(ad) for ad in ad_info[1:])  # sum([2, 6541, 1, 0]) = 6544
@@ -48,7 +50,7 @@ for file_name in gvcf_files:
                     continue
 
                 alt_af = alt_ad / float(dp)  # 1.0005
-                
+
                 # Correct VAF for RefCalls in ClairS-TO
                 if alt_af > 1:
                     alt_af = alt_af - 1  # 0.0005 < max_af=0.03
@@ -67,7 +69,7 @@ for file_name in gvcf_files:
             except (ValueError, IndexError):
                 # Skip if AD field or index is missing/malformed
                 continue
-            
+
 # Sort the variants per genomic position
 background_dict_sorted = OrderedDict(sorted(background_dict.items()))
 
@@ -89,4 +91,3 @@ with open(background_file_path, "w") as background_file:
 
         chrom, pos = key
         background_file.write(f"{chrom}\t{pos}\t{median_background}\t{stdev_background}\t{len(af_list)}\n")
-
