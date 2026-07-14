@@ -6,6 +6,15 @@ units: "config/units.tsv"
 samples_run: "samples.tsv"
 units_run: "units.tsv"
 
+# Modules
+
+modules:
+  annotation: "v1.0.0"
+  cnv_sv: "v0.9.0"
+  filtering: "v1.1.0"
+  snv_indels: "v1.1.0"
+  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
+
 # Custom keys and values below
 
 proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"  # on Marvin, to be replaced by runFolder
@@ -341,8 +350,3 @@ vt_decompose:
 
 vt_normalize:
   container: "docker://hydragenetics/vt:2015.11.10"
-
-# Modules
-
-modules:
-  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
