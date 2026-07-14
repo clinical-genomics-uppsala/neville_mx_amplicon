@@ -39,7 +39,7 @@ files:
     output: "{experiment}_{sample}_{type}.vardict.g.vcf.gz"
 
   - name: "unfiltered gVCF from vardict"
-    input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.soft-clipped.vardict.g.vcf.gz"
+    input: "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
     output: "{experiment}_{sample}_{type}.unfiltered_vardict.g.vcf.gz"
 
   - name: "soft_clipped_bam"
