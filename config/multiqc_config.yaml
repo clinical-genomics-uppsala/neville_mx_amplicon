@@ -85,6 +85,13 @@ module_order:
         - "*/mosdepth_bed/*TP53_J3*"
         # - "*/mosdepth/*mosdepth.summary.txt"
         # - "*/mosdepth_bed/*TP53_*+*"
+  - mosdepth:
+      name:
+        "Mosdepth in exons"
+      info:
+        "Coverage for each exon"
+      path_filters:
+        - "*/mosdepth_bed_per_exon/"
   - picard:
       name:
         "Picard HsMetrics"
