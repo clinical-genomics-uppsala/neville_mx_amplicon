@@ -91,7 +91,7 @@ module_order:
       info:
         "Coverage for each exon"
       path_filters:
-        - "*/mosdepth_bed_per_exon/"
+        - "*/mosdepth_bed_per_exon/*"
   - picard:
       name:
         "Picard HsMetrics"
