@@ -288,6 +288,7 @@ multiqc:
         - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz"
         - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.per-base.bed.gz"
         - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.thresholds.bed.gz"
+        - "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.tsv"
         - "results/qc/samtools_ampliconclip/{experiment}_{sample}_{type}_ampliconclip.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt"

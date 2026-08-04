@@ -12,6 +12,10 @@ extra_fn_clean_exts:
   - type: remove
     pattern: "_reads.ont_adapt_trim.filtered"
 
+sp:
+  exon_coverage:
+    fn: "*_exon_coverage_mqc.tsv"
+
 mosdepth_config:
   include_contigs:
     - "chr*"
@@ -85,13 +89,13 @@ module_order:
         - "*/mosdepth_bed/*TP53_J3*"
         # - "*/mosdepth/*mosdepth.summary.txt"
         # - "*/mosdepth_bed/*TP53_*+*"
-  - mosdepth:
-      name:
-        "Mosdepth in exons"
-      info:
-        "Coverage for each exon"
-      path_filters:
-        - "*/mosdepth_bed_per_exon/*"
+#  - mosdepth:
+#      name:
+#        "Mosdepth in exons"
+#      info:
+#        "Coverage for each exon"
+#      path_filters:
+#        - "*/mosdepth_bed_per_exon/*"
   - picard:
       name:
         "Picard HsMetrics"

@@ -294,3 +294,32 @@ rule qc_ont_picard_bed_to_interval_list:
         config.get("qc_ont_picard_bed_to_interval_list", {}).get("container", config["default_container"])
     wrapper:
         "v5.0.1/bio/picard/bedtointervallist"
+
+
+rule qc_ont_mosdepth_exons_multiqc:
+    input:
+        bed="results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz",
+    output:
+        tsv="results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.tsv",
+    params:
+        extra=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("extra", ""),
+    log:
+        "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.output.log",
+    benchmark:
+        repeat(
+            "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.output.benchmark.tsv",
+            config.get("qc_ont_mosdepth_exons_multiqc", {}).get("benchmark_repeats", 1)
+        )
+    threads: config.get("qc_ont_mosdepth_exons_multiqc", {}).get("threads", config["default_resources"]["threads"])
+    resources:
+        mem_mb=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
+        mem_per_cpu=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
+        partition=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("partition", config["default_resources"]["partition"]),
+        threads=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("threads", config["default_resources"]["threads"]),
+        time=config.get("qc_ont_mosdepth_exons_multiqc", {}).get("time", config["default_resources"]["time"]),
+    container:
+        config.get("qc_ont_mosdepth_exons_multiqc", {}).get("container", config["default_container"])
+    message:
+        "{rule}: Write coverage values in exons to TSV file"
+    script:
+        "../scripts/mosdepth_exons_multiqc.py"
