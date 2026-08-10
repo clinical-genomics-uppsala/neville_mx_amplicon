@@ -114,6 +114,13 @@ mosdepth:
   mem_mb: 122880
   mem_per_cpu: 6144
 
+mosdepth_bed:
+  partition: "core"
+  time: "02:00:00"
+  threads: 8
+  mem_mb: 122880
+  mem_per_cpu: 6144
+
 qc_ont_mosdepth_overlap:
   partition: "core"
   time: "02:00:00"
@@ -131,8 +138,8 @@ qc_ont_mosdepth_overlap_timestep:
 qc_ont_pycoqc:
   partition: "core"
   time: "01:00:00"
-  threads: 1
-  mem_mb: 6144
+  threads: 10
+  mem_mb: 61440
   mem_per_cpu: 6144
 
 qc_ont_sequali:
