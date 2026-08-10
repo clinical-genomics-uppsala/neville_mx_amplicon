@@ -6,6 +6,7 @@ default_resources:
   mem_mb: 1024
   mem_per_cpu: 3072
   partition: "core"
+  gres: ""
 
 alignment_ont_bam_index:
   partition: "core"
