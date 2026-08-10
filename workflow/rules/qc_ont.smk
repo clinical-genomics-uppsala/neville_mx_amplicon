@@ -181,7 +181,7 @@ rule qc_ont_plot_yield_timestep:
         csv=temp("results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.csv"),
         png=temp("results/mosdepth/timestep_coverage_images/{experiment}_{sample}_{type}_cumsum_coverage_per_amplicon.png"),
     params:
-        timestep=config.get("timestep_minknow", 10)
+        timestep=config.get("timestep_minknow", 10),
     resources:
         partition=config["default_resources"]["partition"],
         time=config["default_resources"]["time"],
