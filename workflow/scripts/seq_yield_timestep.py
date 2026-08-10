@@ -33,7 +33,7 @@ for i, batch in enumerate(batches):
         # expand axis in case an amplicon has not produced any read in the time interval
         dfcov = dfcov.join(prev_counts, how="outer").drop("prev_counts", axis=1)
         dfcov = dfcov.loc[target_set].fillna(0.0)
-        dfcov["timestep"] = (batch + 1) * 60  # * 10 if Flongle and * 60 if MinION
+        dfcov["timestep"] = (batch + 1) * snakemake.params.timestep
         dfstep = dfcov[["timestep", "mean"]]
         readcounts.append(dfcov)
     except FileNotFoundError:  # if seqrun failed or is stopped before elapsed time of 24h, then there < 144 bam files

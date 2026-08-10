@@ -187,6 +187,10 @@ rule alignment_ont_split_bam_target_j3:
             "alignment/dorado_align/{{experiment}}_{{sample}}_{{type}}_{target}_reads.txt",
             target=config.get("amplicons") + config.get("extra_regions"),
         ),
+        bam=expand(
+            "alignment/dorado_align/{{experiment}}_{{sample}}_{{type}}_{target}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
+            target=config.get("amplicons") + config.get("extra_regions"),
+        ),
     output:
         bam=temp(
             "alignment/dorado_align/{experiment}_{sample}_{type}_TP53_J3_only_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam"
