@@ -310,7 +310,7 @@ rule qc_ont_mosdepth_exons_multiqc:
     benchmark:
         repeat(
             "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.output.benchmark.tsv",
-            config.get("qc_ont_mosdepth_exons_multiqc", {}).get("benchmark_repeats", 1)
+            config.get("qc_ont_mosdepth_exons_multiqc", {}).get("benchmark_repeats", 1),
         )
     threads: config.get("qc_ont_mosdepth_exons_multiqc", {}).get("threads", config["default_resources"]["threads"])
     resources:
