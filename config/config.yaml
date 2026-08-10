@@ -6,6 +6,15 @@ units: "config/units.tsv"
 samples_run: "samples.tsv"
 units_run: "units.tsv"
 
+# Modules
+
+modules:
+  annotation: "v1.0.0"
+  cnv_sv: "v0.9.0"
+  filtering: "v1.1.0"
+  snv_indels: "v1.1.0"
+  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"
+
 # Custom keys and values below
 
 proj_data: "/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_PoolM12_M13_RO"  # on Marvin, to be replaced by runFolder
@@ -30,6 +39,7 @@ runid: "{{runid}}"
 multisample: "{{multisample}}"
 samplesheet: "{{samplesheet}}"
 raw_data: "pod5"
+timestep_minknow: 10
 
 dorado_model: "dna_r10.4.1_e8.2_400bps_sup@v5.2.0"
 
@@ -274,6 +284,12 @@ multiqc:
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.regions.bed.gz"
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.per-base.bed.gz"
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.thresholds.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.summary.txt"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.region.dist.txt"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.per-base.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.thresholds.bed.gz"
+        - "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.tsv"
         - "results/qc/samtools_ampliconclip/{experiment}_{sample}_{type}_ampliconclip.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt"
@@ -336,8 +352,3 @@ vt_decompose:
 
 vt_normalize:
   container: "docker://hydragenetics/vt:2015.11.10"
-
-# Modules
-
-modules:
-  qc: "v0.5.0"  # "a5e356d": commit hash which is compatible with long-read units.tsv files, otherwise use "v0.5.0"

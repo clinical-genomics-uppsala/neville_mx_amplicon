@@ -25,7 +25,7 @@ if not config.get("multisample", False):
         resources:
             partition=config.get("basecalling_dorado_basecaller", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("basecalling_dorado_basecaller", {}).get("time", config["default_resources"]["time"]),
-            gres=config.get("basecalling_dorado_basecaller", {}).get("gres"),
+            gres=config.get("basecalling_dorado_basecaller", {}).get("gres", config["default_resources"]["gres"]),
             threads=config.get("basecalling_dorado_basecaller", {}).get("threads", config["default_resources"]["threads"]),
             mem_mb=config.get("basecalling_dorado_basecaller", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
             mem_per_cpu=config.get("basecalling_dorado_basecaller", {}).get(
@@ -67,7 +67,7 @@ if not config.get("multisample", False):
         resources:
             partition=config.get("basecalling_dorado_duplex", {}).get("partition", config["default_resources"]["partition"]),
             time=config.get("basecalling_dorado_duplex", {}).get("time", config["default_resources"]["time"]),
-            gres=config.get("basecalling_dorado_duplex", {}).get("gres"),
+            gres=config.get("basecalling_dorado_duplex", {}).get("gres", config["default_resources"]["gres"]),
             threads=config.get("basecalling_dorado_duplex", {}).get("threads", config["default_resources"]["threads"]),
             mem_mb=config.get("basecalling_dorado_duplex", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
             mem_per_cpu=config.get("basecalling_dorado_duplex", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
@@ -118,7 +118,7 @@ if config.get("multisample", False):
                 "partition", config["default_resources"]["partition"]
             ),
             time=config.get("basecalling_dorado_duplex_multisamples", {}).get("time", config["default_resources"]["time"]),
-            gres=config.get("basecalling_dorado_duplex_multisamples", {}).get("gres"),
+            gres=config.get("basecalling_dorado_duplex_multisamples", {}).get("gres", config["default_resources"]["gres"]),
             threads=config.get("basecalling_dorado_duplex_multisamples", {}).get(
                 "threads", config["default_resources"]["threads"]
             ),

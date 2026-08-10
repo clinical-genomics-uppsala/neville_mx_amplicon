@@ -617,3 +617,24 @@ but we keep it here for future use when the tool will be updated to handle ampli
 
 #RESOURCESSCHEMA__snv_indels_svs_savana#
 
+
+## [qc_ont_mosdepth_exons_multiqc](url_to_tool)
+Introduction to qc_ont_mosdepth_exons_multiqc: rewrites bd.gz file to a TSV file with Python.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_exons_multiqc#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_exons_multiqc#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_mosdepth_exons_multiqc#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_mosdepth_exons_multiqc#
