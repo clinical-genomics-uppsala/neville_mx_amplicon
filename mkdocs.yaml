@@ -1,7 +1,31 @@
-site_name: tmp.pipeline_pool_amplicon
+site_name: neville_mx_amplicon
 nav:
-  - Introduction: intro.md
-  - Softwares: softwares.md
+  - Overview:
+    - Introduction: index.md
+    - Pipeline overview: overview.md
+    - Result files: result_files.md
+    - Pipeline setup and configuration: setup.md
+    - Reference files: references.md
+  - Running the pipeline:
+    - Basic: running.md
+    - Running on HPC (Slurm): running_slurm.md
+  - Pipeline Steps:
+    - Basecalling: basecalling.md
+    - Pre-alignment (filtering): prealignment.md
+    - Alignment & soft-clipping: alignment.md
+    - Variant calling: variant_calling.md
+    - Annotation & decomposition: annotation.md
+    - QC and reports: qc.md
+  - Pipeline specific rules:
+    - Rule list: softwares.md
+  - Project Info:
+    - Changelog: changelog.md
+    - Citations: citations.md
+    - Contributing: contributing.md
+    - Credits: credits.md
+    - Frequently Asked Questions: faq.md
+    - License: license.md
+    - More Resources: more_resources.md
 
 theme: readthedocs
 extra_css: [extra.css]
@@ -32,3 +56,6 @@ plugins:
         - 'workflow/rules'
       schemas:
         - 'workflow/schemas/rules.schema.yaml'
+  - mkdocs-simple-hooks:
+      hooks:
+        on_pre_build: "docs.hooks:copy_changelog_and_license"

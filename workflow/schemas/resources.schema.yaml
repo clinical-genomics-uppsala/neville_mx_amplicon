@@ -550,6 +550,26 @@ properties:
         type: string
         description: max execution time
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  qc_ont_picard_bed_to_interval_list:
+    type: object
+    description: resource definitions for qc_ont_picard_bed_to_interval_list
+    properties:
+      mem_mb:
+        type: integer
+        description: max memory in MB to be available
+      mem_per_cpu:
+        type: integer
+        description: memory in MB used per cpu
+      partition:
+        type: string
+        description: partition to use on cluster
+      threads:
+        type: integer
+        description: number of threads to be available
+      time:
+        type: string
+        description: max execution time
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   qc_ont_plot_yield_timestep:
     type: object
     description: resource definitions for qc_ont_plot_yield_timestep
