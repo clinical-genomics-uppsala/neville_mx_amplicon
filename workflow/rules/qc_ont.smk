@@ -116,8 +116,11 @@ rule qc_ont_mosdepth_merge:
 
 
 rule qc_ont_mosdepth_overlap_timestep:
+    # this rule is not used in clinics, but it is kept for research purposes.
+    # It is used to generate coverage per amplicon over time.
     input:
         bamdir=os.path.join(config["runfolder"], "{sample}", config["runid"], "bam_pass"),
+        # bamdir=os.path.join("bam_pass","{experiment}_{sample}"),
         amplibed=[f"{config.get('bed_files')}/{target}.bed" for target in config.get("amplicons") + config.get("extra_regions")],
     output:
         outdir=temp(directory("results/mosdepth/timestep/{experiment}_{sample}")),

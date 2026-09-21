@@ -12,6 +12,10 @@ extra_fn_clean_exts:
   - type: remove
     pattern: "_reads.ont_adapt_trim.filtered"
 
+sp:
+  exon_coverage:
+    fn: "*_exon_coverage_mqc.tsv"
+
 mosdepth_config:
   include_contigs:
     - "chr*"
