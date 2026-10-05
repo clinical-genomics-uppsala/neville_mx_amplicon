@@ -5,60 +5,60 @@ default_resources:
   time: "12:00:00"
   mem_mb: 1024
   mem_per_cpu: 3072
-  partition: "low"
+  partition: "core"
   gres: ""
 
 alignment_ont_bam_index:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 alignment_ont_bam_softclip:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 alignment_ont_bam_sort:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 alignment_ont_dorado_align:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 20
   mem_mb: 122880
   mem_per_cpu: 6144
 
 alignment_ont_split_bam_by_target:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 alignment_ont_split_bam_target_j3:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 basecalling_bam_to_fastq:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 basecalling_compress_fastq:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
@@ -83,7 +83,7 @@ basecalling_dorado_duplex:
   slurm_extra: "-w computeGPU"
 
 basecalling_dorado_duplex_multisamples:
-  partition: "GPU_low"
+  partition: "GPU_akut"
   time: "72:00:00"
   gres: "--gres=gres:gpu:4"
   threads: 40
@@ -92,70 +92,70 @@ basecalling_dorado_duplex_multisamples:
   slurm_extra: "-w computeGPU"
 
 basecalling_dorado_demux:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 20
   mem_mb: 122880
   mem_per_cpu: 6144
 
 prealignment_ont_filtlong:
-  partition: "low"
+  partition: "core"
   time: "00:25:00"
   threads: 8
   mem_mb: 122880
   mem_per_cpu: 6144
 
 prealignment_ont_fetch_filtered_reads:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 qc_ont_mosdepth_overlap:
-  partition: "low"
+  partition: "core"
   time: "02:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 qc_ont_mosdepth_overlap_timestep:
-  partition: "low"
+  partition: "core"
   time: "02:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 qc_ont_pycoqc:
-  partition: "low"
+  partition: "core"
   time: "01:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 qc_ont_sequali:
-  partition: "low"
+  partition: "core"
   time: "00:05:00"
   threads: 10
   mem_mb: 61440
   mem_per_cpu: 6144
 
 snv_indels_svs_clairs_to:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 snv_indels_svs_deepsomatic:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 snv_indels_svs_savana:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
@@ -321,21 +321,21 @@ snv_indels_svs_savana:
 ####################################################
 
 clairs_to:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 deepsomatic:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 demux_dorado:
-  partition: "low"
+  partition: "core"
   time: "12:45:00"
   threads: 20
   mem_mb: 122880
@@ -351,84 +351,84 @@ dorado_basecaller:
   slurm_extra: "-w computeGPU"
 
 dorado_alignment:
-  partition: "low"
+  partition: "core"
   time: "12:45:00"
   threads: 20
   mem_mb: 122880
   mem_per_cpu: 6144
 
 filtlong:
-  partition: "low"
+  partition: "core"
   time: "00:25:00"
   threads: 8
   mem_mb: 122880
   mem_per_cpu: 6144
 
 vardict:
-  partition: "low"
+  partition: "core"
   time: "12:00:00"
   threads: 2
   mem_mb: 122880
   mem_per_cpu: 6144
 
 mosdepth:
-  partition: "low"
+  partition: "core"
   time: "02:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 mosdepth_bed:
-  partition: "low"
-  time: "00:05:00"
+  partition: "core"
+  time: "01:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 nanocaller:
-  partition: "low"
+  partition: "core"
   time: "12:00:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 pycoqc:
-  partition: "low"
+  partition: "core"
   time: "01:00:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 sequali:
-  partition: "low"
+  partition: "core"
   time: "01:00:00"
   threads: 10
   mem_mb: 61440
   mem_per_cpu: 6144
 
 samtools:
-  partition: "low"
+  partition: "core"
   time: "00:15:00"
   threads: 1
   mem_mb: 6144
   mem_per_cpu: 6144
 
 savana:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 scanitd:
-  partition: "low"
+  partition: "core"
   time: "12:00:00"
   threads: 40
   mem_mb: 245760
   mem_per_cpu: 6144
 
 sniffles2_call:
-  partition: "low"
+  partition: "core"
   time: "00:45:00"
   threads: 40
   mem_mb: 245760
