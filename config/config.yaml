@@ -311,9 +311,6 @@ picard_collect_alignment_summary_metrics:
 plot_yield_timestep:
   container: "docker://hydragenetics/common-plots:3.1.1"
 
-pycoqc:
-  container: "docker://nanozoo/pycoqc:2.5.0.23--320ecc7"
-
 samtools:
   container: "docker://hydragenetics/samtools:1.21"
 

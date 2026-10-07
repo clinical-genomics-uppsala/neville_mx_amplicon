@@ -14,7 +14,7 @@
 
    - name: "unfiltered_fastq"
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.unfiltered.fastq.gz"
-     input: "basecalling/duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz"
+     input: "basecalling/dorado_duplex/{experiment}_{sample}_{type}_reads.ont_adapt_trim.fastq.gz"
 
    - name: "filtered_fastq"
      output: "Results/Data/{experiment}_{sample}_{type}.ont_reads.filtered.fastq.gz"
