@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.3.1](https://www.github.com/clinical-genomics-uppsala/neville_mx_amplicon/compare/v0.3.0...v0.3.1) (2026-10-07)
+
+
+### Bug Fixes
+
+* misspelling in path ([cd71f71](https://www.github.com/clinical-genomics-uppsala/neville_mx_amplicon/commit/cd71f7146c3d2f008794928e8b5e9c859eda488f))
+* redundant container specification for pycoqc ([402d9e9](https://www.github.com/clinical-genomics-uppsala/neville_mx_amplicon/commit/402d9e9898352b642f484b415a0291cb06fa9a65))
+
 ## [0.3.0](https://www.github.com/clinical-genomics-uppsala/neville_mx_amplicon/compare/v0.2.0...v0.3.0) (2026-08-10)
 
 
