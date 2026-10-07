@@ -1,0 +1,188 @@
+---
+
+default_resources:
+  threads: 1
+  time: ""
+  mem_mb: 6144
+  mem_per_cpu: 6144
+  partition: ""
+  gres: ""
+
+alignment_ont_bam_index:
+  partition: ""
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+alignment_ont_bam_softclip:
+  partition: ""
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+alignment_ont_bam_sort:
+  partition: ""
+  time: "00:15:00"
+  threads: 4
+  mem_mb: 16000
+  mem_per_cpu: 4000
+
+alignment_ont_dorado_align:
+  partition: ""
+  time: "00:45:00"
+  threads: 20
+  mem_mb: 64000
+  mem_per_cpu: 3200
+
+
+alignment_ont_split_bam_by_target:
+  partition: ""
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+alignment_ont_split_bam_target_j3:
+  partition: ""
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+
+basecalling_bam_to_fastq:
+  partition: ""
+  time: "00:15:00"
+  threads: 2
+  mem_mb: 8000
+  mem_per_cpu: 4000
+
+basecalling_compress_fastq:
+  partition: ""
+  time: "00:15:00"
+  threads: 4
+  mem_mb: 8000
+  mem_per_cpu: 2000
+
+
+basecalling_dorado_basecaller:
+  partition: ""
+  time: "72:00:00"
+  threads: 16
+  mem_mb: 64000
+  mem_per_cpu: 4000
+  gpu: 1
+
+basecalling_dorado_duplex:
+  partition: ""
+  time: "72:00:00"
+  threads: 16
+  mem_mb: 64000
+  mem_per_cpu: 4000
+  gpu: 1
+
+basecalling_dorado_duplex_multisamples:
+  partition: ""
+  time: "72:00:00"
+  threads: 20
+  mem_mb: 96000
+  mem_per_cpu: 4800
+  gpu: 1
+  slurm_extra: ""
+
+basecalling_dorado_demux:
+  partition: ""
+  time: "00:45:00"
+  threads: 8
+  mem_mb: 16000
+  mem_per_cpu: 2000
+
+
+prealignment_ont_filtlong:
+  partition: ""
+  time: "00:25:00"
+  threads: 8
+  mem_mb: 32000
+  mem_per_cpu: 4000
+
+prealignment_ont_fetch_filtered_reads:
+  partition: ""
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+
+
+mosdepth:
+  partition: ""
+  time: "02:00:00"
+  threads: 8
+  mem_mb: 32000
+  mem_per_cpu: 4000
+
+qc_ont_mosdepth_overlap:
+  partition: ""
+  time: "02:00:00"
+  threads: 1
+  mem_mb: 8000
+  mem_per_cpu: 8000
+
+qc_ont_mosdepth_overlap_timestep:
+  partition: ""
+  time: "02:00:00"
+  threads: 1
+  mem_mb: 8000
+  mem_per_cpu: 8000
+
+qc_ont_pycoqc:
+  partition: ""
+  time: "01:00:00"
+  threads: 1
+  mem_mb: 8000
+  mem_per_cpu: 8000
+
+qc_ont_sequali:
+  partition: ""
+  time: "00:05:00"
+  threads: 8
+  mem_mb: 32000
+  mem_per_cpu: 4000
+
+
+picard_collect_alignment_summary_metrics:
+  partition: ""
+  time: "01:00:00"
+  threads: 4
+  mem_mb: 16000
+  mem_per_cpu: 4000
+
+picard_collect_hs_metrics:
+  partition: ""
+  time: "01:00:00"
+  threads: 4
+  mem_mb: 16000
+  mem_per_cpu: 4000
+
+
+snv_indels_svs_clairs_to:
+  partition: ""
+  time: "00:45:00"
+  threads: 24
+  mem_mb: 64000
+  mem_per_cpu: 2667
+
+snv_indels_svs_deepsomatic:
+  partition: ""
+  time: "00:45:00"
+  threads: 24
+  mem_mb: 96000
+  mem_per_cpu: 4000
+
+snv_indels_svs_savana:
+  partition: ""
+  time: "00:45:00"
+  threads: 24
+  mem_mb: 64000
+  mem_per_cpu: 2667

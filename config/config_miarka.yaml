@@ -83,7 +83,7 @@ alignment_ont_bam_sort:
   container: "{{APPTAINER_CACHE}}/hydragenetics__samtools_1.21.sif"
 
 alignment_ont_dorado_align:
-  container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__dorado_1.1.1.sif"
 
 alignment_ont_split_bam_by_target:
   container: "{{APPTAINER_CACHE}}/hydragenetics__samtools_1.21.sif"
@@ -98,29 +98,29 @@ basecalling_compress_fastq:
   container: "{{APPTAINER_CACHE}}/hydragenetics__samtools_1.21.sif"
 
 basecalling_dorado_basecaller:  # simplex basecalling by default
-  container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__dorado_1.1.1.sif"
   model: "{{dorado_model}}"
   trim: "--trim adapters"
   extra: "--device cuda:all"
 
 basecalling_dorado_demux:
-  container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__dorado_1.1.1.sif"
   kit: "--kit-name SQK-NBD114-24"
 
 basecalling_dorado_duplex:  # duplex basecalling
-  container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__dorado_1.1.1.sif"
   model: "{{dorado_model}}"
   trim: "--no-trim-primers --sequencing-kit SQK-LSK114"
   extra: "--device cuda:all"
 
 basecalling_dorado_duplex_multisamples:
-  container: "{{APPTAINER_CACHE}}/dorado_1.1.1+e72f1492.sif"  # ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/dorado_1.1.1+e72f1492.sif"  # hydragenetics__dorado_1.1.1.sif"
   model: "{{dorado_model}}"
   trim: ""  # no trim because samples are demultiplexed in a later step
   extra: "--device cuda:0,1"
 
 basecalling_dorado_trim:
-  container: "{{APPTAINER_CACHE}}/ontresearch__dorado_latest.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__dorado_1.1.1.sif"
   trim: "--sequencing-kit SQK-NBD114-24"
 
 prealignment_ont_filtlong:
@@ -168,7 +168,7 @@ qc_ont_plot_yield_timestep:
   container: "{{APPTAINER_CACHE}}/hydragenetics__common-plots_3.1.1.sif"
 
 qc_ont_pycoqc:
-  container: "{{APPTAINER_CACHE}}/nanozoo__pycoqc_2.5.0.23--320ecc7.sif"
+  container: "{{APPTAINER_CACHE}}/hydragenetics__pycoqc_2.5.0.23.sif"
 
 qc_ont_sequali:
   container: "{{APPTAINER_CACHE}}/hydragenetics__sequali_0.12.0.sif"
@@ -238,6 +238,12 @@ multiqc:
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.regions.bed.gz"
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.per-base.bed.gz"
         - "results/mosdepth_bed/{experiment}_{sample}_{type}_{target}.thresholds.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.summary.txt"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.mosdepth.region.dist.txt"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.regions.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.per-base.bed.gz"
+        - "results/mosdepth_bed_per_exon/{experiment}_{sample}_{type}.thresholds.bed.gz"
+        - "results/qc/custom_content_mqc/{experiment}_{sample}_{type}.exon_coverage_mqc.tsv"
         - "results/qc/samtools_ampliconclip/{experiment}_{sample}_{type}_ampliconclip.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_HsMetrics.txt"
         - "results/qc/picard/{experiment}_{sample}_{type}_{target}.alignment_summary_metrics.txt"
