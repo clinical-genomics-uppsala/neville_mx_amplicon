@@ -12,9 +12,9 @@ from sklearn.metrics import r2_score
 from scipy.stats import pearsonr
 import os
 
-fig_format = "svg"
-date = "260622"
-cohort = "CGU_2024_05"
+fig_format = "png"
+date = "260415"
+cohort = "CGU_2025_22"
 vaf_csv = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_{date}_{cohort}.csv"
 diff_ratio_csv = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_TM_ONT_diff_ratio_{cohort}.csv"
 plot1 = f"/home/camille/Documents/CGU_2024_05-IDH-TP53-NPM1-nanopore/VAF_diff-ratio_{cohort}_all.{fig_format}"
