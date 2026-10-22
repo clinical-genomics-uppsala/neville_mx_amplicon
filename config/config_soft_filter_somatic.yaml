@@ -39,11 +39,12 @@ filters:
     expression: (VEP:BIOTYPE != protein_coding)
     soft_filter_flag: "Biotype"
     soft_filter: "True"
-#  artifacts:
-#    description: "hard filter position that occurs in 4 or more normal samples and AF is less than 5 sd from median af in normalpool"
-#    expression: "((INFO:Artifact:0 > 3 and INFO:ArtifactNrSD:0 < 5) or (INFO:Artifact:1 > 3 and INFO:ArtifactNrSD:1 < 5))"
-#    hard_filter_flag: "Artifact_gt_3"
-#    hard_filter: "True"
+  artifacts:
+    description: "soft filter position that occurs in 6 or more samples from the validation cohort and AF is less than 5 sd from median af in the validation cohort"
+    expression: "((INFO:Artifact:0 > 5 and INFO:ArtifactNrSD:0 < 5) or (INFO:Artifact:1 > 5 and INFO:ArtifactNrSD:1 < 5) or (INFO:Artifact:2 > 5 and INFO:ArtifactNrSD:2 < 5))"
+    # Artifact:0, :1, :2 because 3 callers involved (clairs_to, deepsomatic, vardict, in that order) that are indexed 0, 1, 2
+    soft_filter_flag: "Artifact_gt_5"
+    soft_filter: "True"
 #  background:
 #    description: "hard filter variants where AF is closer than 4 s.d. from the background noise"
 #    expression: "(INFO:PositionNrSD < 4)"

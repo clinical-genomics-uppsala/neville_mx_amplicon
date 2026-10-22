@@ -12,8 +12,8 @@ logger.info(f"\n{workflow.snakefile} is being parsed")
 
 rule results_report_xlsx:
     input:
-        vcf_snv_indels="snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf.gz",
-        vcf_snv_indels_tbi="snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.vep_annotated.rename_vaf.filter.somatic_soft.vcf.gz.tbi",
+        vcf_snv_indels="snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.artifact_annotated.filter.somatic_soft.vcf.gz",
+        vcf_snv_indels_tbi="snv_indels/bcbio_variation_recall_ensemble/{experiment}_{sample}_{type}.ensembled.artifact_annotated.filter.somatic_soft.vcf.gz.tbi",
         vcf_cnv_svs="cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz",
         vcf_cnv_svs_tbi="cnv_sv/sniffles2/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.sniffles2.bcftools_view.vep_annotated.vcf.gz.tbi",
         bedfile=os.path.join(config["bed_files"], "amplicons.bed"),
@@ -36,7 +36,7 @@ rule results_report_xlsx:
         ref=config["reference"]["fasta"],
         amplicons=config["amplicons"],
         extra_regions=config["extra_regions"],
-        # artifact=config["reference"]["artifacts"],
+        artifact=config["reference"]["artifacts"],
         # background=config["reference"]["background"],
         # artifact_indel=config["reference"]["artifacts_indel"],
         filter_somatic_soft=config["filter_vcf"]["somatic_soft"],
