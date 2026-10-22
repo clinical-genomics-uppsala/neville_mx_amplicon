@@ -132,24 +132,26 @@ def get_gvcfs_clairs_to():
 
 
 def get_gvcfs_deepsomatic():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.deepsomatic.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
+    return list(
+                set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.deepsomatic.g.vcf.gz" for t in panel_ref.itertuples()])
     )
 
 
 def get_gvcfs_vardict():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.vardict.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
+    return list(
+                set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.vardict.g.vcf.gz" for t in panel_ref.itertuples()])
     )
 
 
 def get_gvcfs_vardict_unfiltered():
-    return list(set([f"references/vardict/{t.experiment}_{t.sample}_{t.type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
-    )
+    return list(
+        set(
+            [
+                f"references/vardict/{t.experiment}_{t.sample}_{t.type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
+                for t in panel_ref.itertuples()
+            ]
+        )
+     )
 
 
 def get_vcfs():
