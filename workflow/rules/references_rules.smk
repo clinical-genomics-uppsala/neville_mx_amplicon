@@ -93,6 +93,7 @@ rule reference_rules_snv_indels_deepsomatic_gvcf:
         """
 
 
+'''
 rule create_background_file_longread_clairs_to:
     input:
         gvcfs=get_gvcfs_clairs_to(),
@@ -181,6 +182,7 @@ rule create_background_file_longread_vardict:
         "{rule}: create background PoN"
     script:
         "../scripts/create_background_file_longread.py"
+'''
 
 
 rule create_background_file_longread_vardict_unfiltered:

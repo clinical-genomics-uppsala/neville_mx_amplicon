@@ -29,8 +29,8 @@ def get_format_field(format_str, data_str, key):
 
 
 for file_name in vcf_files:
-    print(f"call_stats_dict -- Processing {file_name}")
-    with gzip.open(file_name, "rt") as infile:
+    print(f"\ncall_stats_dict -- Processing {file_name}\n")
+    with open(file_name, "r") as infile:
         for line in infile:
             if line.startswith("#"):
                 continue
@@ -48,7 +48,7 @@ for file_name in vcf_files:
             formats = columns[8]
             data = columns[9]
 
-            key = (chrom, pos, variant_type)
+            key = (chrom, pos, variant_type, ref, alt)
 
             callers_str = get_info_field(info, "CALLERS")
             print(f"\nVariant processed: {(chrom, pos, variant_type)} -- Callers {callers_str}")
@@ -75,19 +75,20 @@ for file_name in vcf_files:
 
 # Sort the variants per genomic position
 call_stats_dict_sorted = OrderedDict(sorted(call_stats_dict.items()))
+call_stats_summary = []
 print('\n')
 print(call_stats_dict_sorted)
 print('\n')
 
 with open(artifact_panel_path, "w") as artifact_panel:
-    header = ["Chromosome", "pos", "variant_type"]
+    header = ["Chromosome", "pos", "variant_type", "ref", "alt"]
     for caller in callers_used:
         header.extend([caller, "median_MAF", "sd_MAF"])
     artifact_panel.write("\t".join(header) + "\n")
 
     for key, callers_data in call_stats_dict_sorted.items():
-        chrom, pos, variant_type = key
-        row = [str(chrom), str(pos), str(variant_type)]
+        chrom, pos, variant_type, ref, alt = key
+        row = [str(chrom), str(pos), str(variant_type), str(ref), str(alt)]
         for caller in callers_used:
             obs_count = 0
             median_af = 0
@@ -103,7 +104,10 @@ with open(artifact_panel_path, "w") as artifact_panel:
                     median_af = statistics.median(af_list)
                     sd_af = statistics.stdev(af_list)
                 row.extend([f"{obs_count}", f"{median_af}", f"{sd_af}"])
-        if sum([int(n) for n in row[3::3]]) == 0:
+        counts_cols = row[5::3]
+        if sum([int(n) for n in counts_cols]) == 0:
             print(f"\nNull counts for {row}")
             print(f"Data: {call_stats_dict[key]}\n")
+            del row
+        call_stats_summary.append(row)
         artifact_panel.write("\t".join(row) + "\n")

@@ -31,6 +31,8 @@ reference:
     "/data/ref_genomes/GRCh38/GCA_000001405.15/GCA_000001405.15_GRCh38_no_alt_analysis_set_masked_chr.dict"
   design_bed:
     "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
+  artifacts:
+    "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon/reference_files/artifacts.tsv"
 
 # All runs
 runfolder: "{{runfolder}}"

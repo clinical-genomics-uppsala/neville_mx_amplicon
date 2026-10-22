@@ -37,11 +37,6 @@ sequenceid = snakemake.params.sequenceid
 
 sample = snakemake.params.sample
 sample_type = snakemake.params.sample_type
-# Panels dict contain all info for sheets with subsets all SNVs, only need to change here if adding/removing subset sheets
-# panels = {
-#     "cll": {"bedfile": snakemake.input.cllbed, "vcf": snakemake.input.cll_vcf},
-#     "myeloid": {"bedfile": snakemake.input.myeloidbed, "vcf": snakemake.input.myeloid_vcf},
-# }
 
 bedfiles = {
     "amplicons": snakemake.input.bedfile,
@@ -102,11 +97,8 @@ for filter_file in [snakemake.params.filter_somatic_hard, snakemake.params.filte
     for key, items in filters_dict["filters"].items():
         if "hard_filter_somatic" in filter_file:
             filters_snv.append(key + ": " + items["description"])
-            # filters_p.append(key + ": " + items["description"])
         elif "soft_filter_somatic" in filter_file:
             filters_snv.append(items["soft_filter_flag"] + ": " + items["description"])
-        # elif "soft_filter_p" in filter_file:
-        #     filters_p.append(items["soft_filter_flag"] + ": " + items["description"])
         else:
             logging.error(f"Unknown filter file, have the filename changed? {filter_file=}")
 
@@ -140,15 +132,6 @@ for record in snv_table["data"]:
         if position_list[1] == record[5] and position_list[2] == record[6] and position_list[3] == record[7]:
             synonymous_table.append(record)  # AF filter?
 
-
-# logging.debug(f"List genes in  bed")
-# _genes = []
-# with open(snakemake.input.bed, "r") as _file:
-#     for lline in _file:
-#         line = lline.strip().split("\t")
-#         _genes.append(line[3])
-# _genes = list(dict.fromkeys(_genes))
-
 logging.debug(f"Avg cov per amplicon (including overlapping regions) from mosdepth {snakemake.input.mosdepth_regions=}")
 regionscov_table = {"data": [], "headers": []}
 regionscov_table["headers"] = [
@@ -159,6 +142,7 @@ regionscov_table["headers"] = [
     {"header": "Target"},
     {"header": "Avg Coverage"},
 ]
+
 bed_table = []
 with (gzip.open(snakemake.input.mosdepth_regions, "rt") as regions_file):
     for lline in regions_file:
@@ -176,7 +160,6 @@ with (gzip.open(snakemake.input.mosdepth_regions, "rt") as regions_file):
             regionscov_table["data"].append(coverage_row)
         if line[0:5] not in bed_table:
             bed_table.append(line[0:5])
-# TODO: Add caller-specific BED info
 
 logging.debug(f"Estimated reads counts per amplicon (avg coverage excluding overlapping regions)"
               f" from mosdepth {snakemake.input.mosdepth_regions=}")
@@ -230,10 +213,6 @@ with open(snakemake.input.mosdepth_summary, "r") as summary_file:
         line = lline.strip().split("\t")
         if line[0] == "total_region":
             coverage["avg_cov"] = line[3]
-        # elif line[0] == "chrX_region":
-        #     coverage["chrX_cov"] = line[3]
-        # elif line[0] == "chrY_region":
-        #     coverage["chrY_cov"] = line[3]
 
 logging.debug(f"Avg cov per exon/coding region from mosdepth {snakemake.input.mosdepth_exons=}")
 exonscov_table = {"data": [], "headers": []}
@@ -265,15 +244,8 @@ logging.info(f"Creating xlsx file {snakemake.output.xlsx}")
 workbook = xlsxwriter.Workbook(snakemake.output.xlsx, {"nan_inf_to_errors": True})
 
 worksheet_overview = workbook.add_worksheet("Overview")
-# if sample.lower() == "hd829":
-#     worksheet_known = workbook.add_worksheet("Known variants")
-# else:
-#     for panel in panels.keys():
-#         panels[panel]["sheet"] = workbook.add_worksheet(panel.upper())
 worksheet_snv = workbook.add_worksheet("SNV_Indels")
 worksheet_sv = workbook.add_worksheet("SVs")
-# worksheet_intron = workbook.add_worksheet("Intron")
-# worksheet_syno = workbook.add_worksheet("Synonymous")
 worksheet_cov = workbook.add_worksheet("Coverage")
 worksheet_exonscov = workbook.add_worksheet("Exon Coverage")
 
@@ -302,19 +274,9 @@ worksheet_overview.write_row(6, 0, empty_list, format_line)
 
 worksheet_overview.write(7, 0, "Sheets:", format_table_heading)
 i = 8
-# if sample.lower() == "hd829":
-#     worksheet_overview.write_url(i, 0, "internal:'Known variants'!A1", string="Known variants")
-# else:
-#     for panel in panels.keys():
-#         worksheet_overview.write_url(i, 0, "internal: '" + panel.upper() + "'!A1", string=panel.upper() + " panel variants")
-#         i += 1
 worksheet_overview.write_url(i, 0, "internal:'SNV_Indels'!A1", string="SNVs and Indels identified")
 worksheet_overview.write_url(i + 1, 0, "internal:'SVs'!A1", string="SVs identified")
-# worksheet_overview.write_url(i + 2, 0, "internal: 'Intron'!A1", string="Intron and non-coding variants")
-# worksheet_overview.write_url(i + 3, 0, "internal: 'Synonymous'!A1", string="Synonymous variants")
-# worksheet_overview.write_url(i + 4, 0, "internal:'Low Coverage'!A1", string="Low Coverage regions")
 worksheet_overview.write_url(i + 5, 0, "internal:'Coverage'!A1", string="Coverage")
-# worksheet_overview.write_url(i + 6, 0, "internal: 'QCI'!A1", string="QCI")
 i += 8
 
 worksheet_overview.write_row(
@@ -324,10 +286,6 @@ worksheet_overview.write_row(
         "RunID",
         "DNAnr",
         "Avg. coverage [x]",
-        # "Duplicationlevel [%]",
-        # str(thresholds[0]) + "x",
-        # str(thresholds[1]) + "x",
-        # str(thresholds[2]) + "x",
     ],
     format_table_heading,
 )
@@ -335,11 +293,8 @@ worksheet_overview.write_row(i + 1, 0, [sequenceid, sample, coverage["avg_cov"]]
 i += 3
 
 worksheet_overview.write(i, 0, "Average coverage of regions in amplicons bedfile")
-# worksheet_overview.write_row(i + 1, 0, ["chrX", coverage["chrX_cov"]])
-# worksheet_overview.write_row(i + 2, 0, ["chrY", coverage["chrY_cov"]])
 i += 4
 
-# worksheet_overview.write(i, 0, "Twist Myeloid capture panel TE-96463385_hg38 used")
 worksheet_overview.write(
     i + 1,
     0,
@@ -353,9 +308,7 @@ i += 8
 worksheet_overview.write(i, 0, "Full design bedfile: " + bedfiles["amplicons"])
 worksheet_overview.write(i + 1, 0, "DeepSomatic-specific bedfile (exons in TP53, IDH1, and IDH2): " + bedfiles["deepsomatic"])
 worksheet_overview.write(i + 2, 0, "VarDict-specific bedfile (ITDs in FLT3 and NPM1): " + bedfiles["vardict"])
-# worksheet_overview.write(i + 3, 0, "Background panel used for snvs: " + snakemake.params.background)
-# worksheet_overview.write(i + 4, 0, "indel bedfile used: " + snakemake.input.indelbed)
-# worksheet_overview.write(i + 5, 0, "indel artifact panel used: " + snakemake.params.artifact_indel)
+worksheet_overview.write(i + 3, 0, "Artifact panel used for snvs and small indels: " + snakemake.params.artifact)
 i += 6
 
 
@@ -383,13 +336,6 @@ worksheet_snv.write(
     "To see all variants; put marker on header row, then click on 'Standard Filter' and remove any values. "
     + "You can then use the drop-downs in the header row to filter to your liking.",
 )
-
-# worksheet_snv.write_url(
-#     "A" + str(i + 3),
-#     "external:" + sample + "_" + sample_type + "_" + sequenceid + "_bamsnap/index.html",
-#     string="SNV screenshots",
-# )
-# worksheet_snv.write("A" + str(i + 4), "Only variants with AF >= 5% and PASS have automated screenshots.")
 
 i += 6
 column_end = ":" + convert_columns_to_letter(len(snv_table["headers"]))
@@ -428,15 +374,9 @@ if True:
     worksheet_sv.write("A1", "Variants found", format_heading)
     worksheet_sv.write("A3", "Sample: " + str(sample))
     worksheet_sv.write("A4", "Reference used: " + str(snakemake.params.ref))
-    # worksheet_sv.write("A6", "To limit runtime indel were used with a specific designfile: " + snakemake.input.indelbed)
-    # worksheet_sv.write("A7", "Which includes the following genes: ")
     i = 8
-    # for gene in indel_genes:
-    #     worksheet_sv.write("C" + str(i), gene)
-    #     i += 1
 
     worksheet_sv.write("A" + str(i + 1), "Filters: ", format_orange)
-    # filters_svs = filters_snv
     for j, filter_txt in enumerate(filters_svs):
         j += i + 1
         worksheet_sv.write("B" + str(j), filter_txt, format_orange)

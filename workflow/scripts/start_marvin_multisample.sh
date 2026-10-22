@@ -7,7 +7,7 @@
 
 set -euox pipefail
 
-module load slurm-drmaa/1.1.4
+module load slurm-drmaa
 module load singularity/3.7.1
 module load snakemake/7.22.0
 module load samtools/1.17
@@ -17,15 +17,6 @@ projFolder=/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/amplicon
 runFolder=$1
 batchId=$2
 flowcellId=$3
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_MWash1_250804
-# batchId=MWash1
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_M21_wash2_250806
-# batchId=M21
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Mwash3_250811
-# batchId=Mwash3
-# runFolder=/projects/wp4/nobackup/ONT_dev_projects/CGU_2024_05_Amplicons_Hemato/CGU_2024_05_Wash4_250813
-# batchId=Wash4
-# flowcellId=FBB06783
 
 runId=$( ls -1 "$runFolder/${batchId}" | grep ${flowcellId} )
 sampleSheet=${runFolder}/${batchId}/${runId}/Samplesheet_${batchId}.csv
