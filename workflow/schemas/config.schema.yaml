@@ -287,6 +287,17 @@ properties:
         type: string
         description: parameters that should be forwarded
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_artifact_homopolymer_annotation:
+    type: object
+    description: parameters for prefiltering_artifact_homopolymer_annotation
+    properties:
+      benchmark_repeats:
+        type: integer
+        description: set number of times benchmark should be repeated
+      container:
+        type: string
+        description: name or path to docker/singularity container
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   prefiltering_bcftools_include_region:
     type: object
     description: parameters for prefiltering_bcftools_include_region

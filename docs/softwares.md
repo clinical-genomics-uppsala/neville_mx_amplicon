@@ -1,7 +1,236 @@
-# Softwares used in the neville_mx_amplicon module
+# Pipeline specific rules
+
+Rules defined in `workflow/rules/`. Rules imported from hydra-genetics modules are documented in the
+[hydra-genetics module documentation](https://hydra-genetics.readthedocs.io/en/latest/).
+
+# Basecalling
+
+Rules in `workflow/rules/basecalling.smk`.
+
+## [basecalling_dorado_basecaller](https://software-docs.nanoporetech.com/dorado/latest/basecaller/simplex/)
+Simplex basecalling of POD5 files with Dorado, with adapter trimming (single-sample runs).
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_basecaller#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_basecaller#
+
+
+## [basecalling_dorado_duplex](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
+Duplex basecalling of POD5 files with Dorado, piped to `dorado trim` (single-sample runs).
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_duplex#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_duplex#
+
+
+## [basecalling_dorado_duplex_multisamples](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
+Duplex basecalling of all POD5 files of a multiplexed run, without trimming so that barcodes are kept.
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_duplex_multisamples#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_duplex_multisamples#
+
+
+## [basecalling_dorado_demux](https://software-docs.nanoporetech.com/dorado/latest/barcoding/barcoding/)
+Demultiplexing of the basecalled reads with `dorado demux` and the sample sheet.
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_demux#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_demux#
+
+
+## basecalling_rename_demux_bam
+Copy each demultiplexed BAM file to a file named after the sample.
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_rename_demux_bam#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_rename_demux_bam#
+
+
+## [basecalling_dorado_trim](https://software-docs.nanoporetech.com/dorado/latest/basecaller/read_trimming/)
+Adapter and barcode trimming of demultiplexed reads with `dorado trim`.
+
+### :snake: Rule
+
+This rule is defined inside an `if config['multisample']` block; see its source in [workflow/rules/basecalling.smk](https://github.com/clinical-genomics-uppsala/neville_mx_amplicon/blob/develop/workflow/rules/basecalling.smk).
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_dorado_trim#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_dorado_trim#
+
+
+## [basecalling_bam_to_fastq](https://www.htslib.org/doc/samtools-fasta.html)
+Convert the unaligned BAM file to FASTQ with `samtools fastq`.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_bam_to_fastq#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_bam_to_fastq#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_bam_to_fastq#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_bam_to_fastq#
+
+
+## basecalling_compress_fastq
+Compress the FASTQ file with gzip.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_compress_fastq#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_compress_fastq#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__basecalling_compress_fastq#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__basecalling_compress_fastq#
+
+
+# Pre-alignment
+
+Rules in `workflow/rules/prealignment_ont.smk`.
+
+## [prealignment_ont_filtlong](https://github.com/rrwick/Filtlong)
+Filter reads on mean quality and length with Filtlong.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prealignment_ont__prealignment_ont_filtlong#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prealignment_ont_filtlong#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prealignment_ont_filtlong#
+
+
+## [prealignment_ont_fetch_filtered_reads](https://www.htslib.org/doc/samtools-view.html)
+Collect the reads removed by Filtlong.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prealignment_ont__prealignment_ont_fetch_filtered_reads#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__prealignment_ont__prealignment_ont_fetch_filtered_reads#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prealignment_ont_fetch_filtered_reads#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prealignment_ont_fetch_filtered_reads#
+
+
+## prealignment_ont_fetch_too_short_too_long_reads
+Split the removed reads into too-short and too-long reads.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__prealignment_ont__prealignment_ont_fetch_too_short_too_long_reads#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__prealignment_ont__prealignment_ont_fetch_too_short_too_long_reads#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__prealignment_ont_fetch_too_short_too_long_reads#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__prealignment_ont_fetch_too_short_too_long_reads#
+
+
+# Alignment
+
+Rules in `workflow/rules/alignment_ont.smk`.
 
 ## [alignment_ont_dorado_align](https://software-docs.nanoporetech.com/dorado/latest/basecaller/alignment/)
-Introduction to alignment_ont_dorado_align
+Align the filtered reads with `dorado aligner` (minimap2).
 
 ### :snake: Rule
 
@@ -22,16 +251,30 @@ Introduction to alignment_ont_dorado_align
 #RESOURCESSCHEMA__alignment_ont_dorado_align#
 
 
+## [alignment_ont_bam_sort](https://www.htslib.org/doc/samtools-sort.html)
+Sort the aligned reads.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_bam_sort#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__alignment_ont_bam_sort#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__alignment_ont_bam_sort#
+
+
 ## [alignment_ont_bam_index](https://www.htslib.org/doc/samtools-index.html)
-Introduction to alignment_ont_bam_index
+Index the sorted BAM file.
 
 ### :snake: Rule
 
 #SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_bam_index#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__alignment_ont__alignment_ont_bam_index#
 
 ### :wrench: Configuration
 
@@ -45,7 +288,7 @@ Introduction to alignment_ont_bam_index
 
 
 ## [alignment_ont_bam_softclip](https://www.htslib.org/doc/samtools-ampliconclip.html)
-Introduction to alignment_ont_bam_softclip
+Soft-clip the primers with `samtools ampliconclip`.
 
 ### :snake: Rule
 
@@ -66,30 +309,8 @@ Introduction to alignment_ont_bam_softclip
 #RESOURCESSCHEMA__alignment_ont_bam_softclip#
 
 
-## [alignment_ont_bam_sort](https://www.htslib.org/doc/samtools-sort.html)
-Introduction to alignment_ont_bam_sort
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__alignment_ont__alignment_ont_bam_sort#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__alignment_ont__alignment_ont_bam_sort#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__alignment_ont_bam_sort#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__alignment_ont_bam_sort#
-
-
 ## [alignment_ont_split_bam_by_target](https://www.htslib.org/doc/samtools-view.html)
-Introduction to alignment_ont_split_bam_by_target
+Write one BAM file and one list of read names per target.
 
 ### :snake: Rule
 
@@ -111,7 +332,7 @@ Introduction to alignment_ont_split_bam_by_target
 
 
 ## [alignment_ont_split_bam_target_j3](https://www.htslib.org/doc/samtools-view.html)
-Introduction to alignment_ont_split_bam_target_j3
+Build the BAM file for TP53_J3 from the D2+J3 region minus the reads of D2 only.
 
 ### :snake: Rule
 
@@ -132,404 +353,12 @@ Introduction to alignment_ont_split_bam_target_j3
 #RESOURCESSCHEMA__alignment_ont_split_bam_target_j3#
 
 
-## [basecalling_bam_to_fastq](https://www.htslib.org/doc/samtools-fasta.html)
-Introduction to basecalling_bam_to_fastq
+# Variant calling
 
-### :snake: Rule
+Rules in `workflow/rules/snv_indels_svs.smk`.
 
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_bam_to_fastq#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_bam_to_fastq#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_bam_to_fastq#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_bam_to_fastq#
-
-
-## [basecalling_compress_fastq](https://www.htslib.org/doc/samtools-view.html)
-Introduction to basecalling_compress_fastq
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_compress_fastq#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_compress_fastq#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_compress_fastq#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_compress_fastq#
-
-
-## [basecalling_dorado_basecaller](https://software-docs.nanoporetech.com/dorado/latest/basecaller/simplex/)
-Introduction to basecalling_dorado_basecaller
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_basecaller#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_basecaller#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_dorado_basecaller#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_dorado_basecaller#
-
-
-## [basecalling_dorado_demux](https://software-docs.nanoporetech.com/dorado/latest/barcoding/barcoding/)
-Introduction to basecalling_dorado_demux
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_demux#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_demux#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_dorado_demux#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_dorado_demux#
-
-
-## [basecalling_dorado_duplex](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
-Introduction to basecalling_dorado_duplex
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_duplex#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_duplex#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_dorado_duplex#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_dorado_duplex#
-
-
-## [basecalling_dorado_duplex_multisamples](https://software-docs.nanoporetech.com/dorado/latest/basecaller/duplex/)
-Introduction to basecalling_dorado_duplex_multisamples
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_duplex_multisamples#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_duplex_multisamples#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_dorado_duplex_multisamples#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_dorado_duplex_multisamples#
-
-
-## [basecalling_dorado_trim](https://software-docs.nanoporetech.com/dorado/latest/basecaller/read_trimming/)
-Introduction to basecalling_dorado_trim
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_dorado_trim#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_dorado_trim#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_dorado_trim#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_dorado_trim#
-
-
-## [basecalling_rename_demux_bam](...)
-Introduction to basecalling_rename_demux_bam
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__basecalling_rename_demux_bam#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__basecalling_rename_demux_bam#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__basecalling_rename_demux_bam#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__basecalling_rename_demux_bam#
-
-
-## [prealignment_ont_filtlong](https://github.com/rrwick/Filtlong)
-Introduction to prealignment_ont_filtlong
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__prealignment_ont_filtlong#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__prealignment_ont_filtlong#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__prealignment_ont_filtlong#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__prealignment_ont_filtlong#
-
-
-## [prealignment_ont_fetch_filtered_reads](https://www.htslib.org/doc/samtools.html)
-Introduction to prealignment_ont_fetch_filtered_reads
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__basecalling__prealignment_ont_fetch_filtered_reads#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__basecalling__prealignment_ont_fetch_filtered_reads#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__prealignment_ont_fetch_filtered_reads#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__prealignment_ont_fetch_filtered_reads#
-
-
-## [prefiltering_bcftools_include_region](https://samtools.github.io/bcftools/bcftools.html#view)
-Introduction to prefiltering_bcftools_include_region
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_include_region#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_include_region#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__prefiltering_bcftools_include_region#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__prefiltering_bcftools_include_region#
-
-
-## [prefiltering_bcftools_view](https://samtools.github.io/bcftools/bcftools.html#view)
-Introduction to prefiltering_bcftools_view
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_view#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_view#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__prefiltering_bcftools_view#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__prefiltering_bcftools_view#
-
-
-## [prefiltering_rename_vaf_to_af](https://samtools.github.io/bcftools/bcftools.html#annotate)
-Introduction to prefiltering_rename_vaf_to_af
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_rename_vaf_to_af#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_rename_vaf_to_af#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__prefiltering_rename_vaf_to_af#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__prefiltering_rename_vaf_to_af#
-
-
-## [qc_ont_picard_bed_to_interval_list](https://snakemake-wrappers.readthedocs.io/en/v3.13.8/wrappers/picard/bedtointervallist.html)
-Introduction to qc_ont_picard_bed_to_interval_list
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_picard_bed_to_interval_list#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_picard_bed_to_interval_list#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__qc_ont_picard_bed_to_interval_list#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__qc_ont_picard_bed_to_interval_list#
-
-
-## [qc_ont_mosdepth_overlap](https://github.com/brentp/mosdepth)
-Introduction to qc_ont_mosdepth_overlap
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__qc_ont_mosdepth_overlap#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__qc_ont_mosdepth_overlap#
-
-
-## [qc_ont_mosdepth_overlap_timestep](https://github.com/brentp/mosdepth)
-Introduction to qc_ont_mosdepth_overlap_timestep
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap_timestep#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap_timestep#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__qc_ont_mosdepth_overlap_timestep#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__qc_ont_mosdepth_overlap_timestep#
-
-
-## [qc_ont_pycoqc](https://github.com/a-slide/pycoQC)
-Introduction to qc_ont_pycoqc
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_pycoqc#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_pycoqc#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__qc_ont_pycoqc#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__qc_ont_pycoqc#
-
-
-## [qc_ont_sequali](https://github.com/rhpvorderman/sequali)
-Introduction to qc_ont_sequali
-
-### :snake: Rule
-
-#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_sequali#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_sequali#
-
-### :wrench: Configuration
-
-#### Software settings (`config.yaml`)
-
-#CONFIGSCHEMA__qc_ont_sequali#
-
-#### Resources settings (`resources.yaml`)
-
-#RESOURCESSCHEMA__qc_ont_sequali#
-
-
-## [snv_indels_svs_clairs_to](https://github.com/HKU-BAL/ClairS-TO/tree/main)
-Introduction to snv_indels_svs_clairs_to
+## [snv_indels_svs_clairs_to](https://github.com/HKU-BAL/ClairS-TO)
+Tumour-only small variant calling with ClairS-TO.
 
 ### :snake: Rule
 
@@ -551,7 +380,7 @@ Introduction to snv_indels_svs_clairs_to
 
 
 ## [snv_indels_svs_clairs_to_concat](https://samtools.github.io/bcftools/bcftools.html#concat)
-Introduction to snv_indels_svs_clairs_to_concat
+Concatenate and sort the SNV and indel VCF files from ClairS-TO.
 
 ### :snake: Rule
 
@@ -573,7 +402,7 @@ Introduction to snv_indels_svs_clairs_to_concat
 
 
 ## [snv_indels_svs_deepsomatic](https://github.com/google/deepsomatic)
-Introduction to snv_indels_svs_deepsomatic
+Tumour-only small variant calling with DeepSomatic (`ONT_TUMOR_ONLY` model).
 
 ### :snake: Rule
 
@@ -595,9 +424,7 @@ Introduction to snv_indels_svs_deepsomatic
 
 
 ## [snv_indels_svs_savana](https://github.com/cortes-ciriano-lab/savana)
-Introduction to snv_indels_svs_savana. Not working yet for amplicon data, 
-but we keep it here for future use when the tool will be updated to handle amplicon data
-(see https://github.com/cortes-ciriano-lab/savana/issues/97).
+Somatic SV calling with SAVANA. Not used: SAVANA does not handle amplicon data yet.
 
 ### :snake: Rule
 
@@ -618,228 +445,220 @@ but we keep it here for future use when the tool will be updated to handle ampli
 #RESOURCESSCHEMA__snv_indels_svs_savana#
 
 
-## [references_rules_snv_indels_clairs_to_gvcf](https://github.com/HKU-BAL/ClairS-TO/tree/main)
-Somatic variant calling with ClairS-TO on reference sample.
+# Pre-filtering and annotation
+
+Rules in `workflow/rules/prefiltering.smk`.
+
+## [prefiltering_bcftools_view](https://samtools.github.io/bcftools/bcftools.html#view)
+Remove each caller's false-positive calls with caller-specific `bcftools view` expressions.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_snv_indels_clairs_to_gvcf#
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_view#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_snv_indels_clairs_to_gvcf#
+#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_view#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__reference_rules_snv_indels_clairs_to_gvcf#
+#CONFIGSCHEMA__prefiltering_bcftools_view#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__snv_indels_svs_clairs_to#
+#RESOURCESSCHEMA__prefiltering_bcftools_view#
 
 
-## [references_rules_snv_indels_deepsomatic_gvcf](https://github.com/google/deepsomatic)
-Somatic variant calling with DeepSomatic on reference sample.
+## [prefiltering_bcftools_include_region](https://samtools.github.io/bcftools/bcftools.html#filter)
+Keep only the Sniffles2 calls in the target regions.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_snv_indels_deepsomatic_gvcf#
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_bcftools_include_region#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_snv_indels_deepsomatic_gvcf#
+#SNAKEMAKE_RULE_TABLE__prefiltering__prefiltering_bcftools_include_region#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__reference_rules_snv_indels_deepsomatic_gvcf#
+#CONFIGSCHEMA__prefiltering_bcftools_include_region#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__snv_indels_svs_deepsomatic#
+#RESOURCESSCHEMA__prefiltering_bcftools_include_region#
 
 
-## [create_background_file_longread_clairs_to](https://github.com/hydra-genetics/references)
-Create background file for ClairS-TO calls.
+## [prefiltering_rename_vaf_to_af](https://samtools.github.io/bcftools/bcftools.html#annotate)
+Rename `FORMAT/VAF` to `FORMAT/AF`.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_clairs_to#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_clairs_to#
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_rename_vaf_to_af#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__create_background_file#
+#CONFIGSCHEMA__prefiltering_rename_vaf_to_af#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__create_background_file#
+#RESOURCESSCHEMA__prefiltering_rename_vaf_to_af#
 
 
-## [create_background_file_longread_deepsomatic](https://github.com/hydra-genetics/references)
-Create background file for DeepSomatic calls.
+## prefiltering_artifact_homopolymer_annotation
+Annotate variants with their frequency in the artifact panel (`Artifact`, `ArtifactMedian`, `ArtifactNrSD`).
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_deepsomatic#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_deepsomatic#
+#SNAKEMAKE_RULE_SOURCE__prefiltering__prefiltering_artifact_homopolymer_annotation#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__create_background_file#
+#CONFIGSCHEMA__prefiltering_artifact_homopolymer_annotation#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__create_background_file#
+#RESOURCESSCHEMA__prefiltering_artifact_homopolymer_annotation#
 
 
-## [create_background_file_longread_vardict](https://github.com/hydra-genetics/references)
-Create background file for VarDict calls.
+# QC
+
+Rules in `workflow/rules/qc_ont.smk`.
+
+## [qc_ont_pycoqc](https://github.com/a-slide/pycoQC)
+Report on the sequencing run from the MinKNOW sequencing summary.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_vardict#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_pycoqc#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_vardict#
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_pycoqc#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__create_background_file#
+#CONFIGSCHEMA__qc_ont_pycoqc#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__create_background_file#
+#RESOURCESSCHEMA__qc_ont_pycoqc#
 
 
-## [create_artifact_file_longread](https://github.com/hydra-genetics/references)
-Create somatic artifact file.
+## [qc_ont_sequali](https://github.com/rhpvorderman/sequali)
+Quality report on the reads kept and removed by Filtlong.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__create_artifact_file_longread#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_sequali#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__create_artifact_file_longread#
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_sequali#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__create_artifact_file#
+#CONFIGSCHEMA__qc_ont_sequali#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__create_artifact_file#
+#RESOURCESSCHEMA__qc_ont_sequali#
 
 
-## [references_rules_align_unfiltered_bam](https://software-docs.nanoporetech.com/dorado/latest/basecaller/alignment/)
-Align unfiltered reads for reference purposes.
+## [qc_ont_mosdepth_overlap](https://github.com/brentp/mosdepth)
+Mean coverage per target.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_align_unfiltered_bam#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_align_unfiltered_bam#
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__alignment_ont_dorado_align#
+#CONFIGSCHEMA__qc_ont_mosdepth_overlap#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__alignment_ont_dorado_align#
+#RESOURCESSCHEMA__qc_ont_mosdepth_overlap#
 
 
-## [references_rules_bam_sort](https://www.htslib.org/doc/samtools-sort.html)
-Sort aligned unfiltered reference BAM file.
+## qc_ont_mosdepth_merge
+Merge the per-target coverage summaries into one CSV file.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_bam_sort#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_bam_sort#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_merge#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__alignment_ont_bam_sort#
+#CONFIGSCHEMA__qc_ont_mosdepth_merge#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__alignment_ont_bam_sort#
+#RESOURCESSCHEMA__qc_ont_mosdepth_merge#
 
 
-## [references_rules_bam_index](https://www.htslib.org/doc/samtools-index.html)
-Index aligned unfiltered reference BAM file.
+## qc_ont_yield_per_pool
+Estimated read count and share of reads per amplicon in each pool.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__references_rules_bam_index#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_yield_per_pool#
 
 #### :left_right_arrow: input / output files
 
-#SNAKEMAKE_RULE_TABLE__references_rules__references_rules_bam_index#
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_yield_per_pool#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__alignment_ont_bam_index#
+#CONFIGSCHEMA__qc_ont_yield_per_pool#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__alignment_ont_bam_index#
+#RESOURCESSCHEMA__qc_ont_yield_per_pool#
 
 
-## [create_background_file_longread_vardict_unfiltered](https://github.com/hydra-genetics/references)
-Create background file for unfiltered VarDict calls.
+## [qc_ont_picard_bed_to_interval_list](https://snakemake-wrappers.readthedocs.io/en/v5.0.1/wrappers/picard/bedtointervallist.html)
+Convert `amplicons.bed` to a Picard interval list.
 
 ### :snake: Rule
 
-#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_vardict_unfiltered#
-
-#### :left_right_arrow: input / output files
-
-#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_vardict_unfiltered#
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_picard_bed_to_interval_list#
 
 ### :wrench: Configuration
 
 #### Software settings (`config.yaml`)
 
-#CONFIGSCHEMA__create_background_file#
+#CONFIGSCHEMA__qc_ont_picard_bed_to_interval_list#
 
 #### Resources settings (`resources.yaml`)
 
-#RESOURCESSCHEMA__create_background_file#
+#RESOURCESSCHEMA__qc_ont_picard_bed_to_interval_list#
 
 
-## [qc_ont_mosdepth_exons_multiqc](url_to_tool)
-Introduction to qc_ont_mosdepth_exons_multiqc: rewrites bd.gz file to a TSV file with Python.
+## qc_ont_mosdepth_exons_multiqc
+Write the coverage per exon as a MultiQC custom-content table.
 
 ### :snake: Rule
 
@@ -858,3 +677,206 @@ Introduction to qc_ont_mosdepth_exons_multiqc: rewrites bd.gz file to a TSV file
 #### Resources settings (`resources.yaml`)
 
 #RESOURCESSCHEMA__qc_ont_mosdepth_exons_multiqc#
+
+
+## [qc_ont_mosdepth_overlap_timestep](https://github.com/brentp/mosdepth)
+Coverage per target for each MinKNOW BAM batch (research).
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_overlap_timestep#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_overlap_timestep#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_mosdepth_overlap_timestep#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_mosdepth_overlap_timestep#
+
+
+## qc_ont_mosdepth_merge_timestep
+Merge the coverage per batch (research).
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_mosdepth_merge_timestep#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_mosdepth_merge_timestep#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_mosdepth_merge_timestep#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_mosdepth_merge_timestep#
+
+
+## qc_ont_plot_yield_timestep
+Plot the cumulative coverage per amplicon over time (research).
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__qc_ont__qc_ont_plot_yield_timestep#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__qc_ont__qc_ont_plot_yield_timestep#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__qc_ont_plot_yield_timestep#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__qc_ont_plot_yield_timestep#
+
+
+# Report
+
+Rules in `workflow/rules/results_report.smk`.
+
+## [results_report_xlsx](https://xlsxwriter.readthedocs.io/)
+Write the Excel report with variants and coverage.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__results_report__results_report_xlsx#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__results_report__results_report_xlsx#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__results_report_xlsx#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__results_report_xlsx#
+
+
+## results_report_copy_bed
+Copy the BED files used in the analysis.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__results_report__results_report_copy_bed#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__results_report_copy_bed#
+
+#### Resources settings (`resources.yaml`)
+
+#RESOURCESSCHEMA__results_report_copy_bed#
+
+
+# Reference workflow
+
+Rules in `workflow/rules/references_rules.smk`.
+
+## [reference_rules_snv_indels_clairs_to_gvcf](https://github.com/HKU-BAL/ClairS-TO)
+ClairS-TO with reference calls printed, for the background panel.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__reference_rules_snv_indels_clairs_to_gvcf#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__reference_rules_snv_indels_clairs_to_gvcf#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__reference_rules_snv_indels_clairs_to_gvcf#
+
+
+## [reference_rules_snv_indels_deepsomatic_gvcf](https://github.com/google/deepsomatic)
+DeepSomatic with gVCF output, for the background panel.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__reference_rules_snv_indels_deepsomatic_gvcf#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__reference_rules_snv_indels_deepsomatic_gvcf#
+
+### :wrench: Configuration
+
+#### Software settings (`config.yaml`)
+
+#CONFIGSCHEMA__reference_rules_snv_indels_deepsomatic_gvcf#
+
+
+## [reference_rules_align_unfiltered](https://software-docs.nanoporetech.com/dorado/latest/basecaller/alignment/)
+Align reads not filtered by Filtlong.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__reference_rules_align_unfiltered#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__reference_rules_align_unfiltered#
+
+
+## [reference_rules_bam_sort_unfiltered](https://www.htslib.org/doc/samtools-sort.html)
+Sort the unfiltered aligned reads.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__reference_rules_bam_sort_unfiltered#
+
+
+## [reference_rules_bam_index_unfiltered](https://www.htslib.org/doc/samtools-index.html)
+Index the unfiltered sorted BAM file.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__reference_rules_bam_index_unfiltered#
+
+
+## create_background_file_longread_vardict_unfiltered
+Background panel from VarDict gVCFs of unfiltered reads.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_background_file_longread_vardict_unfiltered#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_background_file_longread_vardict_unfiltered#
+
+
+## create_artifact_file_longread
+Artifact panel from the soft-filtered ensemble VCFs of the panel samples.
+
+### :snake: Rule
+
+#SNAKEMAKE_RULE_SOURCE__references_rules__create_artifact_file_longread#
+
+#### :left_right_arrow: input / output files
+
+#SNAKEMAKE_RULE_TABLE__references_rules__create_artifact_file_longread#
+

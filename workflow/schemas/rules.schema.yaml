@@ -116,15 +116,14 @@ properties:
         type: object
         description: list of inputs
         properties:
+          txt:
+            type: string
+            description: >
+              text files with the read IDs per target; the reads of TP53_D2_only are removed
+              from the TP53_D2+J3 reads to get the reads of J3
           bam:
             type: string
-            description: input bam file to be split for target J3 only
-          bai:
-            type: string
-            description: input bam index file to be used for splitting
-          amplibed:
-            type: string
-            description: bed file wih the coordinates of the amplicons to be used for splitting
+            description: per-target bam files; the TP53_D2+J3 bam file is split to get the reads of J3 only
       output:
         type: object
         description: list of outputs
@@ -487,6 +486,28 @@ properties:
             type: string
             description: output fastq.gz file with the reads that are too long according to the filtering step with filtlong
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
+  prefiltering_artifact_homopolymer_annotation:
+    type: object
+    description: input and output parameters for prefiltering_artifact_homopolymer_annotation
+    properties:
+      input:
+        type: object
+        description: list of inputs
+        properties:
+          artifacts:
+            type: string
+            description: artifact panel (tsv) with the number of observations, median and standard deviation of the AF per caller and position
+          vcf:
+            type: string
+            description: input VEP-annotated vcf file in which VAF has been renamed to AF
+      output:
+        type: object
+        description: list of outputs
+        properties:
+          vcf:
+            type: string
+            description: output vcf file with the INFO fields Artifact, ArtifactMedian and ArtifactNrSD added
+# Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   prefiltering_bcftools_include_region:
     type: object
     description: input and output parameters for prefiltering_bcftools_include_region
@@ -556,9 +577,9 @@ properties:
             type: string
             description: output vcf file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  qc_ont_bed_to_interval_list:
+  qc_ont_picard_bed_to_interval_list:
     type: object
-    description: input and output parameters for qc_ont_bed_to_interval_list
+    description: input and output parameters for qc_ont_picard_bed_to_interval_list
     properties:
       input:
         type: object
@@ -746,10 +767,10 @@ properties:
         type: object
         description: list of inputs
         properties:
-          fastqgz1:
+          fastgz1:
             type: string
             description: input filtered fastq.gz file to be used for calculating the sequencing quality metrics with sequali
-          fastqgz2:
+          fastgz2:
             type: string
             description: input outfiltered fastq.gz file to be used for calculating the sequencing quality metrics with sequali
       output:
@@ -788,9 +809,9 @@ properties:
             type: string
             description: output csv file per pool with the summary table with the coverage for each target
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  references_rules_align_unfiltered_bam:
+  reference_rules_align_unfiltered:
     type: object
-    description: input and output parameters for references_rules_align_unfiltered_bam
+    description: input and output parameters for reference_rules_align_unfiltered
     properties:
       input:
         type: object
@@ -810,9 +831,9 @@ properties:
             type: string
             description: output aligned bam file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  references_rules_bam_index:
+  reference_rules_bam_index_unfiltered:
     type: object
-    description: input and output parameters for references_rules_bam_index
+    description: input and output parameters for reference_rules_bam_index_unfiltered
     properties:
       input:
         type: string
@@ -821,9 +842,9 @@ properties:
         type: string
         description: output bam index file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  references_rules_bam_sort:
+  reference_rules_bam_sort_unfiltered:
     type: object
-    description: input and output parameters for references_rules_bam_sort
+    description: input and output parameters for reference_rules_bam_sort_unfiltered
     properties:
       input:
         type: string
@@ -832,9 +853,9 @@ properties:
         type: string
         description: output sorted aligned bam file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  references_rules_snv_indels_clairs_to_gvcf:
+  reference_rules_snv_indels_clairs_to_gvcf:
     type: object
-    description: input and output parameters for references_rules_snv_indels_clairs_to_gvcf
+    description: input and output parameters for reference_rules_snv_indels_clairs_to_gvcf
     properties:
       input:
         type: object
@@ -863,9 +884,9 @@ properties:
             type: string
             description: output somatic snv g.vcf.gz file
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
-  references_rules_snv_indels_deepsomatic_gvcf:
+  reference_rules_snv_indels_deepsomatic_gvcf:
     type: object
-    description: input and output parameters for references_rules_snv_indels_deepsomatic_gvcf
+    description: input and output parameters for reference_rules_snv_indels_deepsomatic_gvcf
     properties:
       input:
         type: object
