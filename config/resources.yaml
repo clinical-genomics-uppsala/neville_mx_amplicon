@@ -50,6 +50,13 @@ alignment_ont_split_bam_target_j3:
   mem_mb: 6144
   mem_per_cpu: 6144
 
+artifact_annotation:
+  partition: "core"
+  time: "02:00:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
+  
 basecalling_bam_to_fastq:
   partition: "core"
   time: "00:15:00"
@@ -199,12 +206,12 @@ alignment_ont_split_bam_by_target:
   mem_mb: 6144
   mem_per_cpu: 6144
 
-  alignment_ont_split_bam_target_j3:
-    partition: "core"
-    time: "00:15:00"
-    threads: 1
-    mem_mb: 6144
-    mem_per_cpu: 6144
+alignment_ont_split_bam_target_j3:
+  partition: "core"
+  time: "00:15:00"
+  threads: 1
+  mem_mb: 6144
+  mem_per_cpu: 6144
 
 basecalling_bam_to_fastq:
   partition: "core"

@@ -21,6 +21,8 @@ reference:
     "reference/TP53_chr17_GRCh38.dict"
   design_bed:
     "test_data/bedfiles/amplicons.bed"
+  artifacts:
+    "test_data/artifact_panel.tsv"
 
 runfolder: "test_data"
 batchid: "Mtest"  # _D25-test007
