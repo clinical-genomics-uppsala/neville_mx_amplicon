@@ -35,13 +35,14 @@ samples = pd.read_table(config["samples_ref"], comment="#").set_index("sample", 
 validate(samples, schema="../schemas/samples.schema.yaml")
 
 units = pd.read_table(config["units_ref"], dtype=str).set_index(["sample", "type"], drop=False)
-panel_ref =  pd.read_table(config["panel_ref"], dtype=str).set_index(["experiment", "sample", "type"], drop=False)
+panel_ref = pd.read_table(config["panel_ref"], dtype=str).set_index(["experiment", "sample", "type"], drop=False)
 validate(units, schema="../schemas/units.schema.yaml")
 
 # Ouput file specification
 with open(config["output"]) as f:
     output_spec = yaml.safe_load(f)
     validate(output_spec, schema="../schemas/output_files.schema.yaml")
+
 
 def compile_output_file_list(wildcards):
     outdir = pathlib.Path(output_spec.get("directory", "./"))
@@ -125,30 +126,27 @@ generate_copy_rules(output_spec)
 
 
 def get_gvcfs_clairs_to():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}_snv.clairs_to.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
+    return list(
+        set([f"reference_files/{t.experiment}_{t.sample}_{t.type}_snv.clairs_to.g.vcf.gz" for t in panel_ref.itertuples()])
     )
 
 
 def get_gvcfs_deepsomatic():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.deepsomatic.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
-    )
+    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.deepsomatic.g.vcf.gz" for t in panel_ref.itertuples()]))
 
 
 def get_gvcfs_vardict():
-    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.vardict.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
-    )
+    return list(set([f"reference_files/{t.experiment}_{t.sample}_{t.type}.vardict.g.vcf.gz" for t in panel_ref.itertuples()]))
 
 
 def get_gvcfs_vardict_unfiltered():
-    return list(set([f"references/vardict/{t.experiment}_{t.sample}_{t.type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
-                     for t in panel_ref.itertuples()
-                     ])
+    return list(
+        set(
+            [
+                f"references/vardict/{t.experiment}_{t.sample}_{t.type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf.gz"
+                for t in panel_ref.itertuples()
+            ]
+        )
     )
 
 

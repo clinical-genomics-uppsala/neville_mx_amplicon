@@ -29,9 +29,7 @@ module pipeline:
 use rule * from pipeline exclude all
 
 
-logger.info(
-    f"\nRules currently in scope: {sorted(getattr(r, 'name', str(r)) for r in workflow.rules)}"
-)
+logger.info(f"\nRules currently in scope: {sorted(getattr(r, 'name', str(r)) for r in workflow.rules)}")
 
 
 module snv_indels:
@@ -50,7 +48,9 @@ use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf with
         reference=config.get("reference", {}).get("fasta", ""),
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
-        regions=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")),
+        regions=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")
+        ),
     output:
         vcf=temp(
             "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.vardict.g.vcf"
@@ -58,20 +58,27 @@ use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf with
     params:
         extra=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
         bed_columns=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
-        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("allele_frequency_threshold", "0.01"),
+        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "allele_frequency_threshold", "0.01"
+        ),
         sample_name=lambda wildcards: f"{wildcards.sample}",
-    threads:  config.get("vardict", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("vardict", {}).get("threads", config["default_resources"]["threads"])
     resources:
         mem_mb=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("partition", config["default_resources"]["partition"]),
+        mem_per_cpu=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+        partition=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "partition", config["default_resources"]["partition"]
+        ),
         threads=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("threads", config["default_resources"]["threads"]),
         time=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("time", config["default_resources"]["time"]),
     log:
         "references/vardict/{experiment}_{sample}_{type}.vcf.log",
     benchmark:
         repeat(
-            "references/vardict/{experiment}_{sample}_{type}.benchmark.tsv", config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1)
+            "references/vardict/{experiment}_{sample}_{type}.benchmark.tsv",
+            config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1),
         )
 
 
@@ -80,28 +87,35 @@ use rule vardict from snv_indels as reference_rules_snv_indels_vardict_gvcf_unfi
         reference=config.get("reference", {}).get("fasta", ""),
         bam="references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam",
         bai="references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai",
-        regions=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")),
-    output:
-        vcf=temp(
-            "references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf"
+        regions=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "bed_file", os.path.join(config.get("bed_files"), "amplicons-background.bed")
         ),
+    output:
+        vcf=temp("references/vardict/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.vardict.g.vcf"),
     params:
         extra=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("extra", "-p -Q 1"),  # -p to output gVCF with all positions
         bed_columns=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("bed_columns", "-c 1 -S 2 -E 3 -g 4"),
-        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("allele_frequency_threshold", "0.01"),
+        allele_frequency_threshold=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "allele_frequency_threshold", "0.01"
+        ),
         sample_name=lambda wildcards: f"{wildcards.sample}",
-    threads:  config.get("vardict", {}).get("threads", config["default_resources"]["threads"])
+    threads: config.get("vardict", {}).get("threads", config["default_resources"]["threads"])
     resources:
         mem_mb=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_mb", config["default_resources"]["mem_mb"]),
-        mem_per_cpu=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("mem_per_cpu", config["default_resources"]["mem_per_cpu"]),
-        partition=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("partition", config["default_resources"]["partition"]),
+        mem_per_cpu=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "mem_per_cpu", config["default_resources"]["mem_per_cpu"]
+        ),
+        partition=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get(
+            "partition", config["default_resources"]["partition"]
+        ),
         threads=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("threads", config["default_resources"]["threads"]),
         time=config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("time", config["default_resources"]["time"]),
     log:
         "references/vardict/{experiment}_{sample}_{type}_unfiltered.vcf.log",
     benchmark:
         repeat(
-            "references/vardict/{experiment}_{sample}_{type}_unfiltered.benchmark.tsv", config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1)
+            "references/vardict/{experiment}_{sample}_{type}_unfiltered.benchmark.tsv",
+            config.get("reference_rules_snv_indels_vardict_gvcf", {}).get("benchmark_repeats", 1),
         )
 
 

@@ -85,7 +85,7 @@ def extract_vcf_values(record, csq_index):
     except KeyError:
         return_dict["background_median"] = ""
         return_dict["background_nr_sd"] = ""
-        
+
     print("Variant, return_dict:", variant, return_dict)
 
     return_dict["gene"] = csq[csq_index.index("SYMBOL")]

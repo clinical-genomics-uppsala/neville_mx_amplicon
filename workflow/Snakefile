@@ -12,6 +12,7 @@ logger.info(
     f"raw.githubusercontent.com/hydra-genetics"
 )
 
+
 # Include pipeline specific rules
 include: "rules/common.smk"
 include: "rules/basecalling.smk"
@@ -386,8 +387,8 @@ else:
             "{file}.vep_annotated.vcf.log",
         benchmark:
             repeat("{file}.vep_annotated.vcf.benchmark.tsv", config.get("vep", {}).get("benchmark_repeats", 1))
-            
-            
+
+
 '''            
     use rule artifact_annotation from annotation as artifact_annotation with:
         input:

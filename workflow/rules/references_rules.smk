@@ -9,7 +9,9 @@ rule reference_rules_snv_indels_clairs_to_gvcf:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("reference_rules_snv_indels_clairs_to_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+        bed=config.get("reference_rules_snv_indels_clairs_to_gvcf", {}).get(
+            "bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")
+        ),
         vcf="references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz",
     output:
         snv="references/clairs_to/{experiment}_{sample}_{type}/{experiment}_{sample}_{type}_snv.g.vcf.gz",
@@ -45,11 +47,11 @@ rule reference_rules_snv_indels_clairs_to_gvcf:
         " --output_dir {params.outdir} -s {wildcards.sample} --bed_fn {input.bed}"
         " --snv_min_af {params.snv_min_af} --indel_min_af {params.indel_min_af}"
         " --disable_verdict"
-        # " -G {input.vcf}"
         " --print_ref_calls"
         " --snv_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_snv.g"
         " --indel_output_prefix {wildcards.experiment}_{wildcards.sample}_{wildcards.type}_indel.g"
         " 2> {log}"
+        # " -G {input.vcf}"
 
 
 rule reference_rules_snv_indels_deepsomatic_gvcf:
@@ -57,11 +59,17 @@ rule reference_rules_snv_indels_deepsomatic_gvcf:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam",
         bai="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.bam.bai",
         ref=config.get("ref_data"),
-        bed=config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get("bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")),
+        bed=config.get("reference_rules_snv_indels_deepsomatic_gvcf", {}).get(
+            "bed_file", os.path.join(config.get("bed_files"), "amplicons.bed")
+        ),
     output:
         tmpdir=directory("references/deepsomatic/{experiment}_{sample}_{type}_tmp"),
-        vcf=temp("references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz"),
-        gvcf=temp("references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz"),
+        vcf=temp(
+            "references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.vcf.gz"
+        ),
+        gvcf=temp(
+            "references/deepsomatic/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.deepsomatic.g.vcf.gz"
+        ),
     params:
         sample=lambda wildcards: f"{wildcards.sample}",
         model="ONT_TUMOR_ONLY",
@@ -312,7 +320,9 @@ rule reference_rules_bam_index_unfiltered:
     input:
         "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam",
     output:
-        temp("references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai"),
+        temp(
+            "references/align_unfiltered_bam/{experiment}_{sample}_{type}_reads.ont_adapt_trim.unfiltered.aligned.sorted.bam.bai"
+        ),
     resources:
         partition=config.get("alignment_ont_bam_index", {}).get("partition", config["default_resources"]["partition"]),
         time=config.get("alignment_ont_bam_index", {}).get("time", config["default_resources"]["time"]),

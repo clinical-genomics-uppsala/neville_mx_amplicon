@@ -127,7 +127,7 @@ def extract_average_quality_from_bam(bam_path, bed_path, tsv_out_path):
 
     # Convert results to a DataFrame and save as TSV
     df_results = pd.DataFrame.from_dict(dict_pos_avg_quality, orient='index', columns=["avg_base_quality"])
-    #df_results.index = [f"{target_chrom}:{pos}" for pos in df_results.index]
+    # df_results.index = [f"{target_chrom}:{pos}" for pos in df_results.index]
     df_results["Chr"] = target_chrom.strip("chr")
     df_results["Pos"] = df_results.index
     df_results.reset_index()
@@ -137,9 +137,13 @@ def extract_average_quality_from_bam(bam_path, bed_path, tsv_out_path):
     # Close the BAM file
     bamfile.close()
 
+
 if __name__ == "__main__":
     pass
-    bam_path = "/home/camille/ampliconthemato/neville_mx_amplicon/hotspot_noise_analysis/M11_D23-09080_T.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
+    bam_path = (
+        "/home/camille/ampliconthemato/neville_mx_amplicon/hotspot_noise_analysis/"
+        "M11_D23-09080_T.ont_reads.filtered.aligned.sorted.soft-clipped.bam"
+    )
     bed_path = "/home/camille/ampliconthemato/amplic_ont_hemato/data/primer_data/FLT3_ITD_3kb_1.bed"
     tsv_out = "/home/camille/ampliconthemato/neville_mx_amplicon/hotspot_noise_analysis/M11_D23-09080_T.FLT3-ITD.qscores.tsv"
 
