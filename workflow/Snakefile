@@ -196,7 +196,7 @@ use rule bgzip from snv_indels as snv_indels_bgzip with:
         )
     wildcard_constraints:
         file="(snv_indels)\/.*(decomposed|normalized|vep_annotated|clairs_to|deepsomatic|sniffles2|vardict|ensembled"
-        "|somatic_.+|rename_vaf)",
+        "|artifact_annotated|somatic_.+|rename_vaf)",
 
 
 use rule tabix from snv_indels as snv_indels_tabix with:
@@ -235,6 +235,7 @@ logger.info(
 )
 
 
+'''
 use rule scanitd from cnv_sv as cnv_sv_scanitd with:
     input:
         bam="alignment/dorado_align/{experiment}_{sample}_{type}_reads.ont_adapt_trim.filtered.aligned.sorted.soft-clipped.nm.bam",
@@ -254,6 +255,7 @@ use rule scanitd from cnv_sv as cnv_sv_scanitd with:
             "cnv_sv/scanitd/{experiment}_{sample}_{type}.output.benchmark.tsv",
             config.get("scanitd", {}).get("benchmark_repeats", 1),
         )
+'''
 
 
 use rule sniffles2_call from cnv_sv as cnv_sv_sniffles2_call with:
@@ -387,6 +389,25 @@ else:
             repeat("{file}.vep_annotated.vcf.benchmark.tsv", config.get("vep", {}).get("benchmark_repeats", 1))
 
 
+'''            
+    use rule artifact_annotation from annotation as artifact_annotation with:
+        input:
+            artifacts=config.get("reference", {}).get("artifacts", ""),
+            vcf="{file}.vep_annotated.rename_vaf.vcf",
+        output:
+            vcf=temp("{file}.artifact_annotated.vcf"),
+        wildcard_constraints:
+            file="(snv_indels)/(clairs_to|vardict|deepsomatic|bcbio_variation_recall_ensemble)\/.*",  # no list of artifacts for SVs
+        log:
+            "{file}.artifact_annotated.vcf.log",
+        benchmark:
+            repeat(
+                "{file}.artifact_annotated.vcf.benchmark.tsv",
+                config.get("artifact_annotated", {}).get("benchmark_repeats", 1),
+            )
+'''
+
+
 module filtering:
     snakefile:
         get_module_snakefile(
@@ -413,7 +434,7 @@ use rule filter_vcf from filtering as filtering_filter_vcf with:
     output:
         vcf=temp("{file}.filter.{tag}.vcf"),
     wildcard_constraints:
-        file="snv_indels\/bcbio_variation_recall_ensemble\/.+(ensembled\.vep_annotated\.rename_vaf|filter\.somatic_hard)",
+        file="snv_indels\/bcbio_variation_recall_ensemble\/.+(ensembled\.artifact_annotated|filter\.somatic_hard)",
     params:
         sample_name_regex=config.get("filter_vcf", {}).get("sample_name_regex", "^([A-Za-z0-9-]+_T)$"),
         filter_config=lambda wildcards: config["filter_vcf"][wildcards.tag],

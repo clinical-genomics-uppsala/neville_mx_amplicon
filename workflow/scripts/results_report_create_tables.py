@@ -86,6 +86,8 @@ def extract_vcf_values(record, csq_index):
         return_dict["background_median"] = ""
         return_dict["background_nr_sd"] = ""
 
+    print("Variant, return_dict:", variant, return_dict)
+
     return_dict["gene"] = csq[csq_index.index("SYMBOL")]
     return_dict["transcript"] = csq[csq_index.index("HGVSc")].split(":")[0]
 
@@ -210,8 +212,8 @@ class VariantTable(object):
             {"header": "dbSNP"},
             {"header": "Max Pop AF"},
             {"header": "Max Pop"},
-            # {"header": "Artifact Medians (Mutect; Vardict)"},
-            # {"header": "Artifact calls (Mutect; Vardict; TotNormals)"},
+            {"header": "Artifact Medians (ClairS-TO; deepsomatic; Vardict)"},
+            {"header": "Artifact calls (ClairS-TO; deepsomatic; Vardict)"},
             # {"header": "Number of SD from background median"},
             # {"header": "Background Median"},
             {"header": "Callers"},
@@ -240,8 +242,8 @@ class VariantTable(object):
                     record_values["rs"],
                     record_values["max_pop_af"],
                     record_values["max_pops"],
-                    # record_values["artifact_median"],
-                    # record_values["artifact_callers"],
+                    record_values["artifact_median"],
+                    record_values["artifact_callers"],
                     # record_values["background_nr_sd"],
                     # record_values["background_median"],
                     record_values["callers"],
