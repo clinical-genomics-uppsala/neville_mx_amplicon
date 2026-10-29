@@ -1,0 +1,322 @@
+<!doctype html>
+<!--
+  PROTOTYPE - throwaway. Answers: how should the stacked per-amplicon noise view look and behave?
+  Round 2: the stacked tracks of variant A combined with the clickable variant table of variant C, one tab per amplicon.
+  Data comes from prototype_data.js (build_prototype_data.py). Open this file in a browser (internet needed for plotly.js).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noise view prototype</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="prototype_data.js"></script>
+<style>
+  :root { --fg: #1f2328; --muted: #656d76; --line: #d0d7de; --bg: #ffffff; --panel: #f6f8fa; --sel: #fff8c5; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+  header { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  header h1 { font-size: 18px; margin: 0; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  header label { font-size: 13px; }
+  header input[type=text] { width: 70px; }
+  header input.num { width: 44px; }
+  nav { display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  nav button { border: 1px solid transparent; border-bottom: 0; background: none; padding: 8px 14px; font-size: 14px; cursor: pointer;
+    color: var(--muted); border-radius: 6px 6px 0 0; margin-bottom: -1px; }
+  nav button.on { background: var(--bg); border-color: var(--line); color: var(--fg); font-weight: 600; }
+  main { padding: 8px 16px 40px; }
+  h2 { font-size: 16px; margin: 12px 0 4px; }
+  .sub { color: var(--muted); font-size: 12px; font-weight: normal; }
+  .row { display: flex; gap: 12px; align-items: flex-start; }
+  .row > .plots { flex: 1 1 72%; min-width: 0; }
+  .row > aside { flex: 0 0 28%; max-height: 820px; overflow: auto; border: 1px solid var(--line); }
+  @media (max-width: 1000px) { .row { flex-direction: column; } .row > aside { flex-basis: auto; width: 100%; } }
+  .tools { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .tools button { font-size: 12px; }
+  table { border-collapse: collapse; font-size: 12px; width: 100%; }
+  th, td { padding: 3px 6px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { position: sticky; top: 0; background: var(--panel); }
+  tr.v { cursor: pointer; }
+  tr.v:hover { background: #f3f4f6; }
+  tr.v.sel { background: var(--sel); outline: 2px solid #d4a72c; outline-offset: -2px; }
+  .badge { padding: 1px 6px; border-radius: 8px; font-size: 11px; color: #fff; }
+  .sym { font-size: 13px; letter-spacing: 1px; }
+  #proto { position: fixed; bottom: 10px; right: 12px; background: #111; color: #fff; border-radius: 999px; padding: 4px 10px;
+    font-size: 11px; opacity: .7; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Noise view prototype</h1>
+  <span class="meta" id="meta"></span>
+  <label>Reference lines (VAF %): <input type="text" id="levels" value="1, 5"></label>
+  <label><input type="checkbox" id="logy"> log y for noise</label>
+  <label title="Known variants are never hidden. Germline = a substitution (REF and ALT of equal length) that is soft-filtered PopAF_0.02 / GERMLINE / NonSomatic, or has a VAF at or above the threshold.">
+    <input type="checkbox" id="hidegerm"> hide germline variants (substitutions with a population filter, or VAF &ge;
+    <input class="num" type="text" id="germaf" value="35">%)</label>
+</header>
+<nav id="tabs"></nav>
+<main id="app"></main>
+<div id="proto">PROTOTYPE</div>
+<script>
+const COL = { sub: "#0969da", del: "#cf222e", ins: "#8250df", total: "#1f2328", bq: "#bc4c00",
+  A: "#2da44e", C: "#0969da", G: "#bf8700", T: "#cf222e", low: "#c8c8c8", exon: "#57606a" };
+const CAT = {
+  pass: { name: "PASS", color: "#0969da" },
+  filtered: { name: "Soft-filtered", color: "#8c959f" },
+  known_pass: { name: "Known, PASS", color: "#d1242f" },
+  known_filtered: { name: "Known, soft-filtered", color: "#e16f24" },
+  known_not_called: { name: "Known, not called", color: "#8250df" },
+};
+// nested open shapes so a variant called by several callers shows every caller's shape
+const CALLERS = {
+  clairs_to: { name: "ClairS-TO", symbol: "circle-open", size: 6, glyph: "&#9675;" },
+  deepsomatic: { name: "DeepSomatic", symbol: "square-open", size: 9, glyph: "&#9633;" },
+  vardict: { name: "VarDict", symbol: "diamond-open", size: 13, glyph: "&#9671;" },
+};
+const GERMLINE_FILTERS = ["PopAF_0.02", "GERMLINE", "NonSomatic"];
+const MIN_HP = 5, WINDOW = 20;
+const CFG = { responsive: true, displaylogo: false, scrollZoom: true, modeBarButtonsToAdd: ["drawline", "eraseshape"] };
+const state = { tab: DATA.amplicons[0].name, sel: {} };
+
+function levels() {
+  return document.getElementById("levels").value.split(/[ ,;]+/).map(Number).filter(x => x > 0).map(x => x / 100);
+}
+function logy() { return document.getElementById("logy").checked; }
+function isGermline(v) {
+  if (v.category.startsWith("known") || v.ref.length !== v.alt.length) return false;  // substitutions only
+  const th = Number(document.getElementById("germaf").value) / 100;
+  return v.filter.some(f => GERMLINE_FILTERS.includes(f)) || (v.af != null && th > 0 && v.af >= th);
+}
+function shownVariants(amp) {
+  return document.getElementById("hidegerm").checked ? amp.variants.filter(v => !isGermline(v)) : amp.variants;
+}
+function rolling(a, w = WINDOW) {  // centred mean
+  const h = Math.floor(w / 2), out = [];
+  for (let i = 0; i < a.length; i++) {
+    if (i < h || i + w - h > a.length) { out.push(null); continue; }
+    let s = 0; for (let j = i - h; j < i - h + w; j++) s += a[j]; out.push(s / w);
+  }
+  return out;
+}
+function hline(y, yref) {
+  return { type: "line", xref: "paper", x0: 0, x1: 1, yref, y0: y, y1: y, line: { color: "#57606a", width: 1, dash: "dot" } };
+}
+function callersOf(v) { return v.callers ? [].concat(v.callers) : []; }
+function variantHover(v) {
+  return `${v.pos} ${v.ref}>${v.alt}<br>${CAT[v.category].name}${v.label ? " - " + v.label : ""}${isGermline(v) ? " (germline?)" : ""}` +
+    (v.af != null ? `<br>AF ${(v.af * 100).toFixed(2)}%  DP ${v.dp}` : `<br>${expectedText(v)}`) +
+    (v.filter.length ? `<br>FILTER ${v.filter.join(";")}` : "") + (v.callers ? `<br>CALLERS ${callersOf(v).join(",")}` : "") +
+    (v.artifact && v.artifact.Artifact ? `<br>Artifact obs ${v.artifact.Artifact}  median ${v.artifact.ArtifactMedian}  NrSD ${v.artifact.ArtifactNrSD}` : "");
+}
+function noiseHover(n, i) {
+  return `${n.pos[i]} ref ${n.ref[i]}  depth ${n.depth[i]}${n.low_depth[i] ? " (low)" : ""}<br>` +
+    `total ${(n.total[i] * 100).toFixed(2)}%  sub ${(n.sub[i] * 100).toFixed(2)}%  del ${(n.del[i] * 100).toFixed(2)}%  ins ${(n.ins[i] * 100).toFixed(2)}%<br>` +
+    `sub to A/C/G/T ${["A", "C", "G", "T"].map(b => (n.sub_by_base[b][i] * 100).toFixed(2)).join("/")}%<br>base quality ${n.base_quality[i]}`;
+}
+// a known variant without an expected AF sits at the bottom of the AF axis
+function variantY(v) { return v.af != null ? v.af : v.expected_af != null ? v.expected_af : 0.0045; }
+function expectedText(v) { return v.expected_af != null ? `expected AF ${(v.expected_af * 100).toFixed(0)}%` : "expected AF not given"; }
+function el(tag, attrs = {}, html = "") { const e = document.createElement(tag); Object.assign(e, attrs); e.innerHTML = html; return e; }
+
+/* ---------- one amplicon: stacked tracks + variant table ---------- */
+function renderAmplicon(app, amp) {
+  const n = amp.noise, vs = shownVariants(amp);
+  const hidden = amp.variants.length - vs.length;
+  app.append(el("h2", {}, `${amp.name} <span class="sub">${amp.chrom}:${amp.start}-${amp.end} - click a variant in the table or the plot to highlight it</span>`));
+  const row = el("div", { className: "row" }); app.append(row);
+  const plots = el("div", { className: "plots" }); row.append(plots);
+  const tools = el("div", { className: "tools" }, `<button>Reset zoom</button><button>Clear highlight</button>` +
+    (hidden ? `<span>${hidden} germline variant${hidden > 1 ? "s" : ""} hidden</span>` : ""));
+  const div = el("div"); plots.append(tools, div);
+  const aside = el("aside"); row.append(aside);
+
+  const nu = amp.noise_unfiltered;  // present when the data was built with --unfiltered-bam
+  const hps = amp.homopolymers.filter(h => h.length >= MIN_HP);
+  // read noise traces for one BAM; the unfiltered copy shares legend entries with the filtered one (legendgroup)
+  function noiseTraces(n, yaxis, showlegend) {
+    const hover = n.pos.map((_, i) => noiseHover(n, i));
+    const ok = (a, low = false) => a.map((v, i) => n.low_depth[i] === low ? v : null);
+    return [
+      { x: n.pos, y: ok(n.total), type: "scattergl", mode: "markers", name: "total noise", visible: "legendonly",
+        marker: { size: 3, color: COL.total }, text: hover, hoverinfo: "text" },
+      ...["sub", "del", "ins"].map((k, j) => ({ x: n.pos, y: ok(n[k]), type: "scattergl", mode: "markers",
+        name: { sub: "substitutions", del: "deletions", ins: "insertions" }[k],
+        marker: { size: 3.5, color: COL[k], opacity: 0.75 }, text: hover, hoverinfo: j === 0 ? "text" : "skip" })),
+      { x: n.pos, y: ok(n.total, true), type: "scattergl", mode: "markers", name: `total noise, depth < ${DATA.params.min_depth}`,
+        marker: { size: 3, color: COL.low }, text: hover, hoverinfo: "text" },
+      { x: n.pos, y: rolling(n.total), mode: "lines", name: `total noise, rolling mean ${WINDOW} bp`,
+        line: { color: COL.total, width: 1.5 }, hoverinfo: "skip" },
+      ...["sub", "del", "ins"].map(k => ({ x: n.pos, y: rolling(n[k]), mode: "lines", visible: "legendonly",
+        name: `${k}, rolling mean ${WINDOW} bp`, line: { color: COL[k], width: 1.2 }, hoverinfo: "skip" })),
+    ].map(t => ({ ...t, yaxis, legendgroup: t.name, showlegend }));
+  }
+  function bqTraces(n, yaxis, showlegend) {
+    return [
+      { x: n.pos, y: n.base_quality, type: "scattergl", mode: "markers", name: "base quality",
+        marker: { size: 3, color: COL.bq, opacity: 0.6 }, hovertemplate: "%{x}: Q%{y}<extra></extra>" },
+      { x: n.pos, y: rolling(n.base_quality), mode: "lines", name: `base quality, rolling mean ${WINDOW} bp`,
+        line: { color: "#762c00", width: 1.5 }, hoverinfo: "skip" },
+    ].map(t => ({ ...t, yaxis, legendgroup: t.name, showlegend }));
+  }
+  const traces = [
+    ...noiseTraces(amp.noise, "y", true),
+    ...(nu ? noiseTraces(nu, "y6", false) : []),
+    ...bqTraces(n, "y2", true),
+    ...(nu ? bqTraces(nu, "y7", false) : []),
+    { x: hps.map(h => (h.start + h.end) / 2), y: hps.map(() => 1), width: hps.map(h => h.end - h.start + 1), base: 0,
+      type: "bar", yaxis: "y3", name: `homopolymers (>= ${MIN_HP} bp)`, marker: { color: hps.map(h => COL[h.base]) },
+      text: hps.map(h => `${h.base}x${h.length}`), textposition: "inside", insidetextanchor: "middle", textfont: { size: 9, color: "#fff" },
+      hovertext: hps.map(h => `${h.base} x ${h.length}<br>${h.start}-${h.end}`), hoverinfo: "text" },
+    { x: amp.exons.map(e => (e.start + e.end) / 2), y: amp.exons.map(() => 1), width: amp.exons.map(e => e.end - e.start + 1), base: 0,
+      type: "bar", yaxis: "y4", name: "exons", marker: { color: COL.exon },
+      text: amp.exons.map(e => `${e.gene} exon ${e.number}`), textposition: "inside", insidetextanchor: "middle", textfont: { size: 10, color: "#fff" },
+      hovertext: amp.exons.map(e => `${e.gene} exon ${e.number} (${e.transcript}, ${e.strand} strand)<br>${e.start}-${e.end}`), hoverinfo: "text" },
+  ];
+  // variants: one trace per caller (shape), coloured by status
+  for (const [c, spec] of Object.entries(CALLERS)) {
+    const cv = vs.filter(v => callersOf(v).includes(c));
+    // legend entry in neutral grey (plotly would colour it after the first point), toggles the real trace via its group
+    traces.push({ x: [null], y: [null], yaxis: "y5", mode: "markers", name: `caller: ${spec.name}`, legendgroup: c,
+      marker: { symbol: spec.symbol, size: spec.size, color: "#57606a", line: { width: 1.5, color: "#57606a" } } });
+    traces.push({ x: cv.map(v => v.pos), y: cv.map(variantY), yaxis: "y5", mode: "markers", name: spec.name, legendgroup: c, showlegend: false,
+      marker: { symbol: spec.symbol, size: spec.size, color: cv.map(v => CAT[v.category].color), line: { width: 1.5, color: cv.map(v => CAT[v.category].color) } },
+      customdata: cv.map(v => v.pos), hovertext: cv.map(variantHover), hoverinfo: "text" });
+  }
+  const nc = vs.filter(v => v.category === "known_not_called");
+  traces.push({ x: nc.map(v => v.pos), y: nc.map(variantY), yaxis: "y5", mode: "markers", name: "known, not called (expected AF)",
+    marker: { symbol: "x-thin-open", size: 10, color: CAT.known_not_called.color, line: { width: 2.5, color: CAT.known_not_called.color } },
+    customdata: nc.map(v => v.pos), hovertext: nc.map(variantHover), hoverinfo: "text" });
+  const kn = vs.filter(v => v.label);
+  traces.push({ x: kn.map(v => v.pos), y: kn.map(variantY), yaxis: "y5", mode: "text", text: kn.map(v => v.label), textposition: "top center",
+    textfont: { color: kn.map(v => CAT[v.category].color), size: 12 }, showlegend: false, hoverinfo: "skip" });
+  for (const [k, c] of Object.entries(CAT)) {  // colour key only
+    if (k === "known_not_called") continue;
+    traces.push({ x: [null], y: [null], yaxis: "y5", mode: "markers", name: `status: ${c.name}`, legendgroup: "status",
+      marker: { symbol: "square", size: 8, color: c.color } });
+  }
+  // one legend per subplot, next to it
+  const LEGEND_OF = { y: "legend", y6: "legend", y2: "legend2", y7: "legend2", y3: "legend3", y4: "legend3", y5: "legend4" };
+  for (const t of traces) t.legend = LEGEND_OF[t.yaxis];
+
+  // subplot domains: read noise + base quality per dataset (unfiltered on top when available, then filtered)
+  const D = nu
+    ? { y6: [0.865, 1], y7: [0.775, 0.845], y: [0.555, 0.68], y2: [0.465, 0.535], y3: [0.405, 0.43], y4: [0.36, 0.385], y5: [0, 0.32] }
+    : { y: [0.69, 1], y2: [0.48, 0.65], y3: [0.41, 0.44], y4: [0.35, 0.38], y5: [0, 0.32] };
+  const mid = d => (d[0] + d[1]) / 2;
+  const ds = DATA.datasets;
+  const readsLine = (label, nn, d) => `<b>${label}</b> - ${nn.n_reads.toLocaleString()} reads in this amplicon region ` +
+    `(primary, MAPQ ≥ ${DATA.params.min_mapq}) of ${d.reads.toLocaleString()} primary reads in the dataset`;
+  const subtitles = [[readsLine(nu ? "Filtered reads" : "Reads", n, ds.filtered), D.y[1]],
+    ...(nu ? [[readsLine("Unfiltered reads", nu, ds.unfiltered), D.y6[1]]] : [])]
+    .map(([text, y]) => ({ text, xref: "paper", x: 0, xanchor: "left", yref: "paper", y, yanchor: "bottom", yshift: 4,
+      showarrow: false, font: { size: 12, color: "#57606a" } }));
+  const lv = levels();
+  const baseShapes = [...lv.map(l => hline(l, "y")), ...(nu ? lv.map(l => hline(l, "y6")) : []), ...lv.map(l => hline(l, "y5")),
+    // separator between the unfiltered and filtered groups
+    ...(nu ? [{ type: "line", xref: "paper", x0: -0.1, x1: 1.25, yref: "paper", y0: (D.y7[0] + D.y[1]) / 2 + 0.008,
+      y1: (D.y7[0] + D.y[1]) / 2 + 0.008, line: { color: "#d0d7de", width: 1.5 } }] : [])];
+  const noiseAxis = { tickformat: ".1%", type: logy() ? "log" : "linear", rangemode: "tozero" };
+  const layout = {
+    height: nu ? 1350 : 850, margin: { l: 100, r: 10, t: 30, b: 40 }, hovermode: "closest", dragmode: "zoom", bargap: 0,
+    ...Object.fromEntries([["legend", (D.y6 || D.y)[1]], ["legend2", (D.y7 || D.y2)[1]], ["legend3", D.y3[1]], ["legend4", D.y5[1]]].map(([k, y]) =>
+      [k, { groupclick: "togglegroup", font: { size: 11 }, x: 1.01, xanchor: "left", y, yanchor: "top", tracegroupgap: 2 }])),
+    xaxis: { title: "position", showspikes: true, spikemode: "across", spikesnap: "cursor", spikethickness: 1, spikedash: "solid",
+      spikecolor: "#57606a", anchor: "y5", range: [amp.start, amp.end] },
+    yaxis: { ...noiseAxis, domain: D.y, title: nu ? "read noise,<br>filtered" : "read noise" },
+    ...(nu ? { yaxis6: { ...noiseAxis, domain: D.y6, title: "read noise,<br>unfiltered", matches: "y" } } : {}),
+    yaxis2: { domain: D.y2, title: nu ? "base quality,<br>filtered" : "base quality", range: [0, 50] },
+    ...(nu ? { yaxis7: { domain: D.y7, title: "base quality,<br>unfiltered", range: [0, 50] } } : {}),
+    yaxis3: { domain: D.y3, showticklabels: false, showgrid: false, zeroline: false, range: [0, 1] },
+    yaxis4: { domain: D.y4, showticklabels: false, showgrid: false, zeroline: false, range: [0, 1] },
+    yaxis5: { domain: D.y5, title: "variant AF", type: "log", tickformat: ".1%", range: [Math.log10(0.004), 0.08],
+      tickvals: [0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1] },
+    annotations: [...[["homopolymers", mid(D.y3)], ["exons", mid(D.y4)]].map(([text, y]) => ({ text, xref: "paper", x: -0.01, xanchor: "right",
+      yref: "paper", y, showarrow: false, font: { size: 12 } })), ...subtitles],
+    shapes: baseShapes,
+  };
+  Plotly.newPlot(div, traces, layout, CFG);
+
+  const order = { known_pass: 0, known_filtered: 1, known_not_called: 2, pass: 3, filtered: 4 };
+  const sorted = [...vs].sort((a, b) => order[a.category] - order[b.category] || a.pos - b.pos);
+  aside.innerHTML = `<table><thead><tr><th>pos</th><th>change</th><th>AF</th><th>callers</th><th>status</th><th>FILTER</th></tr></thead><tbody>${
+    sorted.map(v => `<tr class="v" data-pos="${v.pos}" title="${variantHover(v).replace(/<br>/g, "\n")}"><td>${v.pos}</td>` +
+      `<td>${v.ref.length > 4 ? v.ref.slice(0, 3) + "&hellip;" : v.ref}&gt;${v.alt.length > 4 ? v.alt.slice(0, 3) + "&hellip;" : v.alt}${v.label ? "<br><b>" + v.label + "</b>" : ""}</td>` +
+      `<td>${v.af != null ? (v.af * 100).toFixed(2) + "%" : "(" + expectedText(v) + ")"}</td>` +
+      `<td class="sym">${callersOf(v).map(c => `<span title="${CALLERS[c] ? CALLERS[c].name : c}">${CALLERS[c] ? CALLERS[c].glyph : c}</span>`).join("")}</td>` +
+      `<td><span class="badge" style="background:${CAT[v.category].color}">${CAT[v.category].name}</span>${isGermline(v) ? " <i>germline?</i>" : ""}</td>` +
+      `<td>${v.filter.join(";")}</td></tr>`).join("")}</tbody></table>`;
+
+  function select(pos, zoom) {
+    state.sel[amp.name] = pos;
+    aside.querySelectorAll("tr.v").forEach(tr => tr.classList.toggle("sel", +tr.dataset.pos === pos));
+    const tr = aside.querySelector(`tr.v[data-pos="${pos}"]`); if (tr) tr.scrollIntoView({ block: "nearest" });
+    const upd = { shapes: pos == null ? baseShapes : [...baseShapes,
+      { type: "rect", xref: "x", yref: "paper", x0: pos - 0.5, x1: pos + 0.5, y0: 0, y1: 1, fillcolor: "#d4a72c", opacity: 0.35, line: { width: 0 }, layer: "below" }] };
+    if (zoom && pos != null) upd["xaxis.range"] = [pos - 60, pos + 60];
+    Plotly.relayout(div, upd);
+  }
+  aside.querySelectorAll("tr.v").forEach(tr => tr.addEventListener("click", () => select(+tr.dataset.pos, true)));
+  div.on("plotly_click", ev => { const p = ev.points.find(p => p.customdata != null); if (p) select(p.customdata, false); });
+  tools.querySelectorAll("button")[0].onclick = () => Plotly.relayout(div, { "xaxis.range": [amp.start, amp.end], "yaxis.autorange": true });
+  tools.querySelectorAll("button")[1].onclick = () => select(null, false);
+  if (state.sel[amp.name] != null) select(state.sel[amp.name], false);
+
+  const arq = amp.read_quality, rq = DATA.read_quality, f = arq.filtered, u = arq.unfiltered;
+  const assigned = h => `${h.n.toLocaleString()} of ${h.overlapping.toLocaleString()}`;
+  app.append(el("h2", {}, `Read quality - ${amp.name} <span class="sub">reads assigned to this amplicon (filtered ${assigned(f)}` +
+    `${u ? `, unfiltered ${assigned(u)}` : ""} overlapping reads; a read is assigned to the amplicon whose span best ` +
+    `matches its aligned span, overlap / union &ge; ${arq.min_span_match}), against the whole sample</span>`));
+  const qdiv = el("div"); app.append(qdiv);
+  const series = [
+    { key: "amp", h: f, name: `${amp.name}, filtered (n=${f.n.toLocaleString()}, median Q${f.median})`, color: "#0969da", fill: "tozeroy", width: 2.5 },
+    ...(u ? [{ key: "amp_u", h: u, name: `${amp.name}, unfiltered (n=${u.n.toLocaleString()}, median Q${u.median})`, color: "#bc4c00", width: 2.5 }] : []),
+    { key: "filtered", h: rq.filtered, name: `whole sample, filtered (median Q${rq.filtered.median})`, color: "#57606a", width: 1.5, dash: "dot" },
+    { key: "unfiltered", h: rq.unfiltered, name: `whole sample, unfiltered (median Q${rq.unfiltered.median})`, color: "#8c959f", width: 1.5,
+      dash: "dot", visible: "legendonly" },
+  ];
+  Plotly.newPlot(qdiv, series.map(s => ({ x: rq.bins.map(b => b + 0.25), y: s.h.counts.map(c => 100 * c / Math.max(s.h.n, 1)),
+    type: "scatter", mode: "lines", name: s.name, visible: s.visible, fill: s.fill,
+    line: { shape: "hvh", width: s.width, color: s.color, dash: s.dash } })),
+  { height: 300, margin: { l: 100, r: 10, t: 10, b: 40 }, xaxis: { title: "read quality (Q)", range: [0, 40], showspikes: true },
+    yaxis: { title: "% of reads" }, hovermode: "x unified", legend: { x: 0.01, y: 0.98 },
+    shapes: series.filter(s => !s.visible).map(s => ({ type: "line", x0: s.h.median, x1: s.h.median, yref: "paper", y0: 0, y1: 1,
+      line: { dash: "dot", color: s.color } })) }, CFG);
+}
+
+function renderReadQuality(app) {
+  const rq = DATA.read_quality;
+  app.append(el("h2", {}, `Read quality - ${DATA.sample} <span class="sub">per-read mean Q from mean error probability</span>`));
+  const div = el("div"); app.append(div);
+  const tr = ["unfiltered", "filtered"].map(k => ({
+    x: rq.bins.map(b => b + 0.25), y: rq[k].counts.map(c => 100 * c / rq[k].n), type: "scatter", mode: "lines",
+    line: { shape: "hvh", width: 2, color: k === "filtered" ? "#0969da" : "#8c959f" }, fill: "tozeroy",
+    name: `${k} (n=${rq[k].n.toLocaleString()}, median Q${rq[k].median})` }));
+  Plotly.newPlot(div, tr, { height: 360, margin: { l: 70, r: 20, t: 10, b: 40 }, xaxis: { title: "read quality (Q)", range: [0, 40], showspikes: true },
+    yaxis: { title: "% of reads" }, hovermode: "x unified",
+    shapes: ["unfiltered", "filtered"].map(k => ({ type: "line", x0: rq[k].median, x1: rq[k].median, yref: "paper", y0: 0, y1: 1,
+      line: { dash: "dot", color: k === "filtered" ? "#0969da" : "#8c959f" } })) }, CFG);
+}
+
+/* ---------- tabs ---------- */
+const TABS = [...DATA.amplicons.map(a => a.name), "Read quality"];
+function render() {
+  const app = document.getElementById("app");
+  app.querySelectorAll(".js-plotly-plot").forEach(d => Plotly.purge(d));
+  app.innerHTML = "";
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.textContent === state.tab));
+  const amp = DATA.amplicons.find(a => a.name === state.tab);
+  if (amp) renderAmplicon(app, amp); else renderReadQuality(app);
+  const u = new URL(location.href); u.searchParams.set("tab", state.tab); history.replaceState(null, "", u);
+}
+const nav = document.getElementById("tabs");
+for (const t of TABS) nav.append(el("button", { onclick: () => { state.tab = t; render(); } }, t));
+const asked = new URLSearchParams(location.search).get("tab");
+if (TABS.includes(asked)) state.tab = asked;
+for (const id of ["levels", "logy", "hidegerm", "germaf"]) document.getElementById(id).addEventListener("change", render);
+document.getElementById("meta").textContent =
+  `${DATA.sample} - primary reads, MAPQ >= ${DATA.params.min_mapq}; positions with depth < ${DATA.params.min_depth} greyed`;
+render();
+</script>
+</body>
+</html>
