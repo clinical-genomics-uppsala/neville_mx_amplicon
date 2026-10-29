@@ -7,20 +7,14 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, out_vcf_filename):
     artifact_dict = {}
     header = True
     caller_list = []
-    Empty_observation = ["0"]
+    Empty_observation = []
     max_nr_observations = 0
     for line in artifacts:
         lline = line.strip().split("\t")
         if header:
-            caller_list = []
-            i = 0
-            for column in lline[3:]:
-                if i % 3 == 0:
-                    caller_list.append(column)
-                i += 1
-            if len(caller_list) > 1:
-                for caller in caller_list[1:]:
-                    Empty_observation.append("0")
+            # Header: Chromosome, pos, variant_type, ref, alt, then one (caller, median_MAF, sd_MAF) triplet per caller
+            caller_list = lline[5::3]
+            Empty_observation = ["0"] * len(caller_list)
             header = False
             continue
         chrom = lline[0]
