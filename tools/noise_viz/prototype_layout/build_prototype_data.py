@@ -214,26 +214,58 @@ def read_quality():
     return out
 
 
+def best_amplicon(read, same_chrom):
+    """The amplicon whose span best matches the read's aligned span (overlap / union), and that score."""
+    rs, re_ = read.reference_start, read.reference_end
+    best, score = None, 0.0
+    for n, s, e in same_chrom:
+        j = max(0, min(re_, e) - max(rs, s)) / (max(re_, e) - min(rs, s))
+        if j > score:
+            best, score = n, j
+    return best, score
+
+
+def counted(read):
+    return not (read.is_secondary or read.is_supplementary or read.mapping_quality < MIN_MAPQ)
+
+
 def amplicon_read_quality(bam, name, beds):
-    """Read quality of the reads assigned to one amplicon: a read goes to the amplicon whose span best matches
+    """Read quality of the amplicon reads of one amplicon: a read belongs to the amplicon whose span best matches
     its aligned span (overlap / union), if that ratio is at least MIN_SPAN_MATCH. Amplicons overlap, so plain
     overlap with the amplicon would mix in reads from neighbouring amplicons."""
     chrom, start, end = beds[name]
     same_chrom = [(n, s, e) for n, (c, s, e) in beds.items() if c == chrom]
     qs, overlapping = [], 0
-    for read in bam.fetch(chrom, start, end):
-        if read.is_secondary or read.is_supplementary or read.mapping_quality < MIN_MAPQ:
-            continue
+    for read in filter(counted, bam.fetch(chrom, start, end)):
         overlapping += 1
-        rs, re_ = read.reference_start, read.reference_end
-        best, score = None, 0.0
-        for n, s, e in same_chrom:
-            j = max(0, min(re_, e) - max(rs, s)) / (max(re_, e) - min(rs, s))
-            if j > score:
-                best, score = n, j
+        best, score = best_amplicon(read, same_chrom)
         if best == name and score >= MIN_SPAN_MATCH:
             qs.append(float(-10 * np.log10(ERR_P[np.asarray(read.query_qualities)].mean())))
     return {**q_histogram(qs), "overlapping": overlapping}
+
+
+def unmatched_reads(bam, beds):
+    """Reads overlapping at least one amplicon (primary, MAPQ >= MIN_MAPQ) and how many of them match no amplicon,
+    i.e. their best overlap / union is below MIN_SPAN_MATCH."""
+    on_target = unmatched = 0
+    for chrom in sorted({c for c, _, _ in beds.values()}):
+        same_chrom = [(n, s, e) for n, (c, s, e) in beds.items() if c == chrom]
+        lo, hi = min(s for _, s, _ in same_chrom), max(e for _, _, e in same_chrom)
+        for read in filter(counted, bam.fetch(chrom, lo, hi)):
+            best, score = best_amplicon(read, same_chrom)
+            if best is None:  # in a gap between amplicons
+                continue
+            on_target += 1
+            unmatched += score < MIN_SPAN_MATCH
+    return {"on_target": on_target, "unmatched": unmatched}
+
+
+def overlapping_amplicons(name, beds, pools):
+    """Every amplicon of the BED overlapping this one by at least 1 bp, this one first (1-based closed spans)."""
+    chrom, start, end = beds[name]
+    others = sorted((s, n) for n, (c, s, e) in beds.items() if c == chrom and n != name and s < end and e > start)
+    return [{"name": n, "start": beds[n][1] + 1, "end": beds[n][2], "pool": pools.get(n)}
+            for n in [name] + [n for _, n in others]]
 
 
 def bam_summary(path):
@@ -260,10 +292,13 @@ def main():
     known = known_variants(args.known_variants)
     bam = open_bam(BAM)
     ubam = open_bam(args.unfiltered_bam) if args.unfiltered_bam else None
-    beds = {f[3]: (f[0], int(f[1]), int(f[2])) for f in (line.split() for line in open(BED)) if len(f) >= 4}
-    data = {"sample": SAMPLE, "amplicons": [],
-            "datasets": {"filtered": bam_summary(BAM), "unfiltered": bam_summary(args.unfiltered_bam) if ubam else None}, "read_quality": read_quality(),
-            "params": {"min_mapq": MIN_MAPQ, "min_depth": MIN_DEPTH}}
+    rows = [f for f in (line.split() for line in open(BED)) if len(f) >= 4]
+    beds = {f[3]: (f[0], int(f[1]), int(f[2])) for f in rows}
+    pools = {f[3]: f[4] for f in rows if len(f) >= 5}  # BED column 5 = pool
+    datasets = {"filtered": {**bam_summary(BAM), **unmatched_reads(bam, beds)},
+                "unfiltered": {**bam_summary(args.unfiltered_bam), **unmatched_reads(ubam, beds)} if ubam else None}
+    data = {"sample": SAMPLE, "amplicons": [], "datasets": datasets, "read_quality": read_quality(),
+            "params": {"min_mapq": MIN_MAPQ, "min_depth": MIN_DEPTH, "min_span_match": MIN_SPAN_MATCH}}
     for name in AMPLICONS:
         chrom, start, end = beds[name]
         ref = ucsc_sequence(chrom, start, end)
@@ -273,6 +308,7 @@ def main():
             "noise_unfiltered": count(ubam, chrom, start, end, ref) if ubam else None,
             "homopolymers": homopolymers(chrom, start, end),
             "exons": exons(chrom, start, end),
+            "overlapping_amplicons": overlapping_amplicons(name, beds, pools),
             "read_quality": {"min_span_match": MIN_SPAN_MATCH, "filtered": amplicon_read_quality(bam, name, beds),
                              "unfiltered": amplicon_read_quality(ubam, name, beds) if ubam else None},
             "variants": variants(chrom, start, end, known),

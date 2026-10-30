@@ -61,6 +61,8 @@
 <script>
 const COL = { sub: "#0969da", del: "#cf222e", ins: "#8250df", total: "#1f2328", bq: "#bc4c00",
   A: "#2da44e", C: "#0969da", G: "#bf8700", T: "#cf222e", low: "#c8c8c8", exon: "#57606a" };
+// pool colours as in docs/images/TP53_mqc.png (pool = BED column 5)
+const POOL_COL = { 1: "#2da44e", 2: "#cf222e", 3: "#1b9aaa" };
 const CAT = {
   pass: { name: "PASS", color: "#0969da" },
   filtered: { name: "Soft-filtered", color: "#8c959f" },
@@ -109,8 +111,9 @@ function variantHover(v) {
     (v.filter.length ? `<br>FILTER ${v.filter.join(";")}` : "") + (v.callers ? `<br>CALLERS ${callersOf(v).join(",")}` : "") +
     (v.artifact && v.artifact.Artifact ? `<br>Artifact obs ${v.artifact.Artifact}  median ${v.artifact.ArtifactMedian}  NrSD ${v.artifact.ArtifactNrSD}` : "");
 }
-function noiseHover(n, i) {
+function noiseHover(n, i, covering) {
   return `${n.pos[i]} ref ${n.ref[i]}  depth ${n.depth[i]}${n.low_depth[i] ? " (low)" : ""}<br>` +
+    (covering ? `amplicons ${covering[i]}<br>` : "") +
     `total ${(n.total[i] * 100).toFixed(2)}%  sub ${(n.sub[i] * 100).toFixed(2)}%  del ${(n.del[i] * 100).toFixed(2)}%  ins ${(n.ins[i] * 100).toFixed(2)}%<br>` +
     `sub to A/C/G/T ${["A", "C", "G", "T"].map(b => (n.sub_by_base[b][i] * 100).toFixed(2)).join("/")}%<br>base quality ${n.base_quality[i]}`;
 }
@@ -133,9 +136,11 @@ function renderAmplicon(app, amp) {
 
   const nu = amp.noise_unfiltered;  // present when the data was built with --unfiltered-bam
   const hps = amp.homopolymers.filter(h => h.length >= MIN_HP);
+  const amps = amp.overlapping_amplicons;  // shown amplicon first, then every amplicon overlapping it by >= 1 bp
+  const covering = amp.noise.pos.map(p => amps.filter(a => a.start <= p && p <= a.end).map(a => a.name).join(", "));
   // read noise traces for one BAM; the unfiltered copy shares legend entries with the filtered one (legendgroup)
   function noiseTraces(n, yaxis, showlegend) {
-    const hover = n.pos.map((_, i) => noiseHover(n, i));
+    const hover = n.pos.map((_, i) => noiseHover(n, i, covering));
     const ok = (a, low = false) => a.map((v, i) => n.low_depth[i] === low ? v : null);
     return [
       { x: n.pos, y: ok(n.total), type: "scattergl", mode: "markers", name: "total noise", visible: "legendonly",
@@ -173,6 +178,23 @@ function renderAmplicon(app, amp) {
       text: amp.exons.map(e => `${e.gene} exon ${e.number}`), textposition: "inside", insidetextanchor: "middle", textfont: { size: 10, color: "#fff" },
       hovertext: amp.exons.map(e => `${e.gene} exon ${e.number} (${e.transcript}, ${e.strand} strand)<br>${e.start}-${e.end}`), hoverinfo: "text" },
   ];
+  // amplicons track: one row per amplicon, bars cut at the window, coloured by pool; ticks at starts/ends inside the window
+  const cut = a => [Math.max(a.start, amp.start), Math.min(a.end, amp.end)];
+  traces.push({ type: "bar", orientation: "h", yaxis: "y8", showlegend: false, width: 0.7,
+    y: amps.map((_, i) => i), base: amps.map(a => cut(a)[0] - 0.5), x: amps.map(a => cut(a)[1] - cut(a)[0] + 1),
+    marker: { color: amps.map(a => POOL_COL[a.pool] || COL.exon), line: { color: amps.map((_, i) => i ? "rgba(0,0,0,0)" : COL.total),
+      width: amps.map((_, i) => i ? 0 : 2.5) } },
+    hovertext: amps.map((a, i) => `${a.name}${i ? "" : " (shown)"}, pool ${a.pool ?? "?"}<br>${a.start.toLocaleString()}-${a.end.toLocaleString()}`),
+    hoverinfo: "text" });
+  const ticks = amps.slice(1).flatMap((a, i) => [["start", a.start], ["end", a.end]]
+    .filter(([, p]) => amp.start < p && p < amp.end).map(([kind, p]) => ({ kind, p, row: i + 1, name: a.name })));
+  traces.push({ x: ticks.map(t => t.p), y: ticks.map(t => t.row), yaxis: "y8", mode: "markers+text", showlegend: false,
+    marker: { symbol: "line-ns", size: 18, line: { width: 2, color: COL.total } }, cliponaxis: false,
+    text: ticks.map(t => t.p.toLocaleString()), textposition: ticks.map(t => t.kind === "start" ? "middle left" : "middle right"),
+    textfont: { size: 10, color: COL.total }, hovertext: ticks.map(t => `${t.name} ${t.kind} ${t.p.toLocaleString()}`), hoverinfo: "text" });
+  for (const pool of [...new Set(amps.map(a => a.pool))].sort()) {  // colour key
+    traces.push({ x: [null], y: [null], yaxis: "y8", type: "bar", name: `pool ${pool ?? "?"}`, marker: { color: POOL_COL[pool] || COL.exon } });
+  }
   // variants: one trace per caller (shape), coloured by status
   for (const [c, spec] of Object.entries(CALLERS)) {
     const cv = vs.filter(v => callersOf(v).includes(c));
@@ -196,13 +218,20 @@ function renderAmplicon(app, amp) {
       marker: { symbol: "square", size: 8, color: c.color } });
   }
   // one legend per subplot, next to it
-  const LEGEND_OF = { y: "legend", y6: "legend", y2: "legend2", y7: "legend2", y3: "legend3", y4: "legend3", y5: "legend4" };
+  const LEGEND_OF = { y: "legend", y6: "legend", y2: "legend2", y7: "legend2", y8: "legend5", y3: "legend3", y4: "legend3", y5: "legend4" };
   for (const t of traces) t.legend = LEGEND_OF[t.yaxis];
 
   // subplot domains: read noise + base quality per dataset (unfiltered on top when available, then filtered)
-  const D = nu
-    ? { y6: [0.865, 1], y7: [0.775, 0.845], y: [0.555, 0.68], y2: [0.465, 0.535], y3: [0.405, 0.43], y4: [0.36, 0.385], y5: [0, 0.32] }
-    : { y: [0.69, 1], y2: [0.48, 0.65], y3: [0.41, 0.44], y4: [0.35, 0.38], y5: [0, 0.32] };
+  // heights in px, top to bottom: [axis, height, gap below]; the figure grows with the number of amplicon rows
+  const stack = [
+    ...(nu ? [["y6", 170, 25], ["y7", 90, 120]] : []),
+    ["y", nu ? 160 : 240, 25], ["y2", nu ? 90 : 130, 45],
+    ["y8", 24 * amps.length, 30], ["y3", 30, 25], ["y4", 30, 50], ["y5", nu ? 410 : 270, 0],
+  ];
+  const MARGIN = { l: 100, r: 10, t: 30, b: 40 };
+  const area = stack.reduce((s, [, h, g]) => s + h + g, 0);
+  const D = {};
+  stack.reduce((top, [ax, h, g]) => { D[ax] = [(area - top - h) / area, (area - top) / area]; return top + h + g; }, 0);
   const mid = d => (d[0] + d[1]) / 2;
   const ds = DATA.datasets;
   const readsLine = (label, nn, d) => `<b>${label}</b> - ${nn.n_reads.toLocaleString()} reads in this amplicon region ` +
@@ -214,12 +243,13 @@ function renderAmplicon(app, amp) {
   const lv = levels();
   const baseShapes = [...lv.map(l => hline(l, "y")), ...(nu ? lv.map(l => hline(l, "y6")) : []), ...lv.map(l => hline(l, "y5")),
     // separator between the unfiltered and filtered groups
-    ...(nu ? [{ type: "line", xref: "paper", x0: -0.1, x1: 1.25, yref: "paper", y0: (D.y7[0] + D.y[1]) / 2 + 0.008,
-      y1: (D.y7[0] + D.y[1]) / 2 + 0.008, line: { color: "#d0d7de", width: 1.5 } }] : [])];
+    ...(nu ? [{ type: "line", xref: "paper", x0: -0.1, x1: 1.25, yref: "paper", y0: (D.y7[0] + D.y[1]) / 2 + 10 / area,
+      y1: (D.y7[0] + D.y[1]) / 2 + 10 / area, line: { color: "#d0d7de", width: 1.5 } }] : [])];
   const noiseAxis = { tickformat: ".1%", type: logy() ? "log" : "linear", rangemode: "tozero" };
   const layout = {
-    height: nu ? 1350 : 850, margin: { l: 100, r: 10, t: 30, b: 40 }, hovermode: "closest", dragmode: "zoom", bargap: 0,
-    ...Object.fromEntries([["legend", (D.y6 || D.y)[1]], ["legend2", (D.y7 || D.y2)[1]], ["legend3", D.y3[1]], ["legend4", D.y5[1]]].map(([k, y]) =>
+    height: area + MARGIN.t + MARGIN.b, margin: MARGIN, hovermode: "closest", dragmode: "zoom", bargap: 0,
+    ...Object.fromEntries([["legend", (D.y6 || D.y)[1]], ["legend2", (D.y7 || D.y2)[1]], ["legend5", D.y8[1]], ["legend3", D.y3[1]],
+      ["legend4", D.y5[1]]].map(([k, y]) =>
       [k, { groupclick: "togglegroup", font: { size: 11 }, x: 1.01, xanchor: "left", y, yanchor: "top", tracegroupgap: 2 }])),
     xaxis: { title: "position", showspikes: true, spikemode: "across", spikesnap: "cursor", spikethickness: 1, spikedash: "solid",
       spikecolor: "#57606a", anchor: "y5", range: [amp.start, amp.end] },
@@ -227,6 +257,8 @@ function renderAmplicon(app, amp) {
     ...(nu ? { yaxis6: { ...noiseAxis, domain: D.y6, title: "read noise,<br>unfiltered", matches: "y" } } : {}),
     yaxis2: { domain: D.y2, title: nu ? "base quality,<br>filtered" : "base quality", range: [0, 50] },
     ...(nu ? { yaxis7: { domain: D.y7, title: "base quality,<br>unfiltered", range: [0, 50] } } : {}),
+    yaxis8: { domain: D.y8, range: [amps.length - 0.5, -0.5], tickvals: amps.map((_, i) => i), ticktext: amps.map(a => a.name),
+      showgrid: false, zeroline: false, tickfont: { size: 11 }, fixedrange: true },
     yaxis3: { domain: D.y3, showticklabels: false, showgrid: false, zeroline: false, range: [0, 1] },
     yaxis4: { domain: D.y4, showticklabels: false, showgrid: false, zeroline: false, range: [0, 1] },
     yaxis5: { domain: D.y5, title: "variant AF", type: "log", tickformat: ".1%", range: [Math.log10(0.004), 0.08],
@@ -287,6 +319,10 @@ function renderAmplicon(app, amp) {
 function renderReadQuality(app) {
   const rq = DATA.read_quality;
   app.append(el("h2", {}, `Read quality - ${DATA.sample} <span class="sub">per-read mean Q from mean error probability</span>`));
+  const ds = DATA.datasets;
+  app.append(el("p", { className: "sub" }, Object.entries(ds).filter(([, d]) => d && d.on_target != null).map(([k, d]) =>
+    `<b>${k[0].toUpperCase() + k.slice(1)}:</b> ${d.unmatched.toLocaleString()} of ${d.on_target.toLocaleString()} on-target reads ` +
+    `(${(100 * d.unmatched / d.on_target).toFixed(1)}%) match no amplicon (overlap / union &lt; ${DATA.params.min_span_match})`).join("<br>")));
   const div = el("div"); app.append(div);
   const tr = ["unfiltered", "filtered"].map(k => ({
     x: rq.bins.map(b => b + 0.25), y: rq[k].counts.map(c => 100 * c / rq[k].n), type: "scatter", mode: "lines",
