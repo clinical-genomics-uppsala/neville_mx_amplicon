@@ -32,7 +32,6 @@ FASTQ = {
 BED = f"{HD829}/M20_4/Bed/amplicons.bed"
 HOMOPOLYMERS = "/home/camille/ampliconthemato/amplic_ont_hemato/data/homopolymers_amplicons.bed"
 KNOWN_VARIANTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "known_variants", "HD829.csv")
-AMPLICONS = ["TP53_D2", "IDH1_1"]
 MIN_MAPQ, MIN_DEPTH, MIN_SPAN_MATCH = 20, 100, 0.5
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prototype_data.js")
 
@@ -76,8 +75,11 @@ def known_variants(path):
     for r in rows:
         r["chrom"] = r["chrom"] if r["chrom"].startswith("chr") else "chr" + r["chrom"]
         r["expected_af"] = float(r["expected_af"]) if r.get("expected_af") not in (None, "", ".") else None
-        name = " ".join(x for x in (r.get("gene"), r.get("hgvsp") or r.get("hgvsc")) if x and x != ".")
-        r["label"] = name or f"{r['chrom']}:{r['pos']} {r['ref']}>{r['alt']}"
+        # gene + protein change, else cDNA change, else the alleles; a symbolic ALT such as <INS> becomes INS
+        change = next((x for x in (r.get("hgvsp"), r.get("hgvsc")) if x and x != "."), None) or (
+            r["alt"].strip("<>") if r["alt"].startswith("<") else f"{r['ref']}>{r['alt']}")
+        gene = r.get("gene") if r.get("gene") not in (None, "", ".") else f"{r['chrom']}:{r['pos']}"
+        r["label"] = f"{gene} {change}"
     return [r for r in rows if r["chrom"] and r["pos"]]
 
 
@@ -288,6 +290,7 @@ def main():
     ap.add_argument("--known-variants", default=KNOWN_VARIANTS, help="CSV of known variants (default: %(default)s)")
     ap.add_argument("--unfiltered-bam", help="sorted, indexed BAM of the unfiltered reads, e.g. the reference workflow's "
                     "references/align_unfiltered_bam/*.unfiltered.aligned.sorted.bam (optional)")
+    ap.add_argument("--amplicons", nargs="+", help="amplicons to include (default: every amplicon in the BED, in BED order)")
     args = ap.parse_args()
     known = known_variants(args.known_variants)
     bam = open_bam(BAM)
@@ -299,7 +302,10 @@ def main():
                 "unfiltered": {**bam_summary(args.unfiltered_bam), **unmatched_reads(ubam, beds)} if ubam else None}
     data = {"sample": SAMPLE, "amplicons": [], "datasets": datasets, "read_quality": read_quality(),
             "params": {"min_mapq": MIN_MAPQ, "min_depth": MIN_DEPTH, "min_span_match": MIN_SPAN_MATCH}}
-    for name in AMPLICONS:
+    unknown = set(args.amplicons or []) - set(beds)
+    if unknown:
+        raise SystemExit(f"not in {BED}: {', '.join(sorted(unknown))}")
+    for name in args.amplicons or list(beds):
         chrom, start, end = beds[name]
         ref = ucsc_sequence(chrom, start, end)
         data["amplicons"].append({

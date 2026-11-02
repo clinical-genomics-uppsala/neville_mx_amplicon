@@ -20,7 +20,7 @@
   header label { font-size: 13px; }
   header input[type=text] { width: 70px; }
   header input.num { width: 44px; }
-  nav { display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  nav { display: flex; flex-wrap: wrap; gap: 2px; padding: 0 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
   nav button { border: 1px solid transparent; border-bottom: 0; background: none; padding: 8px 14px; font-size: 14px; cursor: pointer;
     color: var(--muted); border-radius: 6px 6px 0 0; margin-bottom: -1px; }
   nav button.on { background: var(--bg); border-color: var(--line); color: var(--fg); font-weight: 600; }
@@ -104,9 +104,11 @@ function rolling(a, w = WINDOW) {  // centred mean
 function hline(y, yref) {
   return { type: "line", xref: "paper", x0: 0, x1: 1, yref, y0: y, y1: y, line: { color: "#57606a", width: 1, dash: "dot" } };
 }
+// symbolic alleles such as <INS> would otherwise be read as HTML tags
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 function callersOf(v) { return v.callers ? [].concat(v.callers) : []; }
 function variantHover(v) {
-  return `${v.pos} ${v.ref}>${v.alt}<br>${CAT[v.category].name}${v.label ? " - " + v.label : ""}${isGermline(v) ? " (germline?)" : ""}` +
+  return `${v.pos} ${esc(v.ref)}&gt;${esc(v.alt)}<br>${CAT[v.category].name}${v.label ? " - " + v.label : ""}${isGermline(v) ? " (germline?)" : ""}` +
     (v.af != null ? `<br>AF ${(v.af * 100).toFixed(2)}%  DP ${v.dp}` : `<br>${expectedText(v)}`) +
     (v.filter.length ? `<br>FILTER ${v.filter.join(";")}` : "") + (v.callers ? `<br>CALLERS ${callersOf(v).join(",")}` : "") +
     (v.artifact && v.artifact.Artifact ? `<br>Artifact obs ${v.artifact.Artifact}  median ${v.artifact.ArtifactMedian}  NrSD ${v.artifact.ArtifactNrSD}` : "");
@@ -273,7 +275,7 @@ function renderAmplicon(app, amp) {
   const sorted = [...vs].sort((a, b) => order[a.category] - order[b.category] || a.pos - b.pos);
   aside.innerHTML = `<table><thead><tr><th>pos</th><th>change</th><th>AF</th><th>callers</th><th>status</th><th>FILTER</th></tr></thead><tbody>${
     sorted.map(v => `<tr class="v" data-pos="${v.pos}" title="${variantHover(v).replace(/<br>/g, "\n")}"><td>${v.pos}</td>` +
-      `<td>${v.ref.length > 4 ? v.ref.slice(0, 3) + "&hellip;" : v.ref}&gt;${v.alt.length > 4 ? v.alt.slice(0, 3) + "&hellip;" : v.alt}${v.label ? "<br><b>" + v.label + "</b>" : ""}</td>` +
+      `<td>${v.ref.length > 4 ? esc(v.ref.slice(0, 3)) + "&hellip;" : esc(v.ref)}&gt;${v.alt.length > 5 ? esc(v.alt.slice(0, 3)) + "&hellip;" : esc(v.alt)}${v.label ? "<br><b>" + v.label + "</b>" : ""}</td>` +
       `<td>${v.af != null ? (v.af * 100).toFixed(2) + "%" : "(" + expectedText(v) + ")"}</td>` +
       `<td class="sym">${callersOf(v).map(c => `<span title="${CALLERS[c] ? CALLERS[c].name : c}">${CALLERS[c] ? CALLERS[c].glyph : c}</span>`).join("")}</td>` +
       `<td><span class="badge" style="background:${CAT[v.category].color}">${CAT[v.category].name}</span>${isGermline(v) ? " <i>germline?</i>" : ""}</td>` +
