@@ -1,0 +1,154 @@
+<!-- PROTOTYPE - throwaway. Client-side part of noise_report.qmd: draws the open tab's figure from the spec the
+     Python cells wrote, and applies the report controls without re-rendering. -->
+<style>
+  .nv-controls { position: sticky; top: 0; z-index: 20; background: var(--bs-body-bg, #fff); border-bottom: 1px solid #d0d7de;
+    padding: 4px 0 6px; }
+  .nv-controls form { display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: 13px; align-items: center; }
+  .nv-controls output { display: inline-block; min-width: 2em; }
+  .nv-row { display: flex; gap: 12px; align-items: flex-start; }
+  .nv-row > .nv-plot { flex: 1 1 72%; min-width: 0; }
+  .nv-row > .nv-table { flex: 0 0 28%; max-height: 900px; overflow: auto; border: 1px solid #d0d7de; font-size: 12px; }
+  @media (max-width: 1000px) { .nv-row { flex-direction: column; } .nv-row > .nv-table { width: 100%; } }
+  .nv-row table { border-collapse: collapse; width: 100%; margin: 0; }
+  .nv-row th, .nv-row td { padding: 2px 6px; border-bottom: 1px solid #d0d7de; white-space: nowrap; }
+  .nv-row th { position: sticky; top: 0; background: #f6f8fa; }
+  .nv-row tr.v { cursor: pointer; }
+  .nv-row tr.v:hover { background: #f3f4f6; }
+  .nv-row tr.v.sel { background: #fff8c5; outline: 2px solid #d4a72c; outline-offset: -2px; }
+  .nv-badge { padding: 1px 6px; border-radius: 8px; font-size: 11px; color: #fff; }
+  .nv-tools { font-size: 12px; color: #57606a; margin: 2px 0; }
+  .nv-tools button { font-size: 12px; }
+</style>
+<script>
+window.NV = (() => {
+  const specs = {}, sel = {};
+  let ctl = { levels: "1, 5", logy: false, minDepth: 100, window: 20, minHP: 5, hideGermline: false, germAF: 35 };
+  const GERMLINE_FILTERS = ["PopAF_0.02", "GERMLINE", "NonSomatic"];
+  const CFG = { responsive: true, displaylogo: false, scrollZoom: true, modeBarButtonsToAdd: ["drawline", "eraseshape"] };
+
+  function rolling(a, w) {  // centred mean; w >= 1
+    const h = Math.floor(w / 2), out = new Array(a.length).fill(null);
+    let s = 0;
+    for (let i = 0; i < a.length; i++) {
+      s += a[i];
+      if (i >= w) s -= a[i - w];
+      if (i >= w - 1) out[i - w + 1 + h] = s / w;
+    }
+    return out;
+  }
+  // a variant is a germline candidate when it is a substitution with a population filter or a VAF at or above the threshold
+  function germline(cd) {  // cd = [pos, af, isSub, popFilter, known]
+    return !cd[4] && cd[2] === 1 && (cd[3] === 1 || (cd[1] != null && cd[1] >= ctl.germAF / 100));
+  }
+  function levels() { return String(ctl.levels).split(/[ ,;]+/).map(Number).filter(x => x > 0).map(x => x / 100); }
+
+  // turn the stored spec into Plotly traces for the current controls
+  function build(name) {
+    const sp = specs[name], S = sp.series, w = Math.max(1, Math.round(ctl.window));
+    const data = sp.data.map(t => {
+      const m = t.meta || {}, u = { ...t };
+      if (m.x === "pos") u.x = sp.pos;
+      const s = S[m.ds];
+      if (m.role === "noise") u.y = s[m.kind].map((v, i) => s.depth[i] >= ctl.minDepth ? v : null);
+      else if (m.role === "low") u.y = s.total.map((v, i) => s.depth[i] < ctl.minDepth ? v : null);
+      else if (m.role === "total") u.y = s.total;
+      else if (m.role === "bq") u.y = s.bq;
+      else if (m.role === "roll") { u.y = rolling(s[m.of], w); u.name = `${m.label}, rolling mean ${w} bp`; }
+      else if (m.role === "hp") {
+        const keep = t.customdata.map(l => l >= ctl.minHP);
+        for (const k of ["x", "width", "text", "hovertext", "customdata"]) u[k] = t[k].filter((_, i) => keep[i]);
+        u.marker = { ...t.marker, color: t.marker.color.filter((_, i) => keep[i]) };
+        u.name = `homopolymers (>= ${ctl.minHP} bp)`;
+      } else if (m.role === "var" && ctl.hideGermline) {
+        const keep = t.customdata.map(cd => !germline(cd));
+        for (const k of ["x", "y", "text", "hovertext", "customdata"]) if (t[k]) u[k] = t[k].filter((_, i) => keep[i]);
+        if (t.marker && Array.isArray(t.marker.color)) u.marker = { ...t.marker, color: t.marker.color.filter((_, i) => keep[i]),
+          line: { ...t.marker.line, color: t.marker.line.color.filter((_, i) => keep[i]) } };
+        if (t.textfont && Array.isArray(t.textfont.color)) u.textfont = { ...t.textfont, color: t.textfont.color.filter((_, i) => keep[i]) };
+      }
+      return u;
+    });
+    const lv = levels(), L = sp.layout;
+    const hl = (y, yref) => ({ type: "line", xref: "paper", x0: 0, x1: 1, yref, y0: y, y1: y, line: { color: "#57606a", width: 1, dash: "dot" } });
+    const shapes = [...(L.shapes || []), ...sp.noiseAxes.flatMap(a => lv.map(l => hl(l, a))), ...lv.map(l => hl(l, sp.afAxis))];
+    if (sel[name] != null) shapes.push({ type: "rect", xref: "x", yref: "paper", x0: sel[name] - 0.5, x1: sel[name] + 0.5, y0: 0, y1: 1,
+      fillcolor: "#d4a72c", opacity: 0.35, line: { width: 0 }, layer: "below" });
+    // log or linear read-noise axes; a per-axis uirevision makes Plotly drop the old zoom when the type changes
+    const axes = Object.fromEntries(sp.noiseAxes.map(a => {
+      const k = a === "y" ? "yaxis" : `yaxis${a.slice(1)}`;
+      return [k, { ...L[k], type: ctl.logy ? "log" : "linear", rangemode: ctl.logy ? "normal" : "tozero", tickformat: ctl.logy ? ".2~%" : ".1%",
+                   uirevision: `${name}-${ctl.logy ? "log" : "lin"}` }];
+    }));
+    return { data, layout: { ...L, ...axes, shapes, uirevision: name } };
+  }
+
+  function render(name) {
+    const div = document.getElementById(`nv-plot-${name}`), f = build(name);
+    Plotly.react(div, f.data, f.layout, CFG);
+    if (!div._nvBound) {
+      div._nvBound = true;
+      div.on("plotly_click", ev => { const p = ev.points.find(p => p.data.meta && p.data.meta.role === "var"); if (p) select(name, p.customdata[0], false); });
+    }
+    const rq = document.getElementById(`nv-rq-${name}`);
+    if (rq && !rq.data) Plotly.newPlot(rq, specs[name].rq.data, specs[name].rq.layout, CFG);
+    filterTable(name);
+  }
+  function purge(name) {
+    for (const id of [`nv-plot-${name}`, `nv-rq-${name}`]) {
+      const d = document.getElementById(id);
+      if (d && d.data) { Plotly.purge(d); d._nvBound = false; }
+    }
+  }
+  // only the visible tab is drawn: hidden tabs would be laid out at zero width, and each WebGL plot holds a browser context
+  function refresh() {
+    for (const name of Object.keys(specs)) {
+      const box = document.getElementById(`nv-amp-${name}`);
+      if (box && box.offsetParent !== null) render(name); else purge(name);
+    }
+    const s = document.getElementById("nv-rq-sample");
+    if (s && s.data && s.offsetParent !== null) Plotly.Plots.resize(s);
+  }
+  function filterTable(name) {
+    const box = document.getElementById(`nv-amp-${name}`); if (!box) return;
+    let hidden = 0;
+    box.querySelectorAll("tr.v").forEach(tr => {
+      const hide = ctl.hideGermline && germline(JSON.parse(tr.dataset.cd));
+      tr.style.display = hide ? "none" : ""; hidden += hide;
+    });
+    const note = box.querySelector(".nv-hidden"); if (note) note.textContent = hidden ? `${hidden} germline variant(s) hidden` : "";
+  }
+  function select(name, pos, zoom) {
+    sel[name] = pos;
+    const box = document.getElementById(`nv-amp-${name}`);
+    box.querySelectorAll("tr.v").forEach(tr => tr.classList.toggle("sel", +tr.dataset.pos === pos));
+    const tr = box.querySelector(`tr.v[data-pos="${pos}"]`); if (tr) tr.scrollIntoView({ block: "nearest" });
+    render(name);
+    if (zoom && pos != null) Plotly.relayout(`nv-plot-${name}`, { "xaxis.range": [pos - 60, pos + 60] });
+  }
+
+  document.addEventListener("click", ev => {
+    const tr = ev.target.closest && ev.target.closest(".nv-amp tr.v");
+    if (tr) { select(tr.closest(".nv-amp").dataset.amp, +tr.dataset.pos, true); return; }
+    const b = ev.target.closest && ev.target.closest(".nv-amp button[data-act]");
+    if (!b) return;
+    const name = b.closest(".nv-amp").dataset.amp, sp = specs[name];
+    if (b.dataset.act === "reset") Plotly.relayout(`nv-plot-${name}`, { "xaxis.range": [sp.start, sp.end], "yaxis.autorange": true });
+    else select(name, null, false);
+  });
+  document.addEventListener("shown.bs.tab", refresh);
+  document.addEventListener("input", ev => {
+    const f = ev.target.form; if (!f || f.id !== "nv-form") return;
+    const o = ev.target.parentElement.querySelector("output"); if (o) o.textContent = ev.target.value;
+    const v = n => f.elements[n];
+    ctl = { levels: v("levels").value, logy: v("logy").checked, minDepth: +v("minDepth").value, window: +v("window").value, minHP: +v("minHP").value,
+            hideGermline: v("hideGermline").checked, germAF: +v("germAF").value };
+    refresh();
+  });
+  window.addEventListener("DOMContentLoaded", refresh);
+
+  return {
+    add(name, spec) { specs[name] = spec; },
+    update(c) { ctl = { ...ctl, ...c }; refresh(); },
+  };
+})();
+</script>

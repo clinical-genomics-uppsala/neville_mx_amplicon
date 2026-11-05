@@ -1,0 +1,511 @@
+---
+# PROTOTYPE - throwaway. Answers wayfinder ticket "Prototype the settled interactions in a self-contained Quarto report":
+# can a self-contained Quarto HTML do what the layout prototype settled? One feasibility build, not layout variants
+# (the layout is already settled). Python cells read the prepared tables and write one figure spec per amplicon;
+# nv.html draws the open tab and applies the controls (plain HTML inputs) in the browser.
+# Render from the repo root:
+#   QUARTO_PYTHON=.venv/bin/python quarto render tools/noise_viz/prototype_quarto/noise_report.qmd \
+#     -P tables_dir:<prepared folder> -P sample:M20_4_HD829
+title: "Noise report prototype"
+format:
+  html:
+    embed-resources: true
+    page-layout: full
+    toc: false
+    include-in-header: nv.html
+execute:
+  echo: false
+  warning: false
+jupyter: python3
+---
+
+```{python}
+#| tags: [parameters]
+tables_dir = ""
+sample = "M20_4_HD829"
+```
+
+```{python}
+import json
+import os
+
+import numpy as np
+import pandas as pd
+import yaml
+from IPython.display import HTML, Markdown, display
+from plotly.offline import get_plotlyjs
+
+D = os.path.join(tables_dir, sample)
+meta = yaml.safe_load(open(os.path.join(D, "sample-metadata.yaml")))
+assert meta["schema_version"] == 1, f"unsupported schema_version {meta['schema_version']}"
+tsv = dict(sep="\t", keep_default_na=False, na_values={"af": [""], "dp": [""], "known_expected_af": [""]})
+amplicons = pd.read_csv(os.path.join(D, "amplicons.tsv"), sep="\t", keep_default_na=False)
+variants = pd.read_csv(os.path.join(D, "variants.tsv"), **tsv)
+homopolymers = pd.read_csv(os.path.join(D, "homopolymers.tsv"), sep="\t")
+exons = pd.read_csv(os.path.join(D, "exons.tsv"), sep="\t")
+positions = pd.read_parquet(os.path.join(D, "positions.parquet"))
+reads = pd.read_parquet(os.path.join(D, "reads.parquet"))
+alignments = pd.read_parquet(os.path.join(D, "alignments.parquet"))
+DATASETS = [d for d in ("unfiltered", "filtered") if d in set(positions.dataset)]  # unfiltered drawn on top
+MIN_MAPQ = meta["parameters"]["min_mapq"]
+
+COL = dict(sub="#0969da", dele="#cf222e", ins="#8250df", total="#1f2328", bq="#bc4c00", bq_roll="#762c00",
+           A="#2da44e", C="#0969da", G="#bf8700", T="#cf222e", low="#c8c8c8", exon="#57606a")
+POOL_COL = {"1": "#2da44e", "2": "#cf222e", "3": "#1b9aaa"}
+CAT = dict(pass_=("PASS", "#0969da"), filtered=("Soft-filtered", "#8c959f"), known_pass=("Known, PASS", "#d1242f"),
+           known_filtered=("Known, soft-filtered", "#e16f24"), known_not_called=("Known, not called", "#8250df"))
+
+
+def cat(c):
+    """Display name and colour of a variant category.
+
+    Args:
+        c: category from variants.tsv: pass, filtered, known_pass, known_filtered or known_not_called.
+
+    Returns:
+        (label, hex colour), e.g. ("Known, PASS", "#d1242f"). (CAT spells "pass" as "pass_": dict(pass=...) is
+        a syntax error.)
+    """
+    return CAT["pass_" if c == "pass" else c]
+
+
+# caller -> (display name, Plotly marker symbol, marker size, HTML glyph for the table)
+CALLERS =dict(clairs_to=("ClairS-TO", "circle-open", 6, "&#9675;"), deepsomatic=("DeepSomatic", "square-open", 9, "&#9633;"),
+               vardict=("VarDict", "diamond-open", 13, "&#9671;"))
+GERMLINE_FILTERS = {"PopAF_0.02", "GERMLINE", "NonSomatic"}  # FILTER values that mark a likely germline variant
+
+
+def r5(a):
+    """Round numbers for JSON: iterable of numbers -> list of floats with 5 decimals, NaN and infinity -> None.
+
+    JSON has no NaN, and Plotly draws None as a gap.
+    """
+    return [None if not np.isfinite(v) else round(float(v), 5) for v in a]
+
+
+def jdump(o):
+    """Serialise o as compact JSON for embedding in the page.
+
+    numpy scalars become Python numbers (via .item()); any other type json cannot handle becomes its str().
+    """
+    return json.dumps(o, separators=(",", ":"), default=lambda x: x.item() if hasattr(x, "item") else str(x))
+
+
+def esc(s):
+    """Escape &, < and > so that text such as the symbolic ALT "<INS>" shows literally in HTML and hover text."""
+    return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+# plotly.js, embedded once. Quarto adds require.js to this page, and plotly.js registers itself as an AMD module
+# instead of window.Plotly when `define` exists, so hide `define` while it loads.
+display(HTML("<script>window.__nvDefine = window.define; window.define = undefined;</script>"
+             f"<script>{get_plotlyjs()}</script><script>window.define = window.__nvDefine;</script>"))
+```
+
+```{=html}
+<!-- Report controls: plain inputs read by nv.html. Quarto's Observable JS cells were tried first: their runtime refuses
+     file:// URLs and downloads its Inputs library from a CDN, so they fail in a self-contained report opened offline. -->
+<div class="nv-controls column-screen-inset"><form id="nv-form" onsubmit="return false">
+  <label>Reference lines (VAF %) <input name="levels" type="text" value="1, 5" size="6"></label>
+  <label><input name="logy" type="checkbox"> Log scale for read noise</label>
+  <label>Minimum depth <input name="minDepth" type="number" value="100" step="10" min="0" style="width: 80px"></label>
+  <label>Rolling window (bp) <input name="window" type="range" min="1" max="100" value="20"> <output>20</output></label>
+  <label>Min homopolymer (bp) <input name="minHP" type="range" min="3" max="12" value="5"> <output>5</output></label>
+  <label><input name="hideGermline" type="checkbox"> Hide germline variants</label>
+  <label>Germline VAF &ge; (%) <input name="germAF" type="range" min="5" max="100" value="35"> <output>35</output></label>
+</form></div>
+```
+
+```{python}
+def series(chrom, start, end, dataset):
+    """Compute the read noise of one dataset over a region, both strands summed.
+
+    Reads the global `positions` table (raw counts per position, dataset and strand). Thresholds (minimum depth,
+    rolling window) are not applied here: nv.html applies them in the browser.
+
+    Args:
+        chrom: chromosome name.
+        start, end: the region, 1-based closed.
+        dataset: "filtered" or "unfiltered".
+
+    Returns:
+        (pos, ref, series):
+            pos: numpy array of the 1-based positions that have rows in positions.parquet, sorted;
+            ref: list of reference bases, one per position;
+            series: dict of lists, one value per position:
+                depth: A + C + G + T + N + deletions;
+                sub: A, C, G or T bases differing from the reference, as a fraction of depth;
+                dele, ins: deletions and insertions as fractions of depth;
+                total: sub + dele + ins;
+                bq: mean base quality (None where no base has a quality).
+        Fractions divide by max(depth, 1), so a position without reads gives 0, not NaN.
+    """
+    p = positions[(positions.chrom == chrom) & (positions.pos.between(start, end)) & (positions.dataset == dataset)]
+    g = p.groupby("pos", sort=True)[["A", "C", "G", "T", "N", "del", "ins", "bq_sum", "bq_n"]].sum()
+    ref = p[p.strand == "+"].set_index("pos").ref.reindex(g.index)
+    bases = g[["A", "C", "G", "T"]]
+    match = np.array([bases.at[i, r] if r in "ACGT" else 0 for i, r in zip(g.index, ref)])
+    depth = (bases.sum(axis=1) + g.N + g["del"]).to_numpy()
+    d = np.maximum(depth, 1)
+    sub = (bases.sum(axis=1).to_numpy() - match) / d
+    dele, ins = g["del"].to_numpy() / d, g.ins.to_numpy() / d
+    return g.index.to_numpy(), ref.tolist(), dict(depth=depth.tolist(), sub=r5(sub), dele=r5(dele), ins=r5(ins),
+                                                  total=r5(sub + dele + ins), bq=r5(g.bq_sum / g.bq_n.replace(0, np.nan)))
+
+
+def overlapping(a):
+    """List the amplicons for the amplicons track of one amplicon's view.
+
+    Args:
+        a: one row of `amplicons` (a namedtuple from itertuples(); 1-based closed start and end).
+
+    Returns:
+        DataFrame of `amplicons` rows: a itself first, then every other amplicon on the same chromosome
+        overlapping it by at least 1 bp, sorted by start.
+    """
+    o =amplicons[(amplicons.chrom == a.chrom) & (amplicons.name != a.name) & (amplicons.start <= a.end) & (amplicons.end >= a.start)]
+    return pd.concat([amplicons[amplicons.name == a.name], o.sort_values("start")])
+
+
+def region_reads(a, dataset):
+    """Count the reads of a dataset that overlap amplicon a's region, for the panel subtitles.
+
+    Counts the alignments in `alignments` (primary only) with MAPQ >= MIN_MAPQ that overlap a by at least 1 bp:
+    the reads that can contribute to the read noise there, whichever amplicon they come from.
+
+    Args:
+        a: one row of `amplicons`.
+        dataset: "filtered" or "unfiltered".
+
+    Returns:
+        The number of reads (int).
+    """
+    x =alignments[(alignments.dataset == dataset) & (alignments.chrom == a.chrom) & (alignments.mapq >= MIN_MAPQ)]
+    return int(((x.start <= a.end) & (x.end >= a.start)).sum())
+
+
+def variant_label(v):
+    """Short label of a known variant, e.g. "TP53 p.R175H".
+
+    Args:
+        v: one row of `variants` (a namedtuple).
+
+    Returns:
+        "<gene> <protein change>"; without a protein change, "<gene> REF>ALT" (a symbolic ALT such as <INS>
+        shows as INS). "" for a variant that is not in the known-variants list. Not HTML-escaped.
+    """
+    if v.known_gene:
+        return f"{v.known_gene} {v.known_hgvsp or (v.alt.strip('<>') if v.alt.startswith('<') else v.ref + '>' + v.alt)}"
+    return ""
+
+
+def variant_hover(v):
+    """Hover text of a variant marker, as HTML for Plotly.
+
+    Args:
+        v: one row of `variants`.
+
+    Returns:
+        Lines with: position and change; status, with the label of a known variant; AF and DP (for a known
+        variant that was not called, its expected AF instead); FILTER; CALLERS; artifact annotation
+        (observations, median, NrSD), each line only when the value is present.
+    """
+    s =f"{v.pos} {esc(v.ref)}&gt;{esc(v.alt)}<br>{cat(v.category)[0]}"
+    s += f" - {esc(variant_label(v))}" if v.known_gene else ""
+    s += f"<br>AF {100 * v.af:.2f}%  DP {int(v.dp)}" if pd.notna(v.af) else (
+        f"<br>expected AF {100 * v.known_expected_af:.0f}%" if pd.notna(v.known_expected_af) else "<br>expected AF not given")
+    s += f"<br>FILTER {v.filter}" if v.filter else ""
+    s += f"<br>CALLERS {v.callers}" if v.callers else ""
+    s += f"<br>Artifact obs {v.artifact}  median {v.artifact_median}  NrSD {v.artifact_nrsd}" if v.artifact else ""
+    return s
+
+
+def variant_cd(v):
+    """Per-variant data the browser needs to find the variant and to hide germline variants.
+
+    Stored as Plotly customdata on the variant markers and as data-cd on the table rows. nv.html treats a variant
+    as germline when it is not known, is a substitution, and either has a germline filter or af >= the
+    "Germline VAF" control.
+
+    Args:
+        v: one row of `variants`.
+
+    Returns:
+        [pos, af, is_substitution, has_germline_filter, is_known]:
+            pos: 1-based position; af: float, None when not called;
+            is_substitution: 1 when REF and ALT have the same length and ALT is not symbolic (SNV or MNV), else 0;
+            has_germline_filter: 1 when FILTER contains one of GERMLINE_FILTERS, else 0;
+            is_known: 1 for the known_* categories, else 0.
+    """
+    return [int(v.pos), None if pd.isna(v.af) else float(v.af), int(len(v.ref) == len(v.alt) and not v.alt.startswith("<")),
+            int(bool(set(v.filter.split(";")) & GERMLINE_FILTERS)), int(v.category.startswith("known"))]
+
+
+def amplicon_spec(a):
+    """Build the figure spec of one amplicon tab, which nv.html turns into the interactive Plotly figure.
+
+    Panels, top to bottom, each on its own y axis with a fixed height in pixels, all sharing the x axis
+    (genomic position):
+        y6, y7: read noise and base quality of the unfiltered reads (only when both datasets are present);
+        y, y2: read noise and base quality of the filtered reads;
+        y8: amplicons track: a and the amplicons overlapping it, coloured by pool, with ticks where the others
+            start and end;
+        y3: homopolymers; y4: exons;
+        y5: variants on a log AF axis (marker shape = caller, colour = status).
+
+    The per-position traces carry no x and y here. Their meta.role tells nv.html how to fill them from `series`
+    with the current controls: noise (sub/del/ins at positions with depth >= minimum depth), low (total noise
+    below minimum depth), total, roll (rolling mean, window from the controls), bq (base quality). Traces with
+    role hp (homopolymers, filtered by minimum length) and var (variants, germline hiding) are filtered in place.
+
+    Args:
+        a: one row of `amplicons`.
+
+    Returns:
+        (spec, vs):
+            spec: dict with pos (positions), start, end, series ({dataset: series()[2]}), data (Plotly traces),
+                layout (Plotly layout), noiseAxes (the read-noise y axes, switched by the log-scale control),
+                afAxis (the variants axis, which also gets the reference lines) and rq (Plotly data and layout of
+                the amplicon's read-quality histogram: amplicon reads only, see alignments.amplicon);
+            vs: the rows of `variants` inside a, for variant_table().
+    """
+    pos = None
+    S, refs = {}, None
+    for ds in DATASETS:
+        pos, refs, S[ds] = series(a.chrom, a.start, a.end, ds)
+    traces = []
+    for ds in DATASETS:
+        ax, bqax = ("y6", "y7") if ds == "unfiltered" and len(DATASETS) == 2 else ("y", "y2")
+        first = ds == DATASETS[0]
+
+        def common(name):
+            """Legend settings shared by both datasets' copy of a trace: one legend entry (from the first
+            dataset) toggles both."""
+            return dict(legendgroup=name, showlegend=first)
+
+        traces += [
+            dict(type="scattergl", mode="markers", name="total noise", visible="legendonly", yaxis=ax, marker=dict(size=3, color=COL["total"]),
+                 meta=dict(x="pos", role="total", ds=ds), hovertemplate="%{x}: total %{y:.2%}<extra></extra>", **common("total noise")),
+            *[dict(type="scattergl", mode="markers", name=n, yaxis=ax, marker=dict(size=3.5, color=COL[k], opacity=0.75),
+                   meta=dict(x="pos", role="noise", ds=ds, kind=k), hovertemplate=f"%{{x}}: {k.rstrip('e')} %{{y:.2%}}<extra>{ds}</extra>", **common(n))
+              for k, n in (("sub", "substitutions"), ("dele", "deletions"), ("ins", "insertions"))],
+            dict(type="scattergl", mode="markers", name="total noise, low depth", yaxis=ax, marker=dict(size=3, color=COL["low"]),
+                 meta=dict(x="pos", role="low", ds=ds), hovertemplate="%{x}: total %{y:.2%} (low depth)<extra></extra>", **common("low")),
+            dict(type="scatter", mode="lines", yaxis=ax, line=dict(color=COL["total"], width=1.5), hoverinfo="skip",
+                 meta=dict(x="pos", role="roll", ds=ds, of="total", label="total noise"), **common("roll total")),
+            *[dict(type="scatter", mode="lines", visible="legendonly", yaxis=ax, line=dict(color=COL[k], width=1.2), hoverinfo="skip",
+                   meta=dict(x="pos", role="roll", ds=ds, of=k, label=k.rstrip("e")), **common(f"roll {k}")) for k in ("sub", "dele", "ins")],
+            dict(type="scattergl", mode="markers", name="base quality", yaxis=bqax, marker=dict(size=3, color=COL["bq"], opacity=0.6),
+                 meta=dict(x="pos", role="bq", ds=ds), hovertemplate="%{x}: Q%{y}<extra></extra>", **common("bq")),
+            dict(type="scatter", mode="lines", yaxis=bqax, line=dict(color=COL["bq_roll"], width=1.5), hoverinfo="skip",
+                 meta=dict(x="pos", role="roll", ds=ds, of="bq", label="base quality"), **common("roll bq")),
+        ]
+    # amplicons track
+    ov = overlapping(a)
+
+    def cut(r):
+        """Span of amplicon row r clipped to a's span: (start, end), 1-based closed."""
+        return max(r.start, a.start), min(r.end, a.end)
+
+    traces.append(dict(type="bar", orientation="h", yaxis="y8", showlegend=False, width=0.7, y=list(range(len(ov))),
+                       base=[cut(r)[0] - 0.5 for r in ov.itertuples()], x=[cut(r)[1] - cut(r)[0] + 1 for r in ov.itertuples()],
+                       marker=dict(color=[POOL_COL.get(str(r.pool), COL["exon"]) for r in ov.itertuples()],
+                                   line=dict(color=[COL["total"]] + ["rgba(0,0,0,0)"] * (len(ov) - 1), width=[2.5] + [0] * (len(ov) - 1))),
+                       hovertext=[f"{r.name}, pool {r.pool}<br>{r.start:,}-{r.end:,}" for r in ov.itertuples()], hoverinfo="text"))
+    ticks = [(k, p, i + 1, r.name) for i, r in enumerate(ov.iloc[1:].itertuples()) for k, p in (("start", r.start), ("end", r.end))
+             if a.start < p < a.end]
+    traces.append(dict(type="scatter", mode="markers+text", yaxis="y8", showlegend=False, cliponaxis=False,
+                       x=[t[1] for t in ticks], y=[t[2] for t in ticks], text=[f"{t[1]:,}" for t in ticks],
+                       textposition=["middle left" if t[0] == "start" else "middle right" for t in ticks], textfont=dict(size=10),
+                       marker=dict(symbol="line-ns", size=18, line=dict(width=2, color=COL["total"])),
+                       hovertext=[f"{t[3]} {t[0]} {t[1]:,}" for t in ticks], hoverinfo="text"))
+    for pool in sorted(set(ov.pool.astype(str))):
+        traces.append(dict(type="bar", yaxis="y8", x=[None], y=[None], name=f"pool {pool}", marker=dict(color=POOL_COL.get(pool, COL["exon"]))))
+    # homopolymers (all runs >= 3 bp; the minimum length is applied in the browser) and exons
+    hp = homopolymers[(homopolymers.chrom == a.chrom) & (homopolymers.start >= a.start) & (homopolymers.end <= a.end)]
+    traces.append(dict(type="bar", yaxis="y3", base=0, name="homopolymers", x=((hp.start + hp.end) / 2).tolist(), y=[1] * len(hp),
+                       width=(hp.end - hp.start + 1).tolist(), marker=dict(color=[COL[b] for b in hp.base]), customdata=hp.length.tolist(),
+                       text=[f"{b}x{n}" for b, n in zip(hp.base, hp.length)], textposition="inside", textfont=dict(size=9, color="#fff"),
+                       hovertext=[f"{b} x {n}<br>{s}-{e}" for b, n, s, e in zip(hp.base, hp.length, hp.start, hp.end)], hoverinfo="text",
+                       meta=dict(role="hp")))
+    ex = exons[(exons.chrom == a.chrom) & (exons.end >= a.start) & (exons.start <= a.end)]
+    traces.append(dict(type="bar", yaxis="y4", base=0, name="exons", x=((ex.start + ex.end) / 2).tolist(), y=[1] * len(ex),
+                       width=(ex.end - ex.start + 1).tolist(), marker=dict(color=COL["exon"]),
+                       text=[f"{g} exon {n}" for g, n in zip(ex.gene, ex.exon)], textposition="inside", textfont=dict(size=10, color="#fff"),
+                       hovertext=[f"{g} exon {n} ({t}, {s} strand)" for g, n, t, s in zip(ex.gene, ex.exon, ex.transcript, ex.strand)],
+                       hoverinfo="text"))
+    # variants: shape = caller, colour = status
+    vs = variants[(variants.chrom == a.chrom) & (variants.pos.between(a.start, a.end))]
+
+    def vy(v):
+        """Height of variant v on the AF axis: its AF; for a known variant that was not called, its expected AF,
+        or 0.45% (just above the axis bottom) when that is not given either."""
+        return v.af if pd.notna(v.af) else (v.known_expected_af if pd.notna(v.known_expected_af) else 0.0045)
+
+    for c, (cname, sym, size, _) in CALLERS.items():
+        cv = [v for v in vs.itertuples() if c in v.callers.split(",")]
+        traces.append(dict(type="scatter", mode="markers", x=[None], y=[None], yaxis="y5", name=f"caller: {cname}", legendgroup=c,
+                           marker=dict(symbol=sym, size=size, color="#57606a", line=dict(width=1.5, color="#57606a"))))
+        cols = [cat(v.category)[1] for v in cv]
+        traces.append(dict(type="scatter", mode="markers", yaxis="y5", name=cname, legendgroup=c, showlegend=False,
+                           x=[v.pos for v in cv], y=[vy(v) for v in cv], customdata=[variant_cd(v) for v in cv],
+                           hovertext=[variant_hover(v) for v in cv], hoverinfo="text",
+                           marker=dict(symbol=sym, size=size, color=cols, line=dict(width=1.5, color=cols)), meta=dict(role="var")))
+    nc = [v for v in vs.itertuples() if v.category == "known_not_called"]
+    traces.append(dict(type="scatter", mode="markers", yaxis="y5", name="known, not called (expected AF)",
+                       x=[v.pos for v in nc], y=[vy(v) for v in nc], customdata=[variant_cd(v) for v in nc],
+                       hovertext=[variant_hover(v) for v in nc], hoverinfo="text", meta=dict(role="var"),
+                       marker=dict(symbol="x-thin-open", size=10, color=CAT["known_not_called"][1], line=dict(width=2.5, color=CAT["known_not_called"][1]))))
+    kn = [v for v in vs.itertuples() if v.known_gene]
+    traces.append(dict(type="scatter", mode="text", yaxis="y5", showlegend=False, hoverinfo="skip", x=[v.pos for v in kn], y=[vy(v) for v in kn],
+                       text=[esc(variant_label(v)) for v in kn], textposition="top center", customdata=[variant_cd(v) for v in kn],
+                       textfont=dict(size=12, color=[cat(v.category)[1] for v in kn]), meta=dict(role="var")))
+    for k in ("pass", "filtered", "known_pass", "known_filtered"):
+        traces.append(dict(type="scatter", mode="markers", x=[None], y=[None], yaxis="y5", name=f"status: {cat(k)[0]}", legendgroup="status",
+                           marker=dict(symbol="square", size=8, color=cat(k)[1])))
+
+    # layout: fixed px heights, top to bottom [axis, height, gap below]
+    two = len(DATASETS) == 2
+    stack = ([("y6", 170, 25), ("y7", 90, 120)] if two else []) + [("y", 160 if two else 240, 25), ("y2", 90 if two else 130, 45),
+             ("y8", 24 * len(ov), 30), ("y3", 30, 25), ("y4", 30, 50), ("y5", 410 if two else 270, 0)]
+    area = sum(h + g for _, h, g in stack)
+    dom, top = {}, 0
+    for ax, h, g in stack:
+        dom[ax] = [(area - top - h) / area, (area - top) / area]
+        top += h + g
+    legend_of = {"y": "legend", "y6": "legend", "y2": "legend2", "y7": "legend2", "y8": "legend5", "y3": "legend3", "y4": "legend3", "y5": "legend4"}
+    for t in traces:
+        t["legend"] = legend_of[t["yaxis"]]
+    noise_axis = dict(tickformat=".1%", rangemode="tozero")
+    total_reads = {ds: int((reads.dataset == ds).sum()) for ds in DATASETS}
+
+    def subtitle(ds, ax):
+        """Plotly annotation above the read-noise panel on axis ax: the read counts of dataset ds."""
+        return dict(
+            text=f"<b>{ds.capitalize()} reads</b> - {region_reads(a, ds):,} reads in this amplicon region (primary, MAPQ ≥ {MIN_MAPQ}) "
+                 f"of {total_reads[ds]:,} reads in the dataset",
+            xref="paper", x=0, xanchor="left", yref="paper", y=dom[ax][1], yanchor="bottom", yshift=4, showarrow=False,
+            font=dict(size=12, color="#57606a"))
+
+    layout = dict(
+        height=area + 70, margin=dict(l=100, r=10, t=30, b=40), hovermode="closest", dragmode="zoom", bargap=0,
+        xaxis=dict(title="position", showspikes=True, spikemode="across", spikesnap="cursor", spikethickness=1, spikedash="solid",
+                   spikecolor="#57606a", anchor="y5", range=[int(a.start), int(a.end)]),
+        yaxis=dict(noise_axis, domain=dom["y"], title="read noise,<br>filtered" if two else "read noise"),
+        yaxis2=dict(domain=dom["y2"], title="base quality,<br>filtered" if two else "base quality", range=[0, 50]),
+        yaxis3=dict(domain=dom["y3"], showticklabels=False, showgrid=False, zeroline=False, range=[0, 1]),
+        yaxis4=dict(domain=dom["y4"], showticklabels=False, showgrid=False, zeroline=False, range=[0, 1]),
+        yaxis5=dict(domain=dom["y5"], title="variant AF", type="log", tickformat=".1%", range=[np.log10(0.004), 0.08],
+                    tickvals=[0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1]),
+        yaxis8=dict(domain=dom["y8"], range=[len(ov) - 0.5, -0.5], tickvals=list(range(len(ov))), ticktext=ov.name.tolist(),
+                    showgrid=False, zeroline=False, tickfont=dict(size=11), fixedrange=True),
+        annotations=[dict(text=t, xref="paper", x=-0.01, xanchor="right", yref="paper", y=sum(dom[ax]) / 2, showarrow=False, font=dict(size=12))
+                     for t, ax in (("homopolymers", "y3"), ("exons", "y4"))] + [subtitle("filtered", "y")]
+                    + ([subtitle("unfiltered", "y6")] if two else []),
+        shapes=[dict(type="line", xref="paper", x0=-0.1, x1=1.25, yref="paper", y0=(dom["y7"][0] + dom["y"][1]) / 2 + 10 / area,
+                     y1=(dom["y7"][0] + dom["y"][1]) / 2 + 10 / area, line=dict(color="#d0d7de", width=1.5))] if two else [],
+        **{k: dict(groupclick="togglegroup", font=dict(size=11), x=1.01, xanchor="left", y=dom[ax][1], yanchor="top", tracegroupgap=2)
+           for k, ax in (("legend", "y6" if two else "y"), ("legend2", "y7" if two else "y2"), ("legend5", "y8"), ("legend3", "y3"), ("legend4", "y5"))},
+    )
+    if two:
+        layout["yaxis6"] = dict(noise_axis, domain=dom["y6"], title="read noise,<br>unfiltered", matches="y")
+        layout["yaxis7"] = dict(domain=dom["y7"], title="base quality,<br>unfiltered", range=[0, 50])
+    # per-amplicon read quality: amplicon reads (alignments.amplicon) joined to their FASTQ read quality
+    bins = np.arange(0, 50.5, 0.5)
+    rq = []
+    for ds, color, fill in (("filtered", "#0969da", "tozeroy"), ("unfiltered", "#bc4c00", None)):
+        if ds not in DATASETS:
+            continue
+        ids = alignments[(alignments.dataset == ds) & (alignments.amplicon == a.name)].read_id
+        q = reads[(reads.dataset == ds) & reads.read_id.isin(ids)].mean_q
+        h, _ = np.histogram(q, bins=bins)
+        rq.append(dict(type="scatter", mode="lines", x=(bins[:-1] + 0.25).tolist(), y=r5(100 * h / max(len(q), 1)), fill=fill,
+                       line=dict(shape="hvh", width=2.5, color=color), name=f"{a.name}, {ds} (n={len(q):,}, median Q{q.median():.2f})"))
+    rq_layout = dict(height=300, margin=dict(l=100, r=10, t=10, b=40), xaxis=dict(title="read quality (Q)", range=[0, 40]),
+                     yaxis=dict(title="% of reads"), hovermode="x unified", legend=dict(x=0.01, y=0.98))
+    return dict(pos=pos.tolist(), start=int(a.start), end=int(a.end), series=S, data=traces, layout=layout,
+                noiseAxes=["y6", "y"] if two else ["y"], afAxis="y5", rq=dict(data=rq, layout=rq_layout)), vs
+
+
+def variant_table(vs):
+    """HTML table of one amplicon's variants, shown next to its plot.
+
+    Rows are ordered known PASS, known soft-filtered, known not called, PASS, soft-filtered, then by position.
+    Each row carries data-pos (a click zooms the plot there) and data-cd (variant_cd(), for germline hiding).
+    data-quarto-disable-processing stops Quarto from restyling the raw table, which otherwise drops it.
+
+    Args:
+        vs: rows of `variants` (from amplicon_spec()).
+
+    Returns:
+        The table as an HTML string, with columns pos, change (and the known label), AF (or the expected AF of a
+        known variant that was not called), callers (one glyph per caller), status, FILTER.
+    """
+    order = dict(known_pass=0, known_filtered=1, known_not_called=2, **{"pass": 3, "filtered": 4})
+    vs = vs.assign(o=vs.category.map(order)).sort_values(["o", "pos"])
+
+    def short(s):
+        """Escape an allele for HTML, shortened to its first 3 bases + "…" when longer than 5."""
+        return esc(s[:3]) + "&hellip;" if len(s) > 5 else esc(s)
+
+    rows = []
+    for v in vs.itertuples():
+        name, color = cat(v.category)
+        af = f"{100 * v.af:.2f}%" if pd.notna(v.af) else ("(exp. %.0f%%)" % (100 * v.known_expected_af) if pd.notna(v.known_expected_af) else "")
+        glyphs = "".join(CALLERS[c][3] for c in v.callers.split(",") if c in CALLERS)
+        rows.append(f"<tr class='v' data-pos='{v.pos}' data-cd='{jdump(variant_cd(v))}'><td>{v.pos}</td>"
+                    f"<td>{short(v.ref)}&gt;{short(v.alt)}{'<br><b>' + esc(variant_label(v)) + '</b>' if v.known_gene else ''}</td>"
+                    f"<td>{af}</td><td>{glyphs}</td><td><span class='nv-badge' style='background:{color}'>{name}</span></td>"
+                    f"<td>{esc(v.filter)}</td></tr>")
+    return ("<table data-quarto-disable-processing='true'><thead><tr><th>pos</th><th>change</th><th>AF</th><th>callers</th><th>status</th><th>FILTER</th></tr></thead><tbody>"
+            + "".join(rows) + "</tbody></table>")
+```
+
+::: {.panel-tabset .column-screen-inset}
+
+```{python}
+#| output: asis
+for a in amplicons.itertuples():
+    spec, vs = amplicon_spec(a)
+    print(f"\n## {a.name}\n")
+    print("```{=html}")
+    print(f"<div class='nv-amp' id='nv-amp-{a.name}' data-amp='{a.name}'>"
+          f"<div class='nv-tools'><b>{a.name}</b> {a.chrom}:{a.start:,}-{a.end:,} &middot; "
+          f"<button data-act='reset'>Reset zoom</button> <button data-act='clear'>Clear highlight</button> <span class='nv-hidden'></span></div>"
+          f"<div class='nv-row'><div class='nv-plot' id='nv-plot-{a.name}'></div><div class='nv-table'>{variant_table(vs)}</div></div>"
+          f"<div id='nv-rq-{a.name}'></div></div>")
+    print(f"<script>NV.add({json.dumps(a.name)}, {jdump(spec)});</script>")
+    print("```\n")
+```
+
+## Read quality
+
+```{python}
+#| output: asis
+lines = []
+for ds in DATASETS:
+    al = alignments[alignments.dataset == ds]
+    on = al[al.chrom.notna() & (al.mapq >= MIN_MAPQ) & ((al.span_match > 0))]
+    unmatched = int(on.amplicon.isna().sum())
+    n_reads, in_bam = int((reads.dataset == ds).sum()), int(al.read_id.nunique())
+    lines.append(f"**{ds.capitalize()}:** {n_reads:,} reads; {n_reads - in_bam:,} ({100 * (n_reads - in_bam) / n_reads:.1f}%) "
+                 f"not in the BAM; {unmatched:,} of {len(on):,} on-target reads ({100 * unmatched / max(len(on), 1):.1f}%) match no amplicon.")
+print("\n\n".join(lines))
+```
+
+```{python}
+bins = np.arange(0, 50.5, 0.5)
+tr = []
+for ds, color in (("unfiltered", "#8c959f"), ("filtered", "#0969da")):
+    if ds in DATASETS:
+        q = reads[reads.dataset == ds].mean_q
+        h, _ = np.histogram(q, bins=bins)
+        tr.append(dict(type="scatter", mode="lines", x=(bins[:-1] + 0.25).tolist(), y=r5(100 * h / len(q)), fill="tozeroy",
+                       line=dict(shape="hvh", width=2, color=color), name=f"{ds} (n={len(q):,}, median Q{q.median():.2f})"))
+lay = dict(height=360, margin=dict(l=70, r=20, t=10, b=40), xaxis=dict(title="read quality (Q)", range=[0, 40]),
+           yaxis=dict(title="% of reads"), hovermode="x unified")
+display(HTML(f"<div id='nv-rq-sample'></div><script>Plotly.newPlot('nv-rq-sample', {jdump(tr)}, {jdump(lay)}, "
+             "{responsive: true, displaylogo: false});</script>"))
+```
+
+:::
