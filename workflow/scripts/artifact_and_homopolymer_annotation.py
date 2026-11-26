@@ -1,10 +1,52 @@
+"""Annotate VCF variants with artifact statistics from a cohort of chosen samples (ideally normal samples).
 
+Snakemake script. For each variant in a single-sample VCF, look up the matching
+entry in an artifact table built from a cohort of chosen samples and prepend
+three INFO fields:
+
+- ``Artifact``: number of panel samples in which the variant was observed, one
+  value per caller, followed by the panel size (the highest observation count
+  in the table).
+- ``ArtifactMedian``: median MAF of the variant across the panel, per caller.
+- ``ArtifactNrSD``: how many standard deviations the sample AF lies from the
+  panel median, per caller. 1000 means the variant was not seen in the panel
+  (or the AF is above a median with no spread); 0.0 means the AF is at or below
+  a median with no spread.
+- If they were only 4 or fewer cohort samples that showed the variant, 
+statistics cannot be computed ('no spread' case).
+
+Variants are matched on chromosome, position, ref, alt and variant type. The
+specific type (e.g. ``C>T``, ``insertion``, ``deletion``) is tried first, then
+the generic type (``SNV`` or ``INDEL``). Variants absent from the table get
+zero observations.
+
+Variants at a hotspot position (chromosome + position in the hotspots table)
+are never treated as artifacts: they get a ``Hotspot`` INFO entry instead of
+the artifact fields.
+
+The AF used is read from the FORMAT ``AF`` field of the first sample.
+
+Inputs (snakemake.input):
+    vcf: VCF to annotate.
+    artifacts: tab-separated artifact table. Header columns are Chromosome,
+        pos, variant_type, ref, alt, followed by one (caller, median_MAF,
+        sd_MAF) triplet per caller; data rows hold (observations, median, sd).
+    hotspots: tab-separated hotspot table whose first two columns are
+        chromosome and position.
+
+Output (snakemake.output):
+    vcf: annotated VCF with the three artifact INFO fields declared in the
+        header.
+"""
+
+import pandas as pd
 from pysam import VariantFile
 
-
-def add_artifact_annotation_data(in_vcf_filename, artifacts, out_vcf_filename):
+def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_filename):
 
     artifact_dict = {}
+    hotspots_dict = [hotspot[0:2] for hotspot in pd.read_table(hotspots).itertuples(index=False, name="Hotspot")]
+    # [0:2] picks only "Chromosome", "pos" in the tuple
     header = True
     caller_list = []
     Empty_observation = []
@@ -98,37 +140,40 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, out_vcf_filename):
             Medians = artifact_dict[key][4]
             SDs = artifact_dict[key][5]
         INFO = lline[7]
-        Artifact_string = "Artifact=" + Observations[0]
-        if len(Observations) > 1:
-            for obs in Observations[1:]:
-                Artifact_string += "," + obs
-            Artifact_string += "," + str(max_nr_observations)
-        Artifact_string += ";ArtifactMedian=" + Medians[0]
-        if len(Medians) > 1:
-            for median in Medians[1:]:
-                Artifact_string += "," + median
-        Artifact_string += ";ArtifactNrSD="
-        i = 0
-        nrsd = 1000
-        for sd in SDs:
-            if sd == "0":
-                nrsd = 1000
-            elif float(sd) == 1000.0 or float(sd) == 0.0:
-                if float(Medians[i]) >= AF:
-                    nrsd = 0.0
-                else:
+
+        if (chrom, pos) in hotspots_dict:
+            # Never mark as artifacts variants reported in hotspot positions
+            Artifact_string = "Hotspot"
+        else:
+            Artifact_string = "Artifact=" + Observations[0]
+            if len(Observations) > 1:
+                for obs in Observations[1:]:
+                    Artifact_string += "," + obs
+                Artifact_string += "," + str(max_nr_observations)
+            Artifact_string += ";ArtifactMedian=" + Medians[0]
+            if len(Medians) > 1:
+                for median in Medians[1:]:
+                    Artifact_string += "," + median
+            Artifact_string += ";ArtifactNrSD="
+            i = 0
+            nrsd = 1000
+            for sd in SDs:
+                if sd == "0":
                     nrsd = 1000
-            else:
-                nrsd = abs(AF - float(Medians[i])) / float(sd)
-            if i == 0:
-                Artifact_string += str(nrsd)
-            else:
-                Artifact_string += "," + str(nrsd)
-            i += 1
+                elif float(sd) == 1000.0 or float(sd) == 0.0:
+                    if float(Medians[i]) >= AF:
+                        nrsd = 0.0
+                    else:
+                        nrsd = 1000
+                else:
+                    nrsd = abs(AF - float(Medians[i])) / float(sd)
+                if i == 0:
+                    Artifact_string += str(nrsd)
+                else:
+                    Artifact_string += "," + str(nrsd)
+                i += 1
         INFO = Artifact_string + ";" + INFO
         lline[7] = INFO
-        if str(pos) == "171410509":
-            print(lline)
         out_vcf.write(lline[0])
         for column in lline[1:]:
             out_vcf.write("\t" + column)
@@ -142,5 +187,6 @@ if __name__ == "__main__":
     add_artifact_annotation_data(
         snakemake.input.vcf,
         open(snakemake.input.artifacts),
+        snakemake.input.hotspots,
         snakemake.output.vcf,
     )
