@@ -22,7 +22,8 @@ zero observations.
 
 Variants at a hotspot position (chromosome + position in the hotspots table)
 are never treated as artifacts: they get a ``Hotspot`` INFO entry instead of
-the artifact fields.
+the artifact fields. The hotspots table is optional; without it no variant
+is treated as a hotspot.
 
 The AF used is read from the FORMAT ``AF`` field of the first sample.
 
@@ -31,7 +32,7 @@ Inputs (snakemake.input):
     artifacts: tab-separated artifact table. Header columns are Chromosome,
         pos, variant_type, ref, alt, followed by one (caller, median_MAF,
         sd_MAF) triplet per caller; data rows hold (observations, median, sd).
-    hotspots: tab-separated hotspot table whose first two columns are
+    hotspots (optional): tab-separated hotspot table whose first two columns are
         chromosome and position.
 
 Output (snakemake.output):
@@ -45,7 +46,9 @@ from pysam import VariantFile
 def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_filename):
 
     artifact_dict = {}
-    hotspots_dict = [hotspot[0:2] for hotspot in pd.read_table(hotspots).itertuples(index=False, name="Hotspot")]
+    hotspots_dict = []
+    if hotspots:
+        hotspots_dict = [hotspot[0:2] for hotspot in pd.read_table(hotspots).itertuples(index=False, name="Hotspot")]
     # [0:2] picks only "Chromosome", "pos" in the tuple
     header = True
     caller_list = []
@@ -187,6 +190,6 @@ if __name__ == "__main__":
     add_artifact_annotation_data(
         snakemake.input.vcf,
         open(snakemake.input.artifacts),
-        snakemake.input.hotspots,
+        snakemake.input.get("hotspots") or None,
         snakemake.output.vcf,
     )
