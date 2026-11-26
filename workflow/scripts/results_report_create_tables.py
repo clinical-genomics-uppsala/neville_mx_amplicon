@@ -242,8 +242,8 @@ class VariantTable(object):
                     record_values["rs"],
                     record_values["max_pop_af"],
                     record_values["max_pops"],
-                    record_values["artifact_median"],
-                    record_values["artifact_callers"],
+                    record_values.get("artifact_median", ""),  # absent for hotspot variants
+                    record_values.get("artifact_callers", ""),
                     # record_values["background_nr_sd"],
                     # record_values["background_median"],
                     record_values["callers"],
