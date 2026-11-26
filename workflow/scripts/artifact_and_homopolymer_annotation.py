@@ -21,10 +21,10 @@ the generic type (``SNV`` or ``INDEL``). Variants absent from the table get
 zero observations.
 
 Variants at a hotspot position (chromosome + position in the hotspots table)
-are never treated as artifacts: they get a ``Hotspot`` INFO entry instead of
-the artifact fields. The pipeline uses config/whitelist_artifacts.tsv
-unless reference.hotspots is set; without a table no variant is treated as a
-hotspot.
+are never treated as artifacts: the artifact INFO fields are left out and
+``Hotspot`` is set in the FILTER column (added to any existing caller
+filters). The pipeline uses config/whitelist_artifacts.tsv unless
+reference.hotspots is set; without a table no variant is treated as a hotspot.
 
 The AF used is read from the FORMAT ``AF`` field of the first sample.
 
@@ -37,8 +37,8 @@ Inputs (snakemake.input):
         chromosome and position.
 
 Output (snakemake.output):
-    vcf: annotated VCF with the three artifact INFO fields declared in the
-        header.
+    vcf: annotated VCF with the three artifact INFO fields and the
+        ``Hotspot`` FILTER declared in the header.
 """
 
 import pandas as pd
@@ -96,6 +96,7 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_f
     )
     new_header.info.add("ArtifactMedian", "1", "String", "Artifact median MAFs in normal panel")
     new_header.info.add("ArtifactNrSD", "1", "String", "Number of Standard Deviations from artifacts in panel median")
+    new_header.filters.add("Hotspot", None, None, "Variant at a hotspot position, never annotated as an artifact")
     out_vcf = VariantFile(out_vcf_filename, 'w', header=new_header)
     out_vcf.close()
     in_vcf.close()
@@ -146,8 +147,10 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_f
         INFO = lline[7]
 
         if (chrom, pos) in hotspots_dict:
-            # Never mark as artifacts variants reported in hotspot positions
-            Artifact_string = "Hotspot"
+            # Never mark as artifacts variants reported in hotspot positions: leave the artifact fields out
+            # (null) rather than "." because filter_vcf.py and the report call float() on them when present.
+            Artifact_string = ""
+            lline[6] = "Hotspot" if filter in (".", "PASS") else filter + ";Hotspot"
         else:
             Artifact_string = "Artifact=" + Observations[0]
             if len(Observations) > 1:
@@ -176,7 +179,8 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_f
                 else:
                     Artifact_string += "," + str(nrsd)
                 i += 1
-        INFO = Artifact_string + ";" + INFO
+        if Artifact_string:
+            INFO = Artifact_string if INFO == "." else Artifact_string + ";" + INFO
         lline[7] = INFO
         out_vcf.write(lline[0])
         for column in lline[1:]:
