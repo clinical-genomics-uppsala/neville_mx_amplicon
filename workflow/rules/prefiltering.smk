@@ -124,7 +124,7 @@ rule prefiltering_rename_vaf_to_af:
 rule prefiltering_artifact_homopolymer_annotation:
     input:
         artifacts=config.get("reference", {}).get("artifacts", ""),
-        hotspots=config.get("reference", {}).get("hotspots", []),
+        hotspots=config.get("reference", {}).get("hotspots", "config/whitelist_artifacts.tsv"),
         vcf="{file}.vep_annotated.rename_vaf.vcf",
     output:
         vcf=temp("{file}.artifact_annotated.vcf"),

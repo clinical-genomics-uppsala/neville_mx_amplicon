@@ -22,8 +22,9 @@ zero observations.
 
 Variants at a hotspot position (chromosome + position in the hotspots table)
 are never treated as artifacts: they get a ``Hotspot`` INFO entry instead of
-the artifact fields. The hotspots table is optional; without it no variant
-is treated as a hotspot.
+the artifact fields. The pipeline uses config/whitelist_artifacts.tsv
+unless reference.hotspots is set; without a table no variant is treated as a
+hotspot.
 
 The AF used is read from the FORMAT ``AF`` field of the first sample.
 
@@ -48,8 +49,8 @@ def add_artifact_annotation_data(in_vcf_filename, artifacts, hotspots, out_vcf_f
     artifact_dict = {}
     hotspots_dict = []
     if hotspots:
-        hotspots_dict = [hotspot[0:2] for hotspot in pd.read_table(hotspots).itertuples(index=False, name="Hotspot")]
-    # [0:2] picks only "Chromosome", "pos" in the tuple
+        hotspots_dict = [hotspot[0:2] for hotspot in pd.read_table(hotspots, dtype=str).itertuples(index=False, name="Hotspot")]
+    # [0:2] picks only "Chromosome", "pos" in the tuple; dtype=str so they compare with the VCF CHROM and POS strings
     header = True
     caller_list = []
     Empty_observation = []
