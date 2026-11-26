@@ -151,26 +151,26 @@ The Python package `smart-open` must be version < 7.0, otherwise the analyses us
 Designing the analysis requires defining the set of amplicons to be analyzed and their assignment to pools.
 The amplicons and their assigned pools are specified in `config/config.yaml` and summarized in the table below:
 
-| Pool  | Amplicon name | Amplicon length | Chromosome |
+| Pool  | Amplicon name | Amplicon length (bp) | Chromosome |
 |-------|-------------| --- | --- |
-| 1     | TP53_A      | 3000 | chr17 |
-| 1     | TP53_D      | 3000 | chr17 |
-| 1     | TP53_F      | 3000 | chr17 |
-| 1     | TP53_I      | 3000 | chr17 |
-| 1     | FLT3_TKD    | 3000 | chr13 |
-| 2     | IDH1        | 2000 | chr2  |
-| 2     | TP53_B      | 3000 | chr17 |
-| 2     | TP53_G      | 3000 | chr17 |
-| 2     | TP53_J      | 3000 | chr17 |
-| 2     | NPM1        | 2000 | chr5  |
-| 3     | IDH2        | 2000 | chr15 |
-| 3     | TP53_C      | 3000 | chr17 |
-| 3     | TP53_E      | 3000 | chr17 |
-| 3     | TP53_H      | 3000 | chr17 |
-| 3     | FLT3_ITD    | 3000 | chr13 |
+| 1     | TP53_A      | 2933 | chr17 |
+| 1     | TP53_D      | 2964 | chr17 |
+| 1     | TP53_F      | 3306 | chr17 |
+| 1     | TP53_I      | 3208 | chr17 |
+| 1     | FLT3_TKD    | 3282 | chr13 |
+| 2     | IDH1        | 2922 | chr2  |
+| 2     | TP53_B      | 3271 | chr17 |
+| 2     | TP53_G      | 3495 | chr17 |
+| 2     | TP53_J      | 2161 | chr17 |
+| 2     | NPM1        | 3402 | chr5  |
+| 3     | IDH2        | 2949 | chr15 |
+| 3     | TP53_C      | 2198 | chr17 |
+| 3     | TP53_E      | 2848 | chr17 |
+| 3     | TP53_H      | 2342 | chr17 |
+| 3     | FLT3_ITD    | 3168 | chr13 |
 
 In multiplexed PCR settings, the amplicons should have similar lengths to ensure balanced amplification.
-The whole TP53 gene is covered by 9 overlapping amplicons 
+The whole TP53 gene is covered by 10 overlapping amplicons 
 (TP53_A, TP53_B, TP53_C, TP53_D, TP53_E, TP53_F, TP53_G, TP53_H, TP53_I, TP53_J), that is a tiled approach.
 In order to avoid truncation of reads during PCR amplification, overlapping amplicons were assigned to different pools.
 
