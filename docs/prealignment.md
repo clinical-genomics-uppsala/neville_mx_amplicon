@@ -20,8 +20,7 @@ Output: `prealignment/filtlong/{experiment}_{sample}_{type}_reads.ont_adapt_trim
 |--------|-------|-------------|
 | `min_length` | 2000 | Minimum read length. |
 | `max_length` | 4000 | Maximum read length. |
-
-`--min_mean_q 30` and `--keep_percent 75` are set in the rule.
+| `extra` | `--min_mean_q 30 --keep_percent 75` | Other Filtlong options. Without it, reads are filtered on length only. |
 
 ## Discarded reads
 

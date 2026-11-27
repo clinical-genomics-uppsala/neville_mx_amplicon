@@ -16,6 +16,7 @@ rule prealignment_ont_filtlong:
     params:
         min_length=config.get("prealignment_ont_filtlong", {}).get("min_length", 50),
         max_length=config.get("prealignment_ont_filtlong", {}).get("max_length", 30000),
+        extra=config.get("prealignment_ont_filtlong", {}).get("extra", ""),
     log:
         "prealignment/filtlong/{experiment}_{sample}_{type}.filtlong.log",
     resources:
@@ -39,7 +40,7 @@ rule prealignment_ont_filtlong:
         """
     shell:
         """
-        filtlong --min_length {params.min_length} --max_length {params.max_length} --min_mean_q 30 --keep_percent 75 {input}  2> {log} | gzip > {output.fastq}
+        filtlong --min_length {params.min_length} --max_length {params.max_length} {params.extra} {input}  2> {log} | gzip > {output.fastq}
         """
 
 

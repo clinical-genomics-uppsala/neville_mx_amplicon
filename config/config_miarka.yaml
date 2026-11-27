@@ -127,6 +127,7 @@ prealignment_ont_filtlong:
     container: "{{APPTAINER_CACHE}}/hydragenetics__filtlong_0.2.1.sif"  # "docker://quay.io/biocontainers/filtlong:0.2.1--hdcf5f25_4"
     min_length: 2000
     max_length: 4000
+    extra: "--min_mean_q 30 --keep_percent 75"
 
 prealignment_ont_fetch_filtered_reads:
   container: "{{APPTAINER_CACHE}}/hydragenetics__samtools_1.21.sif"
