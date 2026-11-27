@@ -512,7 +512,8 @@ Rename `FORMAT/VAF` to `FORMAT/AF`.
 
 
 ## prefiltering_artifact_homopolymer_annotation
-Annotate variants with their frequency in the artifact panel (`Artifact`, `ArtifactMedian`, `ArtifactNrSD`).
+Annotate variants with their frequency in the artifact panel (`Artifact`, `ArtifactMedian`, `ArtifactNrSD`). Variants at
+[hotspot](snv_indels.md#hotspots) positions (`config/whitelist_artifacts.tsv` by default) get the `Hotspot` FILTER instead.
 
 ### :snake: Rule
 

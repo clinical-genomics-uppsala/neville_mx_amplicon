@@ -106,6 +106,19 @@ the [artifact panel](references.md#artifact-panel) and adds three INFO fields, w
 SNVs are matched on the exact substitution (e.g. `C>T`) and then on the generic type `SNV`; indels on `insertion`/`deletion`, then `INDEL`.
 Variants absent from the panel get 0 observations and `ArtifactNrSD=1000`.
 
+### Hotspots
+
+Variants at a hotspot position are never annotated as artifacts: they get no `Artifact`, `ArtifactMedian` or `ArtifactNrSD`
+field, and `Hotspot` is set in the `FILTER` column (added after any filter already set by the caller, e.g. `q22.5;Hotspot`).
+Without the artifact fields, the `Artifact_gt_5` soft filter does not apply to them.
+
+Hotspot positions are read from `reference.hotspots` in `config.yaml`, which defaults to `config/whitelist_artifacts.tsv`:
+a tab-separated table with a header row whose first two columns are chromosome and position. Only chromosome and position
+are matched; ref, alt and variant type are not. Set `reference.hotspots: []` to turn the hotspot check off.
+
+In the Excel report, variants with filter `PASS` or `Hotspot` (and AF ≥ 3%) are shown by default. A hotspot variant that also has a
+caller or soft-filter flag, e.g. `q22.5,Hotspot`, is hidden like any other filtered variant.
+
 ## Soft filtering
 
 `filtering_filter_vcf` (hydra-genetics [filtering](https://hydra-genetics-filtering.readthedocs.io/en/latest/)) applies the filters in
@@ -118,7 +131,7 @@ Variants absent from the panel get 0 observations and `ArtifactNrSD=1000`.
 | `Consequence` | Intergenic, NMD transcript, non-coding transcript, upstream/downstream, TFBS or regulatory region variant. |
 | `PopAF_0.02` | Maximum population AF (1000 Genomes, ESP, gnomAD exomes) above 2%. |
 | `Biotype` | Not annotated as `protein_coding`. |
-| `Artifact_gt_5` | For any caller: seen in more than 5 panel samples and less than 5 SD from the panel median. |
+| `Artifact_gt_5` | For any caller: seen in more than 5 panel samples and less than 5 SD from the panel median. Never set on [hotspots](#hotspots). |
 
 The hard filters in `config/config_hard_filter_somatic.yaml` (gnomAD exome AF > 0.5%, AD < 50, not an SNV) are listed in
 the Excel report.
