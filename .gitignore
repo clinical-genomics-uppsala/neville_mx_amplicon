@@ -32,3 +32,8 @@ PoN
 ./Wash*
 ./M2*
 ./CGU_2025_22*
+# Copied into docs/ by docs/hooks.py at build time
+docs/changelog.md
+docs/license.md
+docs/images/
+site/
