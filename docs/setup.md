@@ -54,7 +54,7 @@ The parameters available for each rule are listed in the [rule list](softwares.m
 | `reference.fasta`, `reference.fai`, `reference.sequence_dict` | Reference genome, its index and its sequence dictionary. |
 | `reference.design_bed` | BED file with the amplicons. |
 | `reference.design_intervals` | Picard interval list of the amplicons. It is created from `amplicons.bed` if missing. |
-| `reference.artifacts` | Artifact panel TSV built by the [reference workflow](running_references.md). |
+| `reference.artifacts` | Artifacts cohort TSV built by the [reference workflow](running_references.md). |
 | `vep.vep_cache` | Directory with the VEP cache. |
 | `*.bed_file` | Caller-specific BED files (`snv_indels_svs_clairs_to`, `snv_indels_svs_deepsomatic`, `vardict`, `prefiltering_bcftools_include_region`). |
 

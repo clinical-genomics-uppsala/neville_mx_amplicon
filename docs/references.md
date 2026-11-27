@@ -36,7 +36,7 @@ the model is first looked up in the folder given by `DORADO_MODELS`, which is us
 
 `vep.vep_cache` points at the VEP cache (`--offline --cache --merged` by default). The cache must match the VEP version (111) and GRCh38.
 
-## Artifact panel
+## Artifacts cohort
 
 `reference.artifacts` is a TSV file with, for each position and variant seen in a set of reference samples, the number of
 observations and the median and standard deviation of the allele frequency, per caller:

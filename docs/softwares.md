@@ -512,7 +512,7 @@ Rename `FORMAT/VAF` to `FORMAT/AF`.
 
 
 ## prefiltering_artifact_homopolymer_annotation
-Annotate variants with their frequency in the artifact panel (`Artifact`, `ArtifactMedian`, `ArtifactNrSD`). Variants at
+Annotate variants with their frequency in the artifacts cohort (`Artifact`, `ArtifactMedian`, `ArtifactNrSD`). Variants at
 [hotspot](snv_indels.md#hotspots) positions (`config/whitelist_artifacts.tsv` by default) get the `Hotspot` FILTER instead.
 
 ### :snake: Rule
@@ -871,7 +871,7 @@ Background panel from VarDict gVCFs of unfiltered reads.
 
 
 ## create_artifact_file_longread
-Artifact panel from the soft-filtered ensemble VCFs of the panel samples.
+Artifacts cohort from the soft-filtered ensemble VCFs of the panel samples.
 
 ### :snake: Rule
 

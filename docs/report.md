@@ -17,7 +17,7 @@ workbook per sample: `Results/Reports/{experiment}_{sample}_{type}.xlsx`.
 
 ### Overview
 Sample and run IDs, processing date, fields for sign-off (created by, signed by, document number), links to the other sheets,
-the average coverage over `amplicons.bed`, and the BED files and artifact panel used.
+the average coverage over `amplicons.bed`, and the BED files and artifacts cohort used.
 
 ### SNV_Indels
 The filters applied, then one row per variant with AF above 0.5% and length up to 50 bp:

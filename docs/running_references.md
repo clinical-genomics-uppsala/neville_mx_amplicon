@@ -3,7 +3,7 @@
 `workflow/Snakefile_references` builds panels from a set of reference samples. These panels describe the sequencing and
 variant-calling noise of the assay:
 
-* the **artifact panel** lists the variants called in the reference samples, with their frequency per caller.
+* the **artifacts cohort** lists the variants called in the reference samples, with their frequency per caller.
   The main pipeline uses it to flag recurrent artifacts (see [Artifact annotation](snv_indels.md#artifact-annotation));
 * the **background panels** give, for each position, the median and standard deviation of the non-reference allele
   frequency seen in the reference samples, one panel per caller. They are used for noise analyses; the main pipeline
@@ -33,9 +33,9 @@ alignment and variant calling are applied to the reference samples.
 | `reference_rules_align_unfiltered`, `reference_rules_bam_sort_unfiltered`, `reference_rules_bam_index_unfiltered`, `reference_rules_snv_indels_vardict_gvcf_unfiltered` | Same VarDict gVCF on reads **not** filtered by Filtlong, to measure the effect of filtering on noise. |
 | `references_create_background_file_{clairs_to,deepsomatic,vardict}` | Background panel per caller, from the hydra-genetics [references](https://hydra-genetics-references.readthedocs.io/en/latest/) module. |
 | `create_background_file_longread_vardict_unfiltered` | Background panel from the unfiltered VarDict gVCFs (`workflow/scripts/create_background_file_longread.py`). |
-| `create_artifact_file_longread` | Artifact panel from the soft-filtered ensemble VCFs (`workflow/scripts/create_artifact_file_longread.py`). |
+| `create_artifact_file_longread` | Artifacts cohort from the soft-filtered ensemble VCFs (`workflow/scripts/create_artifact_file_longread.py`). |
 
-### Artifact panel
+### Artifacts cohort
 
 For each variant (chromosome, position, type, ref, alt) in the ensemble VCFs of the panel samples, and for each caller listed
 in the `CALLERS` INFO field, the script counts the observations and collects the allele frequencies (`FORMAT/AF`).
@@ -67,7 +67,7 @@ snakemake --profile profiles/marvin_drmaa/ -s workflow/Snakefile_references \
 
 | File | Description |
 |------|-------------|
-| `artifact_panel.tsv` | Artifact panel; set `reference.artifacts` in `config/config.yaml` to this file. |
+| `artifact_panel.tsv` | Artifacts cohort; set `reference.artifacts` in `config/config.yaml` to this file. |
 | `background_panel_{clairs_to,deepsomatic,vardict}.tsv` | Background panel per caller. |
 | `background_panel_vardict_unfiltered.tsv` | Background panel from unfiltered reads. |
 | `{experiment}_{sample}_{type}_snv.clairs_to.g.vcf.gz`, `.deepsomatic.g.vcf.gz`, `.vardict.g.vcf.gz`, `.unfiltered_vardict.g.vcf.gz` | gVCFs per sample. |
@@ -80,5 +80,5 @@ Arguments can be given in a file with `@args.txt`; templates are in `workflow/sc
 
 | Script | Description |
 |--------|-------------|
-| `references_report_noise_artifacts.py` | For each hotspot in a CSV file, collects the background and artifact panel values per caller and writes them to CSV and JSON. |
+| `references_report_noise_artifacts.py` | For each hotspot in a CSV file, collects the background and artifacts cohort values per caller and writes them to CSV and JSON. |
 | `hotspots_seq_noise_analysis.py` | For each hotspot, counts the reads carrying the reference and alternative allele in each BAM file of the reference panel and computes the VAF. |

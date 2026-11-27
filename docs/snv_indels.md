@@ -95,7 +95,7 @@ The ensemble VCF is annotated with **[VEP](https://www.ensembl.org/info/docs/too
 ## Artifact annotation
 
 `prefiltering_artifact_homopolymer_annotation` (`workflow/scripts/artifact_and_homopolymer_annotation.py`) looks up each variant in
-the [artifact panel](references.md#artifact-panel) and adds three INFO fields, with one value per caller in the order of the panel:
+the [artifacts cohort](references.md#artifacts-cohort) and adds three INFO fields, with one value per caller in the order of the panel:
 
 | Field | Description |
 |-------|-------------|
@@ -124,7 +124,7 @@ caller or soft-filter flag, e.g. `q22.5,Hotspot`, is hidden like any other filte
 `filtering_filter_vcf` (hydra-genetics [filtering](https://hydra-genetics-filtering.readthedocs.io/en/latest/)) applies the filters in
 `config/config_soft_filter_somatic.yaml`. Variants are kept, and the flag is added to the `FILTER` column:
 
-| Flag | Condition |
+| Soft-filter flag | Condition |
 |------|-----------|
 | `Intron` | Intronic, unless also splice or with a COSMIC ID at the position. |
 | `VAF` | `FORMAT/AF` below 0.01. |
@@ -132,6 +132,8 @@ caller or soft-filter flag, e.g. `q22.5,Hotspot`, is hidden like any other filte
 | `PopAF_0.02` | Maximum population AF (1000 Genomes, ESP, gnomAD exomes) above 2%. |
 | `Biotype` | Not annotated as `protein_coding`. |
 | `Artifact_gt_5` | For any caller: seen in more than 5 panel samples and less than 5 SD from the panel median. Never set on [hotspots](#hotspots). |
+
+Several soft-filter flags can be combined, in such case they are separated by semi-columns `;`. Other possible values in `FILTER` are `"PASS"` and `"Hotspot"` but those ones are set previously to the soft-filter flags.
 
 The hard filters in `config/config_hard_filter_somatic.yaml` (gnomAD exome AF > 0.5%, AD < 50, not an SNV) are listed in
 the Excel report.
