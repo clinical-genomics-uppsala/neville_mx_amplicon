@@ -1,12 +1,38 @@
-site_name: tmp.pipeline_pool_amplicon
+site_name: neville_mx_amplicon
+repo_url: https://github.com/clinical-genomics-uppsala/neville_mx_amplicon
+edit_uri: blob/develop/docs/
 nav:
-  - Introduction: intro.md
-  - Softwares: softwares.md
+  - Overview:
+    - Introduction: index.md
+    - Pipeline overview: overview.md
+    - Result files: result_files.md
+    - Pipeline setup and configuration: setup.md
+    - Reference files: references.md
+  - Running the pipeline:
+    - Basic: running.md
+    - Small integration test: integration_test.md
+    - Building reference panels: running_references.md
+  - Pipeline steps:
+    - Basecalling: basecalling.md
+    - Pre-alignment: prealignment.md
+    - Alignment: alignment.md
+    - SNVs and indels: snv_indels.md
+    - Structural variants: cnv_sv.md
+    - QC: qc.md
+    - Excel report: report.md
+  - Pipeline specific rules:
+    - Rule list: softwares.md
+  - Project info:
+    - Changelog: changelog.md
+    - Citations: citations.md
+    - License: license.md
 
-theme: readthedocs
+theme:
+  name: readthedocs
 extra_css: [extra.css]
 markdown_extensions:
   - abbr
+  - admonition
   - attr_list
   - pymdownx.details
   - pymdownx.snippets:
@@ -15,12 +41,14 @@ markdown_extensions:
       base_path: ["docs/", "workflow/rules/"]
       url_download: "True"
   - mdx_spanner
-  - admonition
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+  - toc:
+      permalink: True
 
 plugins:
+  - search
   - yaml-schema:
       yaml_files:
         - file: "workflow/schemas/config.schema.yaml"
@@ -32,3 +60,7 @@ plugins:
         - 'workflow/rules'
       schemas:
         - 'workflow/schemas/rules.schema.yaml'
+  - mkdocs-simple-hooks:
+      hooks:
+        on_pre_build: "docs.hooks:copy_changelog_license_and_images"
+        on_files: "docs.hooks:exclude_agent_docs"
