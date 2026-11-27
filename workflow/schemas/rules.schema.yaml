@@ -497,6 +497,12 @@ properties:
           artifacts:
             type: string
             description: artifact panel (tsv) with the number of observations, median and standard deviation of the AF per caller and position
+          hotspots:
+            type: string
+            description: >-
+              hotspot positions (tsv) whose first two columns are chromosome and position; variants there get the
+              Hotspot FILTER and no artifact fields. Defaults to config/whitelist_artifacts.tsv, set reference.hotspots
+              to [] to disable
           vcf:
             type: string
             description: input VEP-annotated vcf file in which VAF has been renamed to AF
@@ -506,7 +512,9 @@ properties:
         properties:
           vcf:
             type: string
-            description: output vcf file with the INFO fields Artifact, ArtifactMedian and ArtifactNrSD added
+            description: >-
+              output vcf file with the INFO fields Artifact, ArtifactMedian and ArtifactNrSD added, except for hotspot
+              variants, which get the Hotspot FILTER instead
 # Entry added using Hydra-Genetics CLI - please move it into alphabetically sorted order
   prefiltering_bcftools_include_region:
     type: object
