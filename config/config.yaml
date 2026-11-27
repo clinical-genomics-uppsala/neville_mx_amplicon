@@ -32,7 +32,7 @@ reference:
   design_bed:
     "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/bedfiles/M5-6-7/amplicons.bed"
   artifacts:
-    "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon/reference_files/artifacts.tsv"
+    "/beegfs-storage/projects/wp4/nobackup/workspace/camille_test/ampliconthemato/neville_mx_amplicon/reference_files/artifacts_20261021.tsv"
   # Tab-separated table whose first two columns are chromosome and position.
   # Variants at these positions are annotated Hotspot, never Artifact.
   # Defaults to config/whitelist_artifacts.tsv; set to [] to disable.

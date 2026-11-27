@@ -329,13 +329,15 @@ for i, filter_txt in enumerate(filters_snv):
 
 i += 2
 worksheet_snv.write_rich_string(
-    "A" + str(i), "Only variants with ", format_bold, "> 3 % AF", " and filter-flag ", format_bold, "PASS", " shown by default."
+    "A" + str(i), "Only variants with ", format_bold, "> 3 % AF", " and filter-flag ", format_bold, "PASS or Hotspot", " shown by default."
 )
 worksheet_snv.write(
     "A" + str(i + 1),
     "To see all variants; put marker on header row, then click on 'Standard Filter' and remove any values. "
     + "You can then use the drop-downs in the header row to filter to your liking.",
 )
+
+default_filters = ["PASS", "Hotspot"]
 
 i += 6
 column_end = ":" + convert_columns_to_letter(len(snv_table["headers"]))
@@ -350,15 +352,17 @@ worksheet_snv.add_table(table_area, {"columns": snv_table["headers"],
                                      "style": "Table Style Light 1",
                                      "autofilter": False
                                      })
-cond_formula = "=LEFT($A" + str(i + 1) + ', 4)<>"PASS"'
+cond_formula = '=AND($A{0}<>"PASS", $A{0}<>"Hotspot")'.format(i + 1)
+# cond_formula = "=LEFT($A" + str(i + 1) + ', 4)<>"PASS"'
 worksheet_snv.conditional_format(table_area_data, {"type": "formula", "criteria": cond_formula, "format": format_orange})
 
 
 worksheet_snv.autofilter(table_area)
-worksheet_snv.filter_column("A", "Filter != PASS")
+# worksheet_snv.filter_column("A", "Filter != PASS")
+worksheet_snv.filter_column_list("A", default_filters)
 worksheet_snv.filter_column("I", "AF >= 0.03")
 for row_data in snv_table["data"]:
-    if row_data[0] == "PASS" and float(row_data[8]) >= 0.03:
+    if row_data[0] in default_filters and float(row_data[8]) >= 0.03:
         pass
     else:
         worksheet_snv.set_row(i, options={"hidden": True})
